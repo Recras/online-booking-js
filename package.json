@@ -1,0 +1,30 @@
+{
+  "name": "online-booking-js",
+  "version": "0.0.1",
+  "description": "JS library for easy online booking integration",
+  "main": "dist/onlinebooking.js",
+  "scripts": {
+    "build": "babel src -d dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Recras/online-booking-js.git"
+  },
+  "keywords": [
+    "Recras",
+    "online",
+    "booking",
+    "recreation"
+  ],
+  "author": "Recras BV",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Recras/online-booking-js/issues"
+  },
+  "homepage": "https://github.com/Recras/online-booking-js#readme",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-plugin-transform-es2015-arrow-functions": "^6.22.0",
+    "babel-preset-env": "^1.6.1"
+  }
+}

@@ -167,15 +167,48 @@ var Recrasbooking = function () {
             });*/
         }
     }, {
+        key: 'showContactForm',
+        value: function showContactForm(pack) {
+            var _this6 = this;
+
+            this.getContactFormFields(pack).then(function (fields) {
+                fields = fields.sort(function (a, b) {
+                    return a.sort_order - b.sort_order;
+                });
+
+                var waitFor = [];
+
+                var hasCountryField = fields.filter(function (field) {
+                    return field.field_identifier === 'contact.landcode';
+                }).length > 0;
+                var hasNewsletterField = fields.filter(function (field) {
+                    return field.field_identifier === 'contactpersoon.nieuwsbrieven';
+                }).length > 0;
+
+                if (hasCountryField) {
+                    waitFor.push(_this6.getCountryList(_this6.locale));
+                }
+                if (hasNewsletterField) {
+                    //TODO: /api2/nieuwsbrieven is geen openbare API
+                }
+                Promise.all(waitFor).then(function () {
+                    var html = '<div class="recras-contactform">';
+                    fields.forEach(function (field, idx) {
+                        html += '<div>' + _this6.showContactFormField(field, idx) + '</div>';
+                    });
+                    html += '</div>';
+                    _this6.amendHtml(html);
+                });
+            });
+        }
+    }, {
         key: 'showContactFormField',
         value: function showContactFormField(field, idx) {
-            var _this6 = this;
+            var _this7 = this;
 
             if (field.soort_invoer === 'header') {
                 return '<h3>' + field.naam + '</h3>';
             }
-
-            console.log(field);
 
             var label = this.showContactFormLabel(field, idx);
             var attrRequired = field.verplicht ? 'required' : '';
@@ -184,7 +217,7 @@ var Recrasbooking = function () {
                 case 'contactpersoon.geslacht':
                     html = '<select id="contactformulier-' + idx + '" name="contactformulier' + idx + '" ' + attrRequired + ' autocomplete="sex">';
                     Object.keys(this.GENDERS).forEach(function (key) {
-                        html += '<option value="' + key + '">' + _this6.GENDERS[key];
+                        html += '<option value="' + key + '">' + _this7.GENDERS[key];
                     });
                     html += '</select>';
                     return label + html;
@@ -206,11 +239,12 @@ var Recrasbooking = function () {
                 case 'contact.landcode':
                     html = '<select id="contactformulier-' + idx + '" name="contactformulier' + idx + '" ' + attrRequired + '>';
                     Object.keys(this.countries).forEach(function (code) {
-                        html += '<option value="' + code + '">' + _this6.countries[code];
+                        html += '<option value="' + code + '">' + _this7.countries[code];
                     });
                     html += '</select>';
                     return label + html;
                 default:
+                    console.log('TODO veld', field);
                     var autocomplete = this.AUTOCOMPLETE_OPTIONS[field.soort_invoer] ? this.AUTOCOMPLETE_OPTIONS[field.soort_invoer] : '';
                     return label + ('<input type="text" id="contactformulier-' + idx + '" name="contactformulier' + idx + '" ' + attrRequired + ' autocomplete="' + autocomplete + '">');
             }
@@ -225,9 +259,17 @@ var Recrasbooking = function () {
             return '<label for="contactformulier-' + idx + '">' + labelText + '</label>';
         }
     }, {
+        key: 'showDateTimeSelection',
+        value: function showDateTimeSelection() {
+            var today = new Date().toISOString().substr(0, 10); // Formatted as 2018-03-13
+            this.amendHtml('<label for="recras-onlinebooking-date">Date</label><input type="date" id="recras-onlinebooking-date" min="' + today + '">');
+            this.amendHtml('<label for="recras-onlinebooking-time">Time</label><input type="time" id="recras-onlinebooking-time">');
+            return Promise.resolve(42); //TODO
+        }
+    }, {
         key: 'showPackages',
         value: function showPackages(packages) {
-            var _this7 = this;
+            var _this8 = this;
 
             packages = packages.filter(function (p) {
                 return p.mag_online;
@@ -243,53 +285,24 @@ var Recrasbooking = function () {
             var packageSelectEl = document.getElementById('recras-package-selection');
             packageSelectEl.addEventListener('change', function (e) {
                 var selectedPackageId = parseInt(packageSelectEl.value, 10);
-                var selectedPackage = _this7.packages.filter(function (p) {
+                var selectedPackage = _this8.packages.filter(function (p) {
                     return p.id === selectedPackageId;
                 });
                 if (selectedPackage.length === 0) {
                     // Reset form
-                    _this7.showPackages(packages);
+                    _this8.showPackages(packages);
                     return false;
                 }
-                _this7.selectedPackage = selectedPackage[0];
-                _this7.showProducts(_this7.selectedPackage);
+                _this8.selectedPackage = selectedPackage[0];
+                _this8.showProducts(_this8.selectedPackage);
+                _this8.showDateTimeSelection(_this8.selectedPackage);
+                _this8.showContactForm(_this8.selectedPackage);
             });
         }
     }, {
         key: 'showProducts',
         value: function showProducts(pack) {
-            var _this8 = this;
-
             //TODO: pack.regels bestaat niet in openbare API
-            this.getContactFormFields(pack).then(function (fields) {
-                fields = fields.sort(function (a, b) {
-                    return a.sort_order - b.sort_order;
-                });
-
-                var waitFor = [];
-
-                var hasCountryField = fields.filter(function (field) {
-                    return field.field_identifier === 'contact.landcode';
-                }).length > 0;
-                var hasNewsletterField = fields.filter(function (field) {
-                    return field.field_identifier === 'contactpersoon.nieuwsbrieven';
-                }).length > 0;
-
-                if (hasCountryField) {
-                    waitFor.push(_this8.getCountryList(_this8.locale));
-                }
-                if (hasNewsletterField) {
-                    //TODO: /api2/nieuwsbrieven is geen openbare API
-                }
-                Promise.all(waitFor).then(function () {
-                    var html = '<div class="recras-contactform">';
-                    fields.forEach(function (field, idx) {
-                        html += '<div>' + _this8.showContactFormField(field, idx) + '</div>';
-                    });
-                    html += '</div>';
-                    _this8.amendHtml(html);
-                });
-            });
         }
     }]);
 

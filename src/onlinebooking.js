@@ -149,6 +149,38 @@ class Recrasbooking {
         });*/
     }
 
+    showContactForm(pack) {
+        this.getContactFormFields(pack).then(fields => {
+            fields = fields.sort((a, b) => {
+                return a.sort_order - b.sort_order;
+            });
+
+            let waitFor = [];
+
+            let hasCountryField = fields.filter(field => {
+                return field.field_identifier === 'contact.landcode';
+            }).length > 0;
+            let hasNewsletterField = fields.filter(field => {
+                return field.field_identifier === 'contactpersoon.nieuwsbrieven';
+            }).length > 0;
+
+            if (hasCountryField) {
+                waitFor.push(this.getCountryList(this.locale));
+            }
+            if (hasNewsletterField) {
+                //TODO: /api2/nieuwsbrieven is geen openbare API
+            }
+            Promise.all(waitFor).then(() => {
+                let html = '<div class="recras-contactform">';
+                fields.forEach((field, idx) => {
+                    html += '<div>' + this.showContactFormField(field, idx) + '</div>';
+                });
+                html += '</div>';
+                this.amendHtml(html);
+            });
+        });
+    }
+
     showContactFormField(field, idx) {
         if (field.soort_invoer === 'header') {
             return `<h3>${ field.naam }</h3>`;
@@ -188,7 +220,6 @@ class Recrasbooking {
                 html += '</select>';
                 return label + html;
             default:
-                console.log('TODO veld', field);
                 let autocomplete = this.AUTOCOMPLETE_OPTIONS[field.soort_invoer] ? this.AUTOCOMPLETE_OPTIONS[field.soort_invoer] : '';
                 return label + `<input type="text" id="contactformulier-${ idx }" name="contactformulier${ idx }" ${ attrRequired } autocomplete="${ autocomplete }">`;
         }
@@ -200,6 +231,14 @@ class Recrasbooking {
             labelText += '<span title="Required">*</span>';
         }
         return `<label for="contactformulier-${ idx }">${ labelText }</label>`;
+    }
+
+    showDateTimeSelection() {
+        let today = (new Date()).toISOString().substr(0, 10); // Formatted as 2018-03-13
+        this.amendHtml('<label for="recras-onlinebooking-date">Date</label><input type="date" id="recras-onlinebooking-date" min="' + today + '">');
+        this.amendHtml('<label for="recras-onlinebooking-time">Time</label><input type="time" id="recras-onlinebooking-time">');
+
+        //TODO: load Pikaday
     }
 
     showPackages(packages) {
@@ -227,39 +266,12 @@ class Recrasbooking {
             }
             this.selectedPackage = selectedPackage[0];
             this.showProducts(this.selectedPackage);
+            this.showDateTimeSelection(this.selectedPackage);
+            this.showContactForm(this.selectedPackage);
         });
     }
 
     showProducts(pack) {
         //TODO: pack.regels bestaat niet in openbare API
-        this.getContactFormFields(pack).then(fields => {
-            fields = fields.sort((a, b) => {
-                return a.sort_order - b.sort_order;
-            });
-
-            let waitFor = [];
-
-            let hasCountryField = fields.filter(field => {
-                return field.field_identifier === 'contact.landcode';
-            }).length > 0;
-            let hasNewsletterField = fields.filter(field => {
-                return field.field_identifier === 'contactpersoon.nieuwsbrieven';
-            }).length > 0;
-
-            if (hasCountryField) {
-                waitFor.push(this.getCountryList(this.locale));
-            }
-            if (hasNewsletterField) {
-                //TODO: /api2/nieuwsbrieven is geen openbare API
-            }
-            Promise.all(waitFor).then(() => {
-                let html = '<div class="recras-contactform">';
-                fields.forEach((field, idx) => {
-                    html += '<div>' + this.showContactFormField(field, idx) + '</div>';
-                });
-                html += '</div>';
-                this.amendHtml(html);
-            });
-        });
     }
 }

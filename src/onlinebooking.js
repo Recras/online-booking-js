@@ -25,7 +25,11 @@ class Recrasbooking {
         };
 
         const CSS = `
-.recras-contactform div {
+.recras-onlinebooking > div {
+border-top: 2px solid #dedede; /* Any love for Kirby out there? */
+    padding: 1em 0;
+}
+.recras-contactform div, .recras-amountsform div {
     display: flex;
     justify-content: space-between;
     padding: 0.25em 0;
@@ -58,6 +62,7 @@ class Recrasbooking {
 
         this.element.classList.add('recras-onlinebooking');
         this.loadCSS(CSS);
+        this.loadScripts();
 
         this.getPackages().then(packages => {
             this.showPackages(packages);
@@ -120,6 +125,10 @@ class Recrasbooking {
         refNode.parentNode.insertBefore(styleEl, refNode);
     }
 
+    loadScripts() {
+        //TODO: load Pikaday
+    }
+
     setHtml(msg) {
         this.element.innerHTML = msg;
     }
@@ -141,12 +150,9 @@ class Recrasbooking {
     }
 
     shouldShowBookingSize(pack) {
-        // TODO: pack.regels bestaat niet in openbare API
-        return Math.random() > 0.5; //TODO
-
-        /*return _.some(arrangement.regels, function(r) {
-            return r.onlineboeking_aantalbepalingsmethode === 'boekingsgrootte';
-        });*/
+        return pack.regels.filter(line => {
+            return line.onlineboeking_aantalbepalingsmethode === 'boekingsgrootte';
+        }).length > 0;
     }
 
     showContactForm(pack) {
@@ -235,10 +241,11 @@ class Recrasbooking {
 
     showDateTimeSelection() {
         let today = (new Date()).toISOString().substr(0, 10); // Formatted as 2018-03-13
-        this.amendHtml('<label for="recras-onlinebooking-date">Date</label><input type="date" id="recras-onlinebooking-date" min="' + today + '">');
-        this.amendHtml('<label for="recras-onlinebooking-time">Time</label><input type="time" id="recras-onlinebooking-time">');
-
-        //TODO: load Pikaday
+        let html = `<div class="recras-datetime">`;
+        html += `<label for="recras-onlinebooking-date">Date</label><input type="date" id="recras-onlinebooking-date" min="${ today }">`;
+        html += '<label for="recras-onlinebooking-time">Time</label><input type="time" id="recras-onlinebooking-time">';
+        html += '</div>';
+        this.amendHtml(html);
     }
 
     showPackages(packages) {
@@ -272,6 +279,27 @@ class Recrasbooking {
     }
 
     showProducts(pack) {
-        //TODO: pack.regels bestaat niet in openbare API
+        if (this.shouldShowBookingSize(pack)) {
+            this.amendHtml(`<label for="bookingsize">${ (pack.weergavenaam || pack.arrangement) }</label><input type="number" id="bookingsize" min="0">`);
+            let bookingSizeEl = document.getElementById('bookingsize');
+            bookingSizeEl.addEventListener('input', e => {
+                //TODO: updateProductAmounts
+            });
+        }
+        let linesNoBookingSize = pack.regels.filter(line => {
+            return line.onlineboeking_aantalbepalingsmethode !== 'boekingsgrootte';
+        });
+
+        let html = '<div class="recras-amountsform">';
+        linesNoBookingSize.forEach((line, idx) => {
+            html += '<div>';
+            html += `<label for="packageline${ idx }">${ line.beschrijving }</label>`;
+            //TODO: time, amount too low?, required products?
+            html += `<input id="packageline${ idx }" type="number" min="0" max="${ line.max }">`;
+            //TODO: updateProductAmounts
+            html += '</div>';
+        });
+        html += '</div>';
+        this.amendHtml(html);
     }
 }

@@ -32,7 +32,7 @@ var Recrasbooking = function () {
             'contactpersoon.plaats': 'address-level2'
         };
 
-        var CSS = '\n.recras-contactform div {\n    display: flex;\n    justify-content: space-between;\n    padding: 0.25em 0;\n}\n';
+        var CSS = '\n.recras-onlinebooking > div {\nborder-top: 2px solid #dedede; /* Any love for Kirby out there? */\n    padding: 1em 0;\n}\n.recras-contactform div, .recras-amountsform div {\n    display: flex;\n    justify-content: space-between;\n    padding: 0.25em 0;\n}\n';
         var hostnameRegex = new RegExp(/^[a-z0-9\-]+\.recras\.nl$/, 'i');
         var validLocales = ['de_DE', 'en_GB', 'nl_NL'];
 
@@ -60,6 +60,7 @@ var Recrasbooking = function () {
 
         this.element.classList.add('recras-onlinebooking');
         this.loadCSS(CSS);
+        this.loadScripts();
 
         this.getPackages().then(function (packages) {
             _this.showPackages(packages);
@@ -135,6 +136,11 @@ var Recrasbooking = function () {
             refNode.parentNode.insertBefore(styleEl, refNode);
         }
     }, {
+        key: 'loadScripts',
+        value: function loadScripts() {
+            //TODO: load Pikaday
+        }
+    }, {
         key: 'setHtml',
         value: function setHtml(msg) {
             this.element.innerHTML = msg;
@@ -159,12 +165,9 @@ var Recrasbooking = function () {
     }, {
         key: 'shouldShowBookingSize',
         value: function shouldShowBookingSize(pack) {
-            // TODO: pack.regels bestaat niet in openbare API
-            return Math.random() > 0.5; //TODO
-
-            /*return _.some(arrangement.regels, function(r) {
-                return r.onlineboeking_aantalbepalingsmethode === 'boekingsgrootte';
-            });*/
+            return pack.regels.filter(function (line) {
+                return line.onlineboeking_aantalbepalingsmethode === 'boekingsgrootte';
+            }).length > 0;
         }
     }, {
         key: 'showContactForm',
@@ -244,7 +247,6 @@ var Recrasbooking = function () {
                     html += '</select>';
                     return label + html;
                 default:
-                    console.log('TODO veld', field);
                     var autocomplete = this.AUTOCOMPLETE_OPTIONS[field.soort_invoer] ? this.AUTOCOMPLETE_OPTIONS[field.soort_invoer] : '';
                     return label + ('<input type="text" id="contactformulier-' + idx + '" name="contactformulier' + idx + '" ' + attrRequired + ' autocomplete="' + autocomplete + '">');
             }
@@ -262,9 +264,11 @@ var Recrasbooking = function () {
         key: 'showDateTimeSelection',
         value: function showDateTimeSelection() {
             var today = new Date().toISOString().substr(0, 10); // Formatted as 2018-03-13
-            this.amendHtml('<label for="recras-onlinebooking-date">Date</label><input type="date" id="recras-onlinebooking-date" min="' + today + '">');
-            this.amendHtml('<label for="recras-onlinebooking-time">Time</label><input type="time" id="recras-onlinebooking-time">');
-            return Promise.resolve(42); //TODO
+            var html = '<div class="recras-datetime">';
+            html += '<label for="recras-onlinebooking-date">Date</label><input type="date" id="recras-onlinebooking-date" min="' + today + '">';
+            html += '<label for="recras-onlinebooking-time">Time</label><input type="time" id="recras-onlinebooking-time">';
+            html += '</div>';
+            this.amendHtml(html);
         }
     }, {
         key: 'showPackages',
@@ -302,7 +306,28 @@ var Recrasbooking = function () {
     }, {
         key: 'showProducts',
         value: function showProducts(pack) {
-            //TODO: pack.regels bestaat niet in openbare API
+            if (this.shouldShowBookingSize(pack)) {
+                this.amendHtml('<label for="bookingsize">' + (pack.weergavenaam || pack.arrangement) + '</label><input type="number" id="bookingsize" min="0">');
+                var bookingSizeEl = document.getElementById('bookingsize');
+                bookingSizeEl.addEventListener('input', function (e) {
+                    //TODO: updateProductAmounts
+                });
+            }
+            var linesNoBookingSize = pack.regels.filter(function (line) {
+                return line.onlineboeking_aantalbepalingsmethode !== 'boekingsgrootte';
+            });
+
+            var html = '<div class="recras-amountsform">';
+            linesNoBookingSize.forEach(function (line, idx) {
+                html += '<div>';
+                html += '<label for="packageline' + idx + '">' + line.beschrijving + '</label>';
+                //TODO: time, amount too low?, required products?
+                html += '<input id="packageline' + idx + '" type="number" min="0" max="' + line.max + '">';
+                //TODO: updateProductAmounts
+                html += '</div>';
+            });
+            html += '</div>';
+            this.amendHtml(html);
         }
     }]);
 

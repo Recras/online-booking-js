@@ -72,8 +72,8 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
         });
     }
 
-    amendHtml(msg) {
-        this.setHtml(this.element.innerHTML + msg);
+    appendHtml(msg) {
+        this.element.insertAdjacentHTML('beforeend', msg);
     }
 
     error(msg) {
@@ -82,7 +82,7 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
 
     fetchJson(url) {
         return fetch(url, {
-            method: 'get'
+            method: 'get',
         }).then(response => {
             if (response.status < 200 || response.status >= 400) {
                 this.error(response.status + ' ' + response.statusText);
@@ -179,7 +179,7 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
                     html += '<div>' + this.showContactFormField(field, idx) + '</div>';
                 });
                 html += '</div>';
-                this.amendHtml(html);
+                this.appendHtml(html);
             });
         });
     }
@@ -247,7 +247,7 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
         html += `<label for="recras-onlinebooking-date">Date</label><input type="date" id="recras-onlinebooking-date" min="${ today }">`;
         html += '<label for="recras-onlinebooking-time">Time</label><input type="time" id="recras-onlinebooking-time">';
         html += '</div>';
-        this.amendHtml(html);
+        this.appendHtml(html);
     }
 
     showPackages(packages) {
@@ -300,7 +300,7 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
             html += '</div>';
         });
         html += '</div>';
-        this.amendHtml(html);
+        this.appendHtml(html);
 
         if (this.shouldShowBookingSize(pack)) {
             let bookingSizeEl = document.getElementById('bookingsize');

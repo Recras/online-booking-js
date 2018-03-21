@@ -42,7 +42,7 @@ var Recrasbooking = function () {
         if (!options.recras_hostname) {
             throw new Error('Option "recras_hostname" not set.');
         }
-        if (!hostnameRegex.test(options.recras_hostname)) {
+        if (!hostnameRegex.test(options.recras_hostname) && options.recras_hostname !== '172.16.0.2') {
             throw new Error('Option "recras_hostname" is invalid.');
         }
 
@@ -56,7 +56,10 @@ var Recrasbooking = function () {
         }
 
         this.element = options.element;
-        this.hostname = options.recras_hostname;
+        this.apiBase = 'https://' + options.recras_hostname + '/api2/';
+        if (options.recras_hostname === '172.16.0.2') {
+            this.apiBase = this.apiBase.replace('https://', 'http://');
+        }
 
         this.element.classList.add('recras-onlinebooking');
         this.loadCSS(CSS);
@@ -68,9 +71,9 @@ var Recrasbooking = function () {
     }
 
     _createClass(Recrasbooking, [{
-        key: 'amendHtml',
-        value: function amendHtml(msg) {
-            this.setHtml(this.element.innerHTML + msg);
+        key: 'appendHtml',
+        value: function appendHtml(msg) {
+            this.element.insertAdjacentHTML('beforeend', msg);
         }
     }, {
         key: 'error',
@@ -101,7 +104,7 @@ var Recrasbooking = function () {
         value: function getContactFormFields(pack) {
             var _this3 = this;
 
-            return this.fetchJson('https://' + this.hostname + '/api2/contactformulieren/' + pack.onlineboeking_contactformulier_id + '/velden').then(function (json) {
+            return this.fetchJson(this.apiBase + 'contactformulieren/' + pack.onlineboeking_contactformulier_id + '/velden').then(function (json) {
                 _this3.contactFormFields = json;
                 return _this3.contactFormFields;
             });
@@ -121,7 +124,7 @@ var Recrasbooking = function () {
         value: function getPackages() {
             var _this5 = this;
 
-            return this.fetchJson('https://' + this.hostname + '/api2/arrangementen').then(function (json) {
+            return this.fetchJson(this.apiBase + 'arrangementen').then(function (json) {
                 _this5.packages = json;
                 return _this5.packages;
             });
@@ -184,15 +187,9 @@ var Recrasbooking = function () {
                 var hasCountryField = fields.filter(function (field) {
                     return field.field_identifier === 'contact.landcode';
                 }).length > 0;
-                var hasNewsletterField = fields.filter(function (field) {
-                    return field.field_identifier === 'contactpersoon.nieuwsbrieven';
-                }).length > 0;
 
                 if (hasCountryField) {
                     waitFor.push(_this6.getCountryList(_this6.locale));
-                }
-                if (hasNewsletterField) {
-                    //TODO: /api2/nieuwsbrieven is geen openbare API
                 }
                 Promise.all(waitFor).then(function () {
                     var html = '<div class="recras-contactform">';
@@ -200,7 +197,7 @@ var Recrasbooking = function () {
                         html += '<div>' + _this6.showContactFormField(field, idx) + '</div>';
                     });
                     html += '</div>';
-                    _this6.amendHtml(html);
+                    _this6.appendHtml(html);
                 });
             });
         }
@@ -238,7 +235,12 @@ var Recrasbooking = function () {
                 case 'contactpersoon.email1':
                     return label + ('<input type="email" id="contactformulier-' + idx + '" name="contactformulier' + idx + '" ' + attrRequired + ' autocomplete="email">');
                 case 'contactpersoon.nieuwsbrieven':
-                    return label + 'TODO: niewsbrieven'; //TODO
+                    html = '<select id="contactformulier-' + idx + '" name="contactformulier' + idx + '" ' + attrRequired + ' multiple>';
+                    Object.keys(field.newsletter_options).forEach(function (key) {
+                        html += '<option value="' + key + '">' + field.newsletter_options[key];
+                    });
+                    html += '</select>';
+                    return label + html;
                 case 'contact.landcode':
                     html = '<select id="contactformulier-' + idx + '" name="contactformulier' + idx + '" ' + attrRequired + '>';
                     Object.keys(this.countries).forEach(function (code) {
@@ -268,7 +270,7 @@ var Recrasbooking = function () {
             html += '<label for="recras-onlinebooking-date">Date</label><input type="date" id="recras-onlinebooking-date" min="' + today + '">';
             html += '<label for="recras-onlinebooking-time">Time</label><input type="time" id="recras-onlinebooking-time">';
             html += '</div>';
-            this.amendHtml(html);
+            this.appendHtml(html);
         }
     }, {
         key: 'showPackages',
@@ -306,28 +308,33 @@ var Recrasbooking = function () {
     }, {
         key: 'showProducts',
         value: function showProducts(pack) {
+            var html = '<div class="recras-amountsform">';
+
             if (this.shouldShowBookingSize(pack)) {
-                this.amendHtml('<label for="bookingsize">' + (pack.weergavenaam || pack.arrangement) + '</label><input type="number" id="bookingsize" min="0">');
+                html += '<div><label for="bookingsize">' + (pack.weergavenaam || pack.arrangement) + '</label><input type="number" id="bookingsize" min="0"></div>';
+            }
+
+            var linesNoBookingSize = pack.regels.filter(function (line) {
+                return line.onlineboeking_aantalbepalingsmethode !== 'boekingsgrootte';
+            });
+            linesNoBookingSize.forEach(function (line, idx) {
+                html += '<div>';
+                html += '<label for="packageline' + idx + '">' + line.beschrijving_templated + '</label>';
+                //TODO: time, amount too low?, required products?
+                var maxAttr = line.max ? 'max="' + line.max + '"' : '';
+                html += '<input id="packageline' + idx + '" type="number" min="0" ' + maxAttr + '>';
+                //TODO: onchange: updateProductAmounts
+                html += '</div>';
+            });
+            html += '</div>';
+            this.appendHtml(html);
+
+            if (this.shouldShowBookingSize(pack)) {
                 var bookingSizeEl = document.getElementById('bookingsize');
                 bookingSizeEl.addEventListener('input', function (e) {
                     //TODO: updateProductAmounts
                 });
             }
-            var linesNoBookingSize = pack.regels.filter(function (line) {
-                return line.onlineboeking_aantalbepalingsmethode !== 'boekingsgrootte';
-            });
-
-            var html = '<div class="recras-amountsform">';
-            linesNoBookingSize.forEach(function (line, idx) {
-                html += '<div>';
-                html += '<label for="packageline' + idx + '">' + line.beschrijving + '</label>';
-                //TODO: time, amount too low?, required products?
-                html += '<input id="packageline' + idx + '" type="number" min="0" max="' + line.max + '">';
-                //TODO: updateProductAmounts
-                html += '</div>';
-            });
-            html += '</div>';
-            this.amendHtml(html);
         }
     }]);
 

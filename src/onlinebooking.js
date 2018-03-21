@@ -315,7 +315,7 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
         this.setHtml(`<p>TODO: tekst pre</p>${ html }<p>TODO: tekst post</p>`);
 
         let packageSelectEl = document.getElementById('recras-package-selection');
-        packageSelectEl.addEventListener('change', e => {
+        packageSelectEl.addEventListener('change', () => {
             let selectedPackageId = parseInt(packageSelectEl.value, 10);
             let selectedPackage = this.packages.filter(p => {
                 return p.id === selectedPackageId;
@@ -360,7 +360,7 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
         this.appendHtml(html);
 
         [...document.querySelectorAll('[id^="packageline"], #bookingsize')].forEach(el => {
-            el.addEventListener('input', e => this.updateProductAmounts());
+            el.addEventListener('input', this.updateProductAmounts());
         });
     }
 

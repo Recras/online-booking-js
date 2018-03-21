@@ -24,7 +24,11 @@ class Recrasbooking {
             'contactpersoon.plaats': 'address-level2',
         };
 
+        this.datePicker = null;
+
         const CSS = `
+@import url('https://cdn.rawgit.com/dbushell/Pikaday/eddaaa3b/css/pikaday.css');
+
 .recras-onlinebooking > div {
 border-top: 2px solid #dedede; /* Any love for Kirby out there? */
     padding: 1em 0;
@@ -65,7 +69,6 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
 
         this.element.classList.add('recras-onlinebooking');
         this.loadCSS(CSS);
-        this.loadScripts();
 
         this.getPackages().then(packages => {
             this.showPackages(packages);
@@ -142,10 +145,6 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
 
         let refNode = document.head;
         refNode.parentNode.insertBefore(styleEl, refNode);
-    }
-
-    loadScripts() {
-        //TODO: load Pikaday
     }
 
     postJson(url, data) {
@@ -299,6 +298,10 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
                 html += '<label for="recras-onlinebooking-time">Time</label><input type="time" id="recras-onlinebooking-time">';
                 html += '</div>';
                 this.appendHtml(html);
+
+                this.datePicker = new Pikaday({
+                    field: document.getElementById('recras-onlinebooking-date'),
+                });
             });
     }
 
@@ -321,6 +324,9 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
                 return p.id === selectedPackageId;
             });
 
+            if (this.datePicker) {
+                this.datePicker.destroy();
+            }
             [...document.querySelectorAll('.recras-amountsform, .recras-datetime, .recras-contactform')].forEach(el => {
                 el.parentNode.removeChild(el);
             });

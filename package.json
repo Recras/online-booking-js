@@ -4,7 +4,7 @@
   "description": "JS library for easy online booking integration",
   "main": "dist/onlinebooking.js",
   "scripts": {
-    "build": "babel src -d dist",
+    "build": "babel src -d dist && mv dist/onlinebooking.js dist/temp.js && cat node_modules/pikaday/pikaday.js dist/temp.js > dist/onlinebooking.js && rm dist/temp.js",
     "jshint": "jshint src"
   },
   "repository": {
@@ -27,6 +27,7 @@
     "babel-cli": "^6.26.0",
     "babel-plugin-transform-es2015-arrow-functions": "^6.22.0",
     "babel-preset-env": "^1.6.1",
-    "jshint": "^2.9.5"
+    "jshint": "^2.9.5",
+    "pikaday": "^1.7.0"
   }
 }

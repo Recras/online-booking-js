@@ -268,6 +268,11 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
             let selectedPackage = this.packages.filter(p => {
                 return p.id === selectedPackageId;
             });
+
+            [...document.querySelectorAll('.recras-amountsform, .recras-datetime, .recras-contactform')].forEach(el => {
+                el.parentNode.removeChild(el);
+            });
+
             if (selectedPackage.length === 0) {
                 // Reset form
                 this.showPackages(packages);

@@ -169,15 +169,9 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
             let hasCountryField = fields.filter(field => {
                 return field.field_identifier === 'contact.landcode';
             }).length > 0;
-            let hasNewsletterField = fields.filter(field => {
-                return field.field_identifier === 'contactpersoon.nieuwsbrieven';
-            }).length > 0;
 
             if (hasCountryField) {
                 waitFor.push(this.getCountryList(this.locale));
-            }
-            if (hasNewsletterField) {
-                //TODO: /api2/nieuwsbrieven is geen openbare API
             }
             Promise.all(waitFor).then(() => {
                 let html = '<div class="recras-contactform">';
@@ -220,7 +214,12 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
             case 'contactpersoon.email1':
                 return label + `<input type="email" id="contactformulier-${ idx }" name="contactformulier${ idx }" ${ attrRequired } autocomplete="email">`;
             case 'contactpersoon.nieuwsbrieven':
-                return label + 'TODO: niewsbrieven'; //TODO
+                html = `<select id="contactformulier-${ idx }" name="contactformulier${ idx }" ${ attrRequired } multiple>`;
+                Object.keys(field.newsletter_options).forEach(key => {
+                    html += `<option value="${ key }">${ field.newsletter_options[key] }`;
+                });
+                html += '</select>';
+                return label + html;
             case 'contact.landcode':
                 html = `<select id="contactformulier-${ idx }" name="contactformulier${ idx }" ${ attrRequired }>`;
                 Object.keys(this.countries).forEach(code => {

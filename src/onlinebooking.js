@@ -44,7 +44,7 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
         if (!options.recras_hostname) {
             throw new Error('Option "recras_hostname" not set.');
         }
-        if (!hostnameRegex.test(options.recras_hostname)) {
+        if (!hostnameRegex.test(options.recras_hostname) && options.recras_hostname !== '172.16.0.2') {
             throw new Error('Option "recras_hostname" is invalid.');
         }
 
@@ -58,7 +58,10 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
         }
 
         this.element = options.element;
-        this.hostname = options.recras_hostname;
+        this.apiBase = 'https://' + options.recras_hostname + '/api2/';
+        if (options.recras_hostname === '172.16.0.2') {
+            this.apiBase = this.apiBase.replace('https://', 'http://');
+        }
 
         this.element.classList.add('recras-onlinebooking');
         this.loadCSS(CSS);
@@ -94,7 +97,7 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
     }
 
     getContactFormFields(pack) {
-        return this.fetchJson('https://' + this.hostname + '/api2/contactformulieren/' + pack.onlineboeking_contactformulier_id + '/velden')
+        return this.fetchJson(this.apiBase + 'contactformulieren/' + pack.onlineboeking_contactformulier_id + '/velden')
             .then(json => {
                 this.contactFormFields = json;
                 return this.contactFormFields;
@@ -110,7 +113,7 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
     }
 
     getPackages() {
-        return this.fetchJson('https://' + this.hostname + '/api2/arrangementen')
+        return this.fetchJson(this.apiBase + 'arrangementen')
             .then(json => {
                 this.packages = json;
                 return this.packages;

@@ -76,6 +76,10 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
         this.element.insertAdjacentHTML('beforeend', msg);
     }
 
+    datePartOnly(date) {
+        return date.toISOString().substr(0, 10); // Format as 2018-03-13
+    }
+
     error(msg) {
         this.setHtml(`<strong>Something went wrong:</strong><p>${ msg }</p>`);
     }
@@ -99,9 +103,12 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
     getAvailableDays(packageID, begin, end) {
         return this.postJson(this.apiBase + 'onlineboeking/beschikbaredagen', {
             arrangement_id: packageID,
-            begin: begin.toISOString(),
-            eind: end.toISOString(),
+            begin: this.datePartOnly(begin),
+            eind: this.datePartOnly(end),
             producten: this.productCounts(),
+        }).then(json => {
+            this.availableDays = json;
+            return this.availableDays;
         });
     }
 
@@ -162,8 +169,8 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
         let counts = [];
         [...document.querySelectorAll('[id^="packageline"]')].forEach(line => {
             counts.push({
-                aantal: line.getAttribute('value') || 0,
-                arrangementsregel_id: line.dataset.packageId,
+                aantal: (isNaN(parseInt(line.value)) ? 0 : parseInt(line.value)),
+                arrangementsregel_id: parseInt(line.dataset.packageId, 10),
             });
         });
         return counts;
@@ -280,17 +287,15 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
 
     showDateTimeSelection(pack) {
         let startDate = new Date();
-        let endDate = startDate;
+        let endDate = new Date();
         endDate.setMonth(endDate.getMonth() + 3);
 
         return this.getAvailableDays(pack.id, startDate, endDate)
-            .then(json => {
-                this.availableDays = json;
-
-                let today = (new Date()).toISOString().substr(0, 10); // Formatted as 2018-03-13
+            .then(availableDays => {
+                let today = this.datePartOnly(new Date());
                 let html = `<div class="recras-datetime">`;
                 html += `<label for="recras-onlinebooking-date">Date</label><input type="date" id="recras-onlinebooking-date" min="${ today }">`;
-                html += JSON.stringify(this.availableDays); //DEBUG
+                html += JSON.stringify(availableDays); //DEBUG
                 html += '<label for="recras-onlinebooking-time">Time</label><input type="time" id="recras-onlinebooking-time">';
                 html += '</div>';
                 this.appendHtml(html);
@@ -349,17 +354,24 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
             //TODO: time, amount too low?, required products?
             let maxAttr = line.max ? `max="${ line.max }"` : '';
             html += `<input id="packageline${ idx }" type="number" min="0" ${ maxAttr } data-package-id="${ line.id }">`;
-            //TODO: onchange: updateProductAmounts
             html += '</div>';
         });
         html += '</div>';
         this.appendHtml(html);
 
-        if (this.shouldShowBookingSize(pack)) {
-            let bookingSizeEl = document.getElementById('bookingsize');
-            bookingSizeEl.addEventListener('input', e => {
-                //TODO: updateProductAmounts
+        [...document.querySelectorAll('[id^="packageline"], #bookingsize')].forEach(el => {
+            el.addEventListener('input', e => this.updateProductAmounts());
+        });
+    }
+
+    updateProductAmounts() {
+        let startDate = new Date();
+        let endDate = new Date();
+        endDate.setMonth(endDate.getMonth() + 3);
+
+        this.getAvailableDays(this.selectedPackage.id, startDate, endDate)
+            .then(availableDays => {
+                console.log(availableDays);
             });
-        }
     }
 }

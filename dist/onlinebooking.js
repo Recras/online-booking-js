@@ -78,6 +78,11 @@ var Recrasbooking = function () {
             this.element.insertAdjacentHTML('beforeend', msg);
         }
     }, {
+        key: 'datePartOnly',
+        value: function datePartOnly(date) {
+            return date.toISOString().substr(0, 10); // Format as 2018-03-13
+        }
+    }, {
         key: 'error',
         value: function error(msg) {
             this.setHtml('<strong>Something went wrong:</strong><p>' + msg + '</p>');
@@ -104,41 +109,46 @@ var Recrasbooking = function () {
     }, {
         key: 'getAvailableDays',
         value: function getAvailableDays(packageID, begin, end) {
+            var _this3 = this;
+
             return this.postJson(this.apiBase + 'onlineboeking/beschikbaredagen', {
                 arrangement_id: packageID,
-                begin: begin.toISOString(),
-                eind: end.toISOString(),
+                begin: this.datePartOnly(begin),
+                eind: this.datePartOnly(end),
                 producten: this.productCounts()
+            }).then(function (json) {
+                _this3.availableDays = json;
+                return _this3.availableDays;
             });
         }
     }, {
         key: 'getContactFormFields',
         value: function getContactFormFields(pack) {
-            var _this3 = this;
+            var _this4 = this;
 
             return this.fetchJson(this.apiBase + 'contactformulieren/' + pack.onlineboeking_contactformulier_id + '/velden').then(function (json) {
-                _this3.contactFormFields = json;
-                return _this3.contactFormFields;
+                _this4.contactFormFields = json;
+                return _this4.contactFormFields;
             });
         }
     }, {
         key: 'getCountryList',
         value: function getCountryList(locale) {
-            var _this4 = this;
+            var _this5 = this;
 
             return this.fetchJson('https://cdn.rawgit.com/umpirsky/country-list/ddabf3a8/data/' + locale + '/country.json').then(function (json) {
-                _this4.countries = json;
-                return _this4.countries;
+                _this5.countries = json;
+                return _this5.countries;
             });
         }
     }, {
         key: 'getPackages',
         value: function getPackages() {
-            var _this5 = this;
+            var _this6 = this;
 
             return this.fetchJson(this.apiBase + 'arrangementen').then(function (json) {
-                _this5.packages = json;
-                return _this5.packages;
+                _this6.packages = json;
+                return _this6.packages;
             });
         }
     }, {
@@ -158,21 +168,21 @@ var Recrasbooking = function () {
     }, {
         key: 'postJson',
         value: function postJson(url, data) {
-            var _this6 = this;
+            var _this7 = this;
 
             return fetch(url, {
                 body: JSON.stringify(data),
                 method: 'post'
             }).then(function (response) {
                 if (response.status < 200 || response.status >= 400) {
-                    _this6.error(response.status + ' ' + response.statusText);
+                    _this7.error(response.status + ' ' + response.statusText);
                     return false;
                 }
                 return response.json();
             }).then(function (json) {
                 return json;
             }).catch(function (err) {
-                _this6.error(err);
+                _this7.error(err);
             });
         }
     }, {
@@ -181,8 +191,8 @@ var Recrasbooking = function () {
             var counts = [];
             [].concat(_toConsumableArray(document.querySelectorAll('[id^="packageline"]'))).forEach(function (line) {
                 counts.push({
-                    aantal: line.getAttribute('value') || 0,
-                    arrangementsregel_id: line.dataset.packageId
+                    aantal: isNaN(parseInt(line.value)) ? 0 : parseInt(line.value),
+                    arrangementsregel_id: parseInt(line.dataset.packageId, 10)
                 });
             });
             return counts;
@@ -219,7 +229,7 @@ var Recrasbooking = function () {
     }, {
         key: 'showContactForm',
         value: function showContactForm(pack) {
-            var _this7 = this;
+            var _this8 = this;
 
             this.getContactFormFields(pack).then(function (fields) {
                 fields = fields.sort(function (a, b) {
@@ -233,22 +243,22 @@ var Recrasbooking = function () {
                 }).length > 0;
 
                 if (hasCountryField) {
-                    waitFor.push(_this7.getCountryList(_this7.locale));
+                    waitFor.push(_this8.getCountryList(_this8.locale));
                 }
                 Promise.all(waitFor).then(function () {
                     var html = '<div class="recras-contactform">';
                     fields.forEach(function (field, idx) {
-                        html += '<div>' + _this7.showContactFormField(field, idx) + '</div>';
+                        html += '<div>' + _this8.showContactFormField(field, idx) + '</div>';
                     });
                     html += '</div>';
-                    _this7.appendHtml(html);
+                    _this8.appendHtml(html);
                 });
             });
         }
     }, {
         key: 'showContactFormField',
         value: function showContactFormField(field, idx) {
-            var _this8 = this;
+            var _this9 = this;
 
             if (field.soort_invoer === 'header') {
                 return '<h3>' + field.naam + '</h3>';
@@ -261,7 +271,7 @@ var Recrasbooking = function () {
                 case 'contactpersoon.geslacht':
                     html = '<select id="contactformulier-' + idx + '" name="contactformulier' + idx + '" ' + attrRequired + ' autocomplete="sex">';
                     Object.keys(this.GENDERS).forEach(function (key) {
-                        html += '<option value="' + key + '">' + _this8.GENDERS[key];
+                        html += '<option value="' + key + '">' + _this9.GENDERS[key];
                     });
                     html += '</select>';
                     return label + html;
@@ -288,7 +298,7 @@ var Recrasbooking = function () {
                 case 'contact.landcode':
                     html = '<select id="contactformulier-' + idx + '" name="contactformulier' + idx + '" ' + attrRequired + '>';
                     Object.keys(this.countries).forEach(function (code) {
-                        html += '<option value="' + code + '">' + _this8.countries[code];
+                        html += '<option value="' + code + '">' + _this9.countries[code];
                     });
                     html += '</select>';
                     return label + html;
@@ -309,28 +319,26 @@ var Recrasbooking = function () {
     }, {
         key: 'showDateTimeSelection',
         value: function showDateTimeSelection(pack) {
-            var _this9 = this;
+            var _this10 = this;
 
             var startDate = new Date();
-            var endDate = startDate;
+            var endDate = new Date();
             endDate.setMonth(endDate.getMonth() + 3);
 
-            return this.getAvailableDays(pack.id, startDate, endDate).then(function (json) {
-                _this9.availableDays = json;
-
-                var today = new Date().toISOString().substr(0, 10); // Formatted as 2018-03-13
+            return this.getAvailableDays(pack.id, startDate, endDate).then(function (availableDays) {
+                var today = _this10.datePartOnly(new Date());
                 var html = '<div class="recras-datetime">';
                 html += '<label for="recras-onlinebooking-date">Date</label><input type="date" id="recras-onlinebooking-date" min="' + today + '">';
-                html += JSON.stringify(_this9.availableDays); //DEBUG
+                html += JSON.stringify(availableDays); //DEBUG
                 html += '<label for="recras-onlinebooking-time">Time</label><input type="time" id="recras-onlinebooking-time">';
                 html += '</div>';
-                _this9.appendHtml(html);
+                _this10.appendHtml(html);
             });
         }
     }, {
         key: 'showPackages',
         value: function showPackages(packages) {
-            var _this10 = this;
+            var _this11 = this;
 
             packages = packages.filter(function (p) {
                 return p.mag_online;
@@ -346,7 +354,7 @@ var Recrasbooking = function () {
             var packageSelectEl = document.getElementById('recras-package-selection');
             packageSelectEl.addEventListener('change', function (e) {
                 var selectedPackageId = parseInt(packageSelectEl.value, 10);
-                var selectedPackage = _this10.packages.filter(function (p) {
+                var selectedPackage = _this11.packages.filter(function (p) {
                     return p.id === selectedPackageId;
                 });
 
@@ -356,19 +364,21 @@ var Recrasbooking = function () {
 
                 if (selectedPackage.length === 0) {
                     // Reset form
-                    _this10.showPackages(packages);
+                    _this11.showPackages(packages);
                     return false;
                 }
-                _this10.selectedPackage = selectedPackage[0];
-                _this10.showProducts(_this10.selectedPackage);
-                _this10.showDateTimeSelection(_this10.selectedPackage).then(function () {
-                    _this10.showContactForm(_this10.selectedPackage);
+                _this11.selectedPackage = selectedPackage[0];
+                _this11.showProducts(_this11.selectedPackage);
+                _this11.showDateTimeSelection(_this11.selectedPackage).then(function () {
+                    _this11.showContactForm(_this11.selectedPackage);
                 });
             });
         }
     }, {
         key: 'showProducts',
         value: function showProducts(pack) {
+            var _this12 = this;
+
             var html = '<div class="recras-amountsform">';
 
             if (this.shouldShowBookingSize(pack)) {
@@ -384,18 +394,27 @@ var Recrasbooking = function () {
                 //TODO: time, amount too low?, required products?
                 var maxAttr = line.max ? 'max="' + line.max + '"' : '';
                 html += '<input id="packageline' + idx + '" type="number" min="0" ' + maxAttr + ' data-package-id="' + line.id + '">';
-                //TODO: onchange: updateProductAmounts
                 html += '</div>';
             });
             html += '</div>';
             this.appendHtml(html);
 
-            if (this.shouldShowBookingSize(pack)) {
-                var bookingSizeEl = document.getElementById('bookingsize');
-                bookingSizeEl.addEventListener('input', function (e) {
-                    //TODO: updateProductAmounts
+            [].concat(_toConsumableArray(document.querySelectorAll('[id^="packageline"], #bookingsize'))).forEach(function (el) {
+                el.addEventListener('input', function (e) {
+                    return _this12.updateProductAmounts();
                 });
-            }
+            });
+        }
+    }, {
+        key: 'updateProductAmounts',
+        value: function updateProductAmounts() {
+            var startDate = new Date();
+            var endDate = new Date();
+            endDate.setMonth(endDate.getMonth() + 3);
+
+            this.getAvailableDays(this.selectedPackage.id, startDate, endDate).then(function (availableDays) {
+                console.log(availableDays);
+            });
         }
     }]);
 

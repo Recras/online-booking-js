@@ -281,27 +281,31 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
     }
 
     showProducts(pack) {
+        let html = '<div class="recras-amountsform">';
+
         if (this.shouldShowBookingSize(pack)) {
-            this.amendHtml(`<label for="bookingsize">${ (pack.weergavenaam || pack.arrangement) }</label><input type="number" id="bookingsize" min="0">`);
+            html += `<div><label for="bookingsize">${ (pack.weergavenaam || pack.arrangement) }</label><input type="number" id="bookingsize" min="0"></div>`;
+        }
+
+        let linesNoBookingSize = pack.regels.filter(line => {
+            return line.onlineboeking_aantalbepalingsmethode !== 'boekingsgrootte';
+        });
+        linesNoBookingSize.forEach((line, idx) => {
+            html += '<div>';
+            html += `<label for="packageline${ idx }">${ line.beschrijving_templated }</label>`;
+            //TODO: time, amount too low?, required products?
+            html += `<input id="packageline${ idx }" type="number" min="0" ${ line.max }>`;
+            //TODO: onchange: updateProductAmounts
+            html += '</div>';
+        });
+        html += '</div>';
+        this.amendHtml(html);
+
+        if (this.shouldShowBookingSize(pack)) {
             let bookingSizeEl = document.getElementById('bookingsize');
             bookingSizeEl.addEventListener('input', e => {
                 //TODO: updateProductAmounts
             });
         }
-        let linesNoBookingSize = pack.regels.filter(line => {
-            return line.onlineboeking_aantalbepalingsmethode !== 'boekingsgrootte';
-        });
-
-        let html = '<div class="recras-amountsform">';
-        linesNoBookingSize.forEach((line, idx) => {
-            html += '<div>';
-            html += `<label for="packageline${ idx }">${ line.beschrijving }</label>`;
-            //TODO: time, amount too low?, required products?
-            html += `<input id="packageline${ idx }" type="number" min="0" max="${ line.max }">`;
-            //TODO: updateProductAmounts
-            html += '</div>';
-        });
-        html += '</div>';
-        this.amendHtml(html);
     }
 }

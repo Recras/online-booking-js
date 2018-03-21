@@ -294,7 +294,8 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
             html += '<div>';
             html += `<label for="packageline${ idx }">${ line.beschrijving_templated }</label>`;
             //TODO: time, amount too low?, required products?
-            html += `<input id="packageline${ idx }" type="number" min="0" ${ line.max }>`;
+            let maxAttr = line.max ? `max="${ line.max }"` : '';
+            html += `<input id="packageline${ idx }" type="number" min="0" ${ maxAttr }>`;
             //TODO: onchange: updateProductAmounts
             html += '</div>';
         });

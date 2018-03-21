@@ -96,6 +96,15 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
         });
     }
 
+    getAvailableDays(packageID, begin, end) {
+        return this.postJson(this.apiBase + 'onlineboeking/beschikbaredagen', {
+            arrangement_id: packageID,
+            begin: begin.toISOString(),
+            eind: end.toISOString(),
+            producten: this.productCounts(),
+        });
+    }
+
     getContactFormFields(pack) {
         return this.fetchJson(this.apiBase + 'contactformulieren/' + pack.onlineboeking_contactformulier_id + '/velden')
             .then(json => {
@@ -130,6 +139,34 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
 
     loadScripts() {
         //TODO: load Pikaday
+    }
+
+    postJson(url, data) {
+        return fetch(url, {
+            body: JSON.stringify(data),
+            method: 'post',
+        }).then(response => {
+            if (response.status < 200 || response.status >= 400) {
+                this.error(response.status + ' ' + response.statusText);
+                return false;
+            }
+            return response.json();
+        }).then(json => {
+            return json;
+        }).catch(err => {
+            this.error(err);
+        });
+    }
+
+    productCounts() {
+        let counts = [];
+        [...document.querySelectorAll('[id^="packageline"]')].forEach(line => {
+            counts.push({
+                aantal: line.getAttribute('value') || 0,
+                arrangementsregel_id: line.dataset.packageId,
+            });
+        });
+        return counts;
     }
 
     setHtml(msg) {
@@ -241,13 +278,23 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
         return `<label for="contactformulier-${ idx }">${ labelText }</label>`;
     }
 
-    showDateTimeSelection() {
-        let today = (new Date()).toISOString().substr(0, 10); // Formatted as 2018-03-13
-        let html = `<div class="recras-datetime">`;
-        html += `<label for="recras-onlinebooking-date">Date</label><input type="date" id="recras-onlinebooking-date" min="${ today }">`;
-        html += '<label for="recras-onlinebooking-time">Time</label><input type="time" id="recras-onlinebooking-time">';
-        html += '</div>';
-        this.appendHtml(html);
+    showDateTimeSelection(pack) {
+        let startDate = new Date();
+        let endDate = startDate;
+        endDate.setMonth(endDate.getMonth() + 3);
+
+        return this.getAvailableDays(pack.id, startDate, endDate)
+            .then(json => {
+                this.availableDays = json;
+
+                let today = (new Date()).toISOString().substr(0, 10); // Formatted as 2018-03-13
+                let html = `<div class="recras-datetime">`;
+                html += `<label for="recras-onlinebooking-date">Date</label><input type="date" id="recras-onlinebooking-date" min="${ today }">`;
+                html += JSON.stringify(this.availableDays); //DEBUG
+                html += '<label for="recras-onlinebooking-time">Time</label><input type="time" id="recras-onlinebooking-time">';
+                html += '</div>';
+                this.appendHtml(html);
+            });
     }
 
     showPackages(packages) {
@@ -280,8 +327,9 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
             }
             this.selectedPackage = selectedPackage[0];
             this.showProducts(this.selectedPackage);
-            this.showDateTimeSelection(this.selectedPackage);
-            this.showContactForm(this.selectedPackage);
+            this.showDateTimeSelection(this.selectedPackage).then(() => {
+                this.showContactForm(this.selectedPackage);
+            });
         });
     }
 
@@ -300,7 +348,7 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
             html += `<label for="packageline${ idx }">${ line.beschrijving_templated }</label>`;
             //TODO: time, amount too low?, required products?
             let maxAttr = line.max ? `max="${ line.max }"` : '';
-            html += `<input id="packageline${ idx }" type="number" min="0" ${ maxAttr }>`;
+            html += `<input id="packageline${ idx }" type="number" min="0" ${ maxAttr } data-package-id="${ line.id }">`;
             //TODO: onchange: updateProductAmounts
             html += '</div>';
         });

@@ -300,7 +300,18 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
                 this.appendHtml(html);
 
                 this.datePicker = new Pikaday({
+                    disableDayFn: (day) => {
+                        let dateFmt = this.datePartOnly(day);
+                        //TODO: because of timezones, this is off by 1
+                        return this.availableDays.indexOf(dateFmt) === -1;
+                    },
                     field: document.getElementById('recras-onlinebooking-date'),
+                    format: 'yyyy-MM-dd', //Only used when Moment is loaded?
+                    /*i18n: {}*/
+                    minDate: new Date(),
+                    onDraw: () => {
+                        //TODO: callback function for when the picker draws a new month
+                    },
                 });
             });
     }
@@ -366,7 +377,7 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
         this.appendHtml(html);
 
         [...document.querySelectorAll('[id^="packageline"], #bookingsize')].forEach(el => {
-            el.addEventListener('input', this.updateProductAmounts());
+            el.addEventListener('input', this.updateProductAmounts.bind(this));
         });
     }
 
@@ -377,7 +388,7 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
 
         this.getAvailableDays(this.selectedPackage.id, startDate, endDate)
             .then(availableDays => {
-                console.log(availableDays);
+                //
             });
     }
 }

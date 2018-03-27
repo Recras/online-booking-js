@@ -1569,14 +1569,24 @@ var Recrasbooking = function () {
             return this.getAvailableDays(pack.id, startDate, endDate).then(function (availableDays) {
                 var today = _this10.datePartOnly(new Date());
                 var html = '<div class="recras-datetime">';
-                html += '<label for="recras-onlinebooking-date">Date</label><input type="date" id="recras-onlinebooking-date" min="' + today + '">';
+                html += '<label for="recras-onlinebooking-date">Date</label><input type="text" id="recras-onlinebooking-date" min="' + today + '">';
                 html += JSON.stringify(availableDays); //DEBUG
                 html += '<label for="recras-onlinebooking-time">Time</label><input type="time" id="recras-onlinebooking-time">';
                 html += '</div>';
                 _this10.appendHtml(html);
 
                 _this10.datePicker = new Pikaday({
-                    field: document.getElementById('recras-onlinebooking-date')
+                    disableDayFn: function disableDayFn(day) {
+                        var dateFmt = _this10.datePartOnly(day);
+                        return _this10.availableDays.indexOf(dateFmt) === -1;
+                    },
+                    field: document.getElementById('recras-onlinebooking-date'),
+                    format: 'yyyy-MM-dd', //Only used when Moment is loaded?
+                    /*i18n: {}*/
+                    minDate: new Date(),
+                    onDraw: function onDraw() {
+                        //TODO: callback function for when the picker draws a new month
+                    }
                 });
             });
         }
@@ -1648,7 +1658,7 @@ var Recrasbooking = function () {
             this.appendHtml(html);
 
             [].concat(_toConsumableArray(document.querySelectorAll('[id^="packageline"], #bookingsize'))).forEach(function (el) {
-                el.addEventListener('input', _this12.updateProductAmounts());
+                el.addEventListener('input', _this12.updateProductAmounts.bind(_this12));
             });
         }
     }, {
@@ -1659,7 +1669,7 @@ var Recrasbooking = function () {
             endDate.setMonth(endDate.getMonth() + 3);
 
             this.getAvailableDays(this.selectedPackage.id, startDate, endDate).then(function (availableDays) {
-                console.log(availableDays);
+                //
             });
         }
     }]);

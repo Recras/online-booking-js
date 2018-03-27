@@ -293,7 +293,7 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
             .then(availableDays => {
                 let today = this.datePartOnly(new Date());
                 let html = `<div class="recras-datetime">`;
-                html += `<label for="recras-onlinebooking-date">Date</label><input type="date" id="recras-onlinebooking-date" min="${ today }">`;
+                html += `<label for="recras-onlinebooking-date">Date</label><input type="text" id="recras-onlinebooking-date" min="${ today }">`;
                 html += JSON.stringify(availableDays); //DEBUG
                 html += '<label for="recras-onlinebooking-time">Time</label><input type="time" id="recras-onlinebooking-time">';
                 html += '</div>';

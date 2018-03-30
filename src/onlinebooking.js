@@ -38,6 +38,9 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
     justify-content: space-between;
     padding: 0.25em 0;
 }
+.minimum-amount {
+    color: hsl(0, 50%, 50%);
+}
 `;
         const hostnameRegex = new RegExp(/^[a-z0-9\-]+\.recras\.nl$/, 'i');
         const validLocales = ['de_DE', 'en_GB', 'nl_NL'];
@@ -77,6 +80,30 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
 
     appendHtml(msg) {
         this.element.insertAdjacentHTML('beforeend', msg);
+    }
+
+    checkDependencies() {
+        //console.log(this.selectedPackage, this.productCounts());
+    }
+
+    checkMinimumAmounts() {
+        [...document.querySelectorAll('.minimum-amount')].forEach(el => {
+            el.parentNode.removeChild(el);
+        });
+
+        let selectedProducts = this.productCounts();
+        selectedProducts.forEach(p => {
+            if (p.aantal > 0) {
+                let packageLineID = p.arrangementsregel_id;
+
+                let packageLine = this.selectedPackage.regels.filter(line => (line.id === packageLineID))[0];
+                if (p.aantal < packageLine.aantal_personen) {
+                    let input = document.querySelector(`[data-package-id="${ packageLineID }"]`);
+                    let label = document.querySelector(`label[for="${ input.id }"]`);
+                    label.insertAdjacentHTML('beforeend', `<span class="minimum-amount">(must be at least ${ packageLine.aantal_personen })</span>`);
+                }
+            }
+        });
     }
 
     datePartOnly(date) {
@@ -381,18 +408,17 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
         let html = '<div class="recras-amountsform">';
 
         if (this.shouldShowBookingSize(pack)) {
-            html += `<div><label for="bookingsize">${ (pack.weergavenaam || pack.arrangement) }</label><input type="number" id="bookingsize" min="0"></div>`;
+            html += `<div><div><label for="bookingsize">${ (pack.weergavenaam || pack.arrangement) }</label></div><input type="number" id="bookingsize" min="0"></div>`;
         }
 
         let linesNoBookingSize = pack.regels.filter(line => {
             return line.onlineboeking_aantalbepalingsmethode !== 'boekingsgrootte';
         });
         linesNoBookingSize.forEach((line, idx) => {
-            html += '<div>';
+            html += '<div><div>';
             html += `<label for="packageline${ idx }">${ line.beschrijving_templated }</label>`;
-            //TODO: time, amount too low?, required products?
             let maxAttr = line.max ? `max="${ line.max }"` : '';
-            html += `<input id="packageline${ idx }" type="number" min="0" ${ maxAttr } data-package-id="${ line.id }">`;
+            html += `</div><input id="packageline${ idx }" type="number" min="0" ${ maxAttr } data-package-id="${ line.id }">`;
             html += '</div>';
         });
         html += '</div>';
@@ -432,5 +458,8 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
                     datePickerEl.removeAttribute('disabled');
                 }
             });
+
+        this.checkDependencies();
+        this.checkMinimumAmounts();
     }
 }

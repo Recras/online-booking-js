@@ -83,6 +83,10 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
         return date.toISOString().substr(0, 10); // Format as 2018-03-13
     }
 
+    timePartOnly(date) {
+        return date.toTimeString().substr(0, 5); // Format at 09:00
+    }
+
     error(msg) {
         this.setHtml(`<strong>Something went wrong:</strong><p>${ msg }</p>`);
     }
@@ -112,6 +116,17 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
         }).then(json => {
             this.availableDays = json;
             return this.availableDays;
+        });
+    }
+
+    getAvailableTimes(packageID, date) {
+        return this.postJson(this.apiBase + 'onlineboeking/beschikbaretijden', {
+            arrangement_id: packageID,
+            datum: this.datePartOnly(date),
+            producten: this.productCounts(),
+        }).then(json => {
+            this.availableTimes = json;
+            return this.availableTimes;
         });
     }
 
@@ -293,8 +308,8 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
             .then(availableDays => {
                 let today = this.datePartOnly(new Date());
                 let html = `<div class="recras-datetime">`;
-                html += `<label for="recras-onlinebooking-date">Date</label><input type="text" id="recras-onlinebooking-date" min="${ today }">`;
-                html += '<label for="recras-onlinebooking-time">Time</label><input type="time" id="recras-onlinebooking-time">';
+                html += `<label for="recras-onlinebooking-date">Date</label><input type="text" id="recras-onlinebooking-date" min="${ today }" disabled>`;
+                html += '<label for="recras-onlinebooking-time">Time</label><select id="recras-onlinebooking-time" disabled></select>';
                 html += '</div>';
                 this.appendHtml(html);
 
@@ -305,11 +320,18 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
                         return this.availableDays.indexOf(dateFmt) === -1;
                     },
                     field: document.getElementById('recras-onlinebooking-date'),
+                    firstDay: 1, // Monday
                     format: 'yyyy-MM-dd', //Only used when Moment is loaded?
                     /*i18n: {}*/
                     minDate: new Date(),
                     onDraw: () => {
                         //TODO: callback function for when the picker draws a new month
+                    },
+                    onSelect: (date) => {
+                        this.getAvailableTimes(pack.id, date).then(times => {
+                            times = times.map(time => this.timePartOnly(new Date(time)));
+                            this.showTimes(times);
+                        });
                     },
                     toString: (date) => this.datePartOnly(date),
                 });
@@ -381,6 +403,20 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
         });
     }
 
+    showTimes(times) {
+        let html = ``;
+        times.forEach(time => {
+            html += `<option value="${ time }">${ time }`;
+        });
+        document.getElementById('recras-onlinebooking-time').innerHTML = html;
+        document.getElementById('recras-onlinebooking-time').removeAttribute('disabled');
+    }
+
+    clearTimes() {
+        document.getElementById('recras-onlinebooking-time').innerHTML = '';
+        document.getElementById('recras-onlinebooking-time').setAttribute('disabled', 'disabled');
+    }
+
     updateProductAmounts() {
         let startDate = new Date();
         let endDate = new Date();
@@ -388,7 +424,13 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
 
         this.getAvailableDays(this.selectedPackage.id, startDate, endDate)
             .then(availableDays => {
-                //
+                let datePickerEl = document.getElementById('recras-onlinebooking-date');
+                if (availableDays.indexOf(datePickerEl.value) === -1) {
+                    datePickerEl.value = '';
+                    this.clearTimes();
+                } else {
+                    datePickerEl.removeAttribute('disabled');
+                }
             });
     }
 }

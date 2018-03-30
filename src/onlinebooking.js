@@ -294,7 +294,6 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
                 let today = this.datePartOnly(new Date());
                 let html = `<div class="recras-datetime">`;
                 html += `<label for="recras-onlinebooking-date">Date</label><input type="text" id="recras-onlinebooking-date" min="${ today }">`;
-                html += JSON.stringify(availableDays); //DEBUG
                 html += '<label for="recras-onlinebooking-time">Time</label><input type="time" id="recras-onlinebooking-time">';
                 html += '</div>';
                 this.appendHtml(html);
@@ -312,6 +311,7 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
                     onDraw: () => {
                         //TODO: callback function for when the picker draws a new month
                     },
+                    toString: (date) => this.datePartOnly(date),
                 });
             });
     }

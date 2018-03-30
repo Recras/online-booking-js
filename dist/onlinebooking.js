@@ -1570,7 +1570,6 @@ var Recrasbooking = function () {
                 var today = _this10.datePartOnly(new Date());
                 var html = '<div class="recras-datetime">';
                 html += '<label for="recras-onlinebooking-date">Date</label><input type="text" id="recras-onlinebooking-date" min="' + today + '">';
-                html += JSON.stringify(availableDays); //DEBUG
                 html += '<label for="recras-onlinebooking-time">Time</label><input type="time" id="recras-onlinebooking-time">';
                 html += '</div>';
                 _this10.appendHtml(html);
@@ -1578,6 +1577,7 @@ var Recrasbooking = function () {
                 _this10.datePicker = new Pikaday({
                     disableDayFn: function disableDayFn(day) {
                         var dateFmt = _this10.datePartOnly(day);
+                        //TODO: because of timezones, this is off by 1
                         return _this10.availableDays.indexOf(dateFmt) === -1;
                     },
                     field: document.getElementById('recras-onlinebooking-date'),
@@ -1586,6 +1586,9 @@ var Recrasbooking = function () {
                     minDate: new Date(),
                     onDraw: function onDraw() {
                         //TODO: callback function for when the picker draws a new month
+                    },
+                    toString: function toString(date) {
+                        return _this10.datePartOnly(date);
                     }
                 });
             });

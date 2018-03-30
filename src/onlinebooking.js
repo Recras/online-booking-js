@@ -38,6 +38,9 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
     justify-content: space-between;
     padding: 0.25em 0;
 }
+.time-preview, .minimum-amount {
+    padding-left: 0.5em;
+} 
 .minimum-amount {
     color: hsl(0, 50%, 50%);
 }
@@ -100,7 +103,11 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
                 if (p.aantal < packageLine.aantal_personen) {
                     let input = document.querySelector(`[data-package-id="${ packageLineID }"]`);
                     let label = document.querySelector(`label[for="${ input.id }"]`);
-                    label.insertAdjacentHTML('beforeend', `<span class="minimum-amount">(must be at least ${ packageLine.aantal_personen })</span>`);
+
+                    let warnEl = document.createElement('span');
+                    warnEl.classList.add('minimum-amount');
+                    warnEl.innerHTML = `(must be at least ${ packageLine.aantal_personen })`;
+                    label.parentNode.appendChild(warnEl);
                 }
             }
         });
@@ -173,6 +180,10 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
             });
     }
 
+    getLinesNoBookingSize(pack) {
+        return pack.regels.filter(line => (line.onlineboeking_aantalbepalingsmethode !== 'boekingsgrootte'));
+    }
+
     getPackages() {
         return this.fetchJson(this.apiBase + 'arrangementen')
             .then(json => {
@@ -204,6 +215,35 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
         }).catch(err => {
             this.error(err);
         });
+    }
+
+    normaliseDate(date, packageStart, bookingStart) {
+        let diffSeconds = (date - packageStart) / 1000;
+        return new Date(bookingStart.setSeconds(bookingStart.getSeconds() + diffSeconds));
+    }
+
+    previewTimes() {
+        [...document.querySelectorAll('.time-preview')].forEach(el => {
+            el.parentNode.removeChild(el);
+        });
+        if (this.selectedTime) {
+            let linesWithTime = this.selectedPackage.regels.filter(line => !!line.begin);
+            let linesBegin = linesWithTime.map(line => new Date(line.begin));
+            let packageStart = new Date(Math.min(...linesBegin)); // Math.min transforms dates to timestamps
+
+            let bookingStart = this.selectedDate;
+            bookingStart.setHours(this.selectedTime.substr(0, 2), this.selectedTime.substr(3, 2));
+
+            let linesNoBookingSize = this.getLinesNoBookingSize(this.selectedPackage);
+            linesNoBookingSize.forEach((line, idx) => {
+                let normalisedStart = this.normaliseDate(new Date(line.begin), packageStart, bookingStart);
+                let normalisedEnd = this.normaliseDate(new Date(line.eind), packageStart, bookingStart);
+                document.querySelector(`label[for="packageline${ idx }"]`).insertAdjacentHTML(
+                    'beforeend',
+                    `<span class="time-preview">(${ this.timePartOnly(normalisedStart) } – ${ this.timePartOnly(normalisedEnd) })</span>`
+                );
+            });
+        }
     }
 
     productCounts() {
@@ -355,12 +395,18 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
                         //TODO: callback function for when the picker draws a new month
                     },
                     onSelect: (date) => {
+                        this.selectedDate = date;
                         this.getAvailableTimes(pack.id, date).then(times => {
                             times = times.map(time => this.timePartOnly(new Date(time)));
                             this.showTimes(times);
                         });
                     },
                     toString: (date) => this.datePartOnly(date),
+                });
+
+                document.getElementById('recras-onlinebooking-time').addEventListener('change', () => {
+                    this.selectedTime = document.getElementById('recras-onlinebooking-time').value;
+                    this.previewTimes();
                 });
             });
     }
@@ -411,9 +457,7 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
             html += `<div><div><label for="bookingsize">${ (pack.weergavenaam || pack.arrangement) }</label></div><input type="number" id="bookingsize" min="0"></div>`;
         }
 
-        let linesNoBookingSize = pack.regels.filter(line => {
-            return line.onlineboeking_aantalbepalingsmethode !== 'boekingsgrootte';
-        });
+        let linesNoBookingSize = this.getLinesNoBookingSize(pack);
         linesNoBookingSize.forEach((line, idx) => {
             html += '<div><div>';
             html += `<label for="packageline${ idx }">${ line.beschrijving_templated }</label>`;
@@ -430,7 +474,7 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
     }
 
     showTimes(times) {
-        let html = ``;
+        let html = `<option>`;
         times.forEach(time => {
             html += `<option value="${ time }">${ time }`;
         });
@@ -451,7 +495,7 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
         this.getAvailableDays(this.selectedPackage.id, startDate, endDate)
             .then(availableDays => {
                 let datePickerEl = document.getElementById('recras-onlinebooking-date');
-                if (availableDays.indexOf(datePickerEl.value) === -1) {
+                if (datePickerEl.value && availableDays.indexOf(datePickerEl.value) === -1) {
                     datePickerEl.value = '';
                     this.clearTimes();
                 } else {

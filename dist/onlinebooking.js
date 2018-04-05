@@ -1326,12 +1326,24 @@ var Recrasbooking = function () {
     }, {
         key: 'checkDependencies',
         value: function checkDependencies() {
-            //console.log(this.selectedPackage, this.productCounts());
+            var _this2 = this;
+
+            this.productCounts().forEach(function (line) {
+                if (line.aantal > 0) {
+                    var packageLineID = line.arrangementsregel_id;
+                    var product = _this2.findProduct(packageLineID).product;
+                    product.vereist_product.forEach(function (vp) {
+                        if (!_this2.dependencySatisfied(line.aantal, vp)) {
+                            console.log('Product ' + product.weergavenaam + ' vereist', vp);
+                        }
+                    });
+                }
+            });
         }
     }, {
         key: 'checkMinimumAmounts',
         value: function checkMinimumAmounts() {
-            var _this2 = this;
+            var _this3 = this;
 
             [].concat(_toConsumableArray(document.querySelectorAll('.minimum-amount'))).forEach(function (el) {
                 el.parentNode.removeChild(el);
@@ -1342,9 +1354,7 @@ var Recrasbooking = function () {
                 if (p.aantal > 0) {
                     var packageLineID = p.arrangementsregel_id;
 
-                    var packageLine = _this2.selectedPackage.regels.filter(function (line) {
-                        return line.id === packageLineID;
-                    })[0];
+                    var packageLine = _this3.findProduct(packageLineID);
                     if (p.aantal < packageLine.aantal_personen) {
                         var input = document.querySelector('[data-package-id="' + packageLineID + '"]');
                         var label = document.querySelector('label[for="' + input.id + '"]');
@@ -1363,6 +1373,27 @@ var Recrasbooking = function () {
             return date.toISOString().substr(0, 10); // Format as 2018-03-13
         }
     }, {
+        key: 'dependencySatisfied',
+        value: function dependencySatisfied(hasNow, requiredProduct) {
+            var productLines = this.productCounts();
+            for (var i = 0; i < productLines.length; i++) {
+                var line = productLines[i];
+                if (line.aantal === 0) {
+                    continue;
+                }
+
+                var product = this.findProduct(line.arrangementsregel_id).product;
+                if (product.id !== parseInt(requiredProduct.vereist_product_id, 10)) {
+                    continue;
+                }
+
+                var requiredAmount = this.requiredAmount(hasNow, requiredProduct);
+
+                return line.aantal >= requiredAmount;
+            }
+            return false;
+        }
+    }, {
         key: 'timePartOnly',
         value: function timePartOnly(date) {
             return date.toTimeString().substr(0, 5); // Format at 09:00
@@ -1375,26 +1406,33 @@ var Recrasbooking = function () {
     }, {
         key: 'fetchJson',
         value: function fetchJson(url) {
-            var _this3 = this;
+            var _this4 = this;
 
             return fetch(url, {
                 method: 'get'
             }).then(function (response) {
                 if (response.status < 200 || response.status >= 400) {
-                    _this3.error(response.status + ' ' + response.statusText);
+                    _this4.error(response.status + ' ' + response.statusText);
                     return false;
                 }
                 return response.json();
             }).then(function (json) {
                 return json;
             }).catch(function (err) {
-                _this3.error(err);
+                _this4.error(err);
             });
+        }
+    }, {
+        key: 'findProduct',
+        value: function findProduct(packageLineID) {
+            return this.selectedPackage.regels.filter(function (line) {
+                return line.id === packageLineID;
+            })[0];
         }
     }, {
         key: 'getAvailableDays',
         value: function getAvailableDays(packageID, begin, end) {
-            var _this4 = this;
+            var _this5 = this;
 
             return this.postJson(this.apiBase + 'onlineboeking/beschikbaredagen', {
                 arrangement_id: packageID,
@@ -1402,42 +1440,42 @@ var Recrasbooking = function () {
                 eind: this.datePartOnly(end),
                 producten: this.productCounts()
             }).then(function (json) {
-                _this4.availableDays = json;
-                return _this4.availableDays;
+                _this5.availableDays = json;
+                return _this5.availableDays;
             });
         }
     }, {
         key: 'getAvailableTimes',
         value: function getAvailableTimes(packageID, date) {
-            var _this5 = this;
+            var _this6 = this;
 
             return this.postJson(this.apiBase + 'onlineboeking/beschikbaretijden', {
                 arrangement_id: packageID,
                 datum: this.datePartOnly(date),
                 producten: this.productCounts()
             }).then(function (json) {
-                _this5.availableTimes = json;
-                return _this5.availableTimes;
+                _this6.availableTimes = json;
+                return _this6.availableTimes;
             });
         }
     }, {
         key: 'getContactFormFields',
         value: function getContactFormFields(pack) {
-            var _this6 = this;
+            var _this7 = this;
 
             return this.fetchJson(this.apiBase + 'contactformulieren/' + pack.onlineboeking_contactformulier_id + '/velden').then(function (json) {
-                _this6.contactFormFields = json;
-                return _this6.contactFormFields;
+                _this7.contactFormFields = json;
+                return _this7.contactFormFields;
             });
         }
     }, {
         key: 'getCountryList',
         value: function getCountryList(locale) {
-            var _this7 = this;
+            var _this8 = this;
 
             return this.fetchJson('https://cdn.rawgit.com/umpirsky/country-list/ddabf3a8/data/' + locale + '/country.json').then(function (json) {
-                _this7.countries = json;
-                return _this7.countries;
+                _this8.countries = json;
+                return _this8.countries;
             });
         }
     }, {
@@ -1450,11 +1488,11 @@ var Recrasbooking = function () {
     }, {
         key: 'getPackages',
         value: function getPackages() {
-            var _this8 = this;
+            var _this9 = this;
 
             return this.fetchJson(this.apiBase + 'arrangementen').then(function (json) {
-                _this8.packages = json;
-                return _this8.packages;
+                _this9.packages = json;
+                return _this9.packages;
             });
         }
     }, {
@@ -1469,21 +1507,21 @@ var Recrasbooking = function () {
     }, {
         key: 'postJson',
         value: function postJson(url, data) {
-            var _this9 = this;
+            var _this10 = this;
 
             return fetch(url, {
                 body: JSON.stringify(data),
                 method: 'post'
             }).then(function (response) {
                 if (response.status < 200 || response.status >= 400) {
-                    _this9.error(response.status + ' ' + response.statusText);
+                    _this10.error(response.status + ' ' + response.statusText);
                     return false;
                 }
                 return response.json();
             }).then(function (json) {
                 return json;
             }).catch(function (err) {
-                _this9.error(err);
+                _this10.error(err);
             });
         }
     }, {
@@ -1495,7 +1533,7 @@ var Recrasbooking = function () {
     }, {
         key: 'previewTimes',
         value: function previewTimes() {
-            var _this10 = this;
+            var _this11 = this;
 
             [].concat(_toConsumableArray(document.querySelectorAll('.time-preview'))).forEach(function (el) {
                 el.parentNode.removeChild(el);
@@ -1514,9 +1552,9 @@ var Recrasbooking = function () {
 
                 var linesNoBookingSize = this.getLinesNoBookingSize(this.selectedPackage);
                 linesNoBookingSize.forEach(function (line, idx) {
-                    var normalisedStart = _this10.normaliseDate(new Date(line.begin), packageStart, bookingStart);
-                    var normalisedEnd = _this10.normaliseDate(new Date(line.eind), packageStart, bookingStart);
-                    document.querySelector('label[for="packageline' + idx + '"]').insertAdjacentHTML('beforeend', '<span class="time-preview">(' + _this10.timePartOnly(normalisedStart) + ' \u2013 ' + _this10.timePartOnly(normalisedEnd) + ')</span>');
+                    var normalisedStart = _this11.normaliseDate(new Date(line.begin), packageStart, bookingStart);
+                    var normalisedEnd = _this11.normaliseDate(new Date(line.eind), packageStart, bookingStart);
+                    document.querySelector('label[for="packageline' + idx + '"]').insertAdjacentHTML('beforeend', '<span class="time-preview">(' + _this11.timePartOnly(normalisedStart) + ' \u2013 ' + _this11.timePartOnly(normalisedEnd) + ')</span>');
                 });
             }
         }
@@ -1531,6 +1569,17 @@ var Recrasbooking = function () {
                 });
             });
             return counts;
+        }
+    }, {
+        key: 'requiredAmount',
+        value: function requiredAmount(hasNow, requiredProduct) {
+            var requiredAmount = hasNow / requiredProduct.per_x_aantal;
+            if (requiredProduct.afronding === 'boven') {
+                requiredAmount = Math.ceil(requiredAmount);
+            } else {
+                requiredAmount = Math.floor(requiredAmount);
+            }
+            return requiredAmount;
         }
     }, {
         key: 'setHtml',
@@ -1564,7 +1613,7 @@ var Recrasbooking = function () {
     }, {
         key: 'showContactForm',
         value: function showContactForm(pack) {
-            var _this11 = this;
+            var _this12 = this;
 
             this.getContactFormFields(pack).then(function (fields) {
                 fields = fields.sort(function (a, b) {
@@ -1578,22 +1627,22 @@ var Recrasbooking = function () {
                 }).length > 0;
 
                 if (hasCountryField) {
-                    waitFor.push(_this11.getCountryList(_this11.locale));
+                    waitFor.push(_this12.getCountryList(_this12.locale));
                 }
                 Promise.all(waitFor).then(function () {
                     var html = '<div class="recras-contactform">';
                     fields.forEach(function (field, idx) {
-                        html += '<div>' + _this11.showContactFormField(field, idx) + '</div>';
+                        html += '<div>' + _this12.showContactFormField(field, idx) + '</div>';
                     });
                     html += '</div>';
-                    _this11.appendHtml(html);
+                    _this12.appendHtml(html);
                 });
             });
         }
     }, {
         key: 'showContactFormField',
         value: function showContactFormField(field, idx) {
-            var _this12 = this;
+            var _this13 = this;
 
             if (field.soort_invoer === 'header') {
                 return '<h3>' + field.naam + '</h3>';
@@ -1606,7 +1655,7 @@ var Recrasbooking = function () {
                 case 'contactpersoon.geslacht':
                     html = '<select id="contactformulier-' + idx + '" name="contactformulier' + idx + '" ' + attrRequired + ' autocomplete="sex">';
                     Object.keys(this.GENDERS).forEach(function (key) {
-                        html += '<option value="' + key + '">' + _this12.GENDERS[key];
+                        html += '<option value="' + key + '">' + _this13.GENDERS[key];
                     });
                     html += '</select>';
                     return label + html;
@@ -1633,7 +1682,7 @@ var Recrasbooking = function () {
                 case 'contact.landcode':
                     html = '<select id="contactformulier-' + idx + '" name="contactformulier' + idx + '" ' + attrRequired + '>';
                     Object.keys(this.countries).forEach(function (code) {
-                        html += '<option value="' + code + '">' + _this12.countries[code];
+                        html += '<option value="' + code + '">' + _this13.countries[code];
                     });
                     html += '</select>';
                     return label + html;
@@ -1654,58 +1703,59 @@ var Recrasbooking = function () {
     }, {
         key: 'showDateTimeSelection',
         value: function showDateTimeSelection(pack) {
-            var _this13 = this;
+            var _this14 = this;
 
             var startDate = new Date();
             var endDate = new Date();
             endDate.setMonth(endDate.getMonth() + 3);
 
             return this.getAvailableDays(pack.id, startDate, endDate).then(function (availableDays) {
-                var today = _this13.datePartOnly(new Date());
+                var today = _this14.datePartOnly(new Date());
                 var html = '<div class="recras-datetime">';
                 html += '<label for="recras-onlinebooking-date">Date</label><input type="text" id="recras-onlinebooking-date" min="' + today + '" disabled>';
                 html += '<label for="recras-onlinebooking-time">Time</label><select id="recras-onlinebooking-time" disabled></select>';
                 html += '</div>';
-                _this13.appendHtml(html);
+                _this14.appendHtml(html);
 
-                _this13.datePicker = new Pikaday({
+                _this14.datePicker = new Pikaday({
                     disableDayFn: function disableDayFn(day) {
-                        var dateFmt = _this13.datePartOnly(day);
+                        var dateFmt = _this14.datePartOnly(day);
                         //TODO: because of timezones, this is off by 1
-                        return _this13.availableDays.indexOf(dateFmt) === -1;
+                        return _this14.availableDays.indexOf(dateFmt) === -1;
                     },
                     field: document.getElementById('recras-onlinebooking-date'),
                     firstDay: 1, // Monday
                     format: 'yyyy-MM-dd', //Only used when Moment is loaded?
                     /*i18n: {}*/
                     minDate: new Date(),
+                    numberOfMonths: 2,
                     onDraw: function onDraw() {
                         //TODO: callback function for when the picker draws a new month
                     },
                     onSelect: function onSelect(date) {
-                        _this13.selectedDate = date;
-                        _this13.getAvailableTimes(pack.id, date).then(function (times) {
+                        _this14.selectedDate = date;
+                        _this14.getAvailableTimes(pack.id, date).then(function (times) {
                             times = times.map(function (time) {
-                                return _this13.timePartOnly(new Date(time));
+                                return _this14.timePartOnly(new Date(time));
                             });
-                            _this13.showTimes(times);
+                            _this14.showTimes(times);
                         });
                     },
                     toString: function toString(date) {
-                        return _this13.datePartOnly(date);
+                        return _this14.datePartOnly(date);
                     }
                 });
 
                 document.getElementById('recras-onlinebooking-time').addEventListener('change', function () {
-                    _this13.selectedTime = document.getElementById('recras-onlinebooking-time').value;
-                    _this13.previewTimes();
+                    _this14.selectedTime = document.getElementById('recras-onlinebooking-time').value;
+                    _this14.previewTimes();
                 });
             });
         }
     }, {
         key: 'showPackages',
         value: function showPackages(packages) {
-            var _this14 = this;
+            var _this15 = this;
 
             packages = packages.filter(function (p) {
                 return p.mag_online;
@@ -1721,12 +1771,12 @@ var Recrasbooking = function () {
             var packageSelectEl = document.getElementById('recras-package-selection');
             packageSelectEl.addEventListener('change', function () {
                 var selectedPackageId = parseInt(packageSelectEl.value, 10);
-                var selectedPackage = _this14.packages.filter(function (p) {
+                var selectedPackage = _this15.packages.filter(function (p) {
                     return p.id === selectedPackageId;
                 });
 
-                if (_this14.datePicker) {
-                    _this14.datePicker.destroy();
+                if (_this15.datePicker) {
+                    _this15.datePicker.destroy();
                 }
                 [].concat(_toConsumableArray(document.querySelectorAll('.recras-amountsform, .recras-datetime, .recras-contactform'))).forEach(function (el) {
                     el.parentNode.removeChild(el);
@@ -1734,20 +1784,21 @@ var Recrasbooking = function () {
 
                 if (selectedPackage.length === 0) {
                     // Reset form
-                    _this14.showPackages(packages);
+                    _this15.showPackages(packages);
                     return false;
                 }
-                _this14.selectedPackage = selectedPackage[0];
-                _this14.showProducts(_this14.selectedPackage);
-                _this14.showDateTimeSelection(_this14.selectedPackage).then(function () {
-                    _this14.showContactForm(_this14.selectedPackage);
+                _this15.selectedPackage = selectedPackage[0];
+                _this15.showProducts(_this15.selectedPackage);
+                _this15.checkDependencies();
+                _this15.showDateTimeSelection(_this15.selectedPackage).then(function () {
+                    _this15.showContactForm(_this15.selectedPackage);
                 });
             });
         }
     }, {
         key: 'showProducts',
         value: function showProducts(pack) {
-            var _this15 = this;
+            var _this16 = this;
 
             var html = '<div class="recras-amountsform">';
 
@@ -1767,7 +1818,7 @@ var Recrasbooking = function () {
             this.appendHtml(html);
 
             [].concat(_toConsumableArray(document.querySelectorAll('[id^="packageline"], #bookingsize'))).forEach(function (el) {
-                el.addEventListener('input', _this15.updateProductAmounts.bind(_this15));
+                el.addEventListener('input', _this16.updateProductAmounts.bind(_this16));
             });
         }
     }, {
@@ -1789,7 +1840,7 @@ var Recrasbooking = function () {
     }, {
         key: 'updateProductAmounts',
         value: function updateProductAmounts() {
-            var _this16 = this;
+            var _this17 = this;
 
             var startDate = new Date();
             var endDate = new Date();
@@ -1799,7 +1850,7 @@ var Recrasbooking = function () {
                 var datePickerEl = document.getElementById('recras-onlinebooking-date');
                 if (datePickerEl.value && availableDays.indexOf(datePickerEl.value) === -1) {
                     datePickerEl.value = '';
-                    _this16.clearTimes();
+                    _this17.clearTimes();
                 } else {
                     datePickerEl.removeAttribute('disabled');
                 }

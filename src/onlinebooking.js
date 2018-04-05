@@ -86,7 +86,17 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
     }
 
     checkDependencies() {
-        //console.log(this.selectedPackage, this.productCounts());
+        this.productCounts().forEach(line => {
+            if (line.aantal > 0) {
+                let packageLineID = line.arrangementsregel_id;
+                let product = this.findProduct(packageLineID).product;
+                product.vereist_product.forEach(vp => {
+                    if (!this.dependencySatisfied(line.aantal, vp)) {
+                        console.log(`Product ${ product.weergavenaam } vereist`, vp);
+                    }
+                });
+            }
+        });
     }
 
     checkMinimumAmounts() {
@@ -99,7 +109,7 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
             if (p.aantal > 0) {
                 let packageLineID = p.arrangementsregel_id;
 
-                let packageLine = this.selectedPackage.regels.filter(line => (line.id === packageLineID))[0];
+                let packageLine = this.findProduct(packageLineID);
                 if (p.aantal < packageLine.aantal_personen) {
                     let input = document.querySelector(`[data-package-id="${ packageLineID }"]`);
                     let label = document.querySelector(`label[for="${ input.id }"]`);
@@ -115,6 +125,26 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
 
     datePartOnly(date) {
         return date.toISOString().substr(0, 10); // Format as 2018-03-13
+    }
+
+    dependencySatisfied(hasNow, requiredProduct) {
+        let productLines = this.productCounts();
+        for (let i = 0; i < productLines.length; i++) {
+            let line = productLines[i];
+            if (line.aantal === 0) {
+                continue;
+            }
+
+            let product = this.findProduct(line.arrangementsregel_id).product;
+            if (product.id !== parseInt(requiredProduct.vereist_product_id, 10)) {
+                continue;
+            }
+
+            let requiredAmount = this.requiredAmount(hasNow, requiredProduct);
+
+            return line.aantal >= requiredAmount;
+        }
+        return false;
     }
 
     timePartOnly(date) {
@@ -139,6 +169,10 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
         }).catch(err => {
             this.error(err);
         });
+    }
+
+    findProduct(packageLineID) {
+        return this.selectedPackage.regels.filter(line => (line.id === packageLineID))[0];
     }
 
     getAvailableDays(packageID, begin, end) {
@@ -255,6 +289,16 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
             });
         });
         return counts;
+    }
+
+    requiredAmount(hasNow, requiredProduct) {
+        let requiredAmount = hasNow / requiredProduct.per_x_aantal;
+        if (requiredProduct.afronding === 'boven') {
+            requiredAmount = Math.ceil(requiredAmount);
+        } else {
+            requiredAmount = Math.floor(requiredAmount);
+        }
+        return requiredAmount;
     }
 
     setHtml(msg) {
@@ -391,6 +435,7 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
                     format: 'yyyy-MM-dd', //Only used when Moment is loaded?
                     /*i18n: {}*/
                     minDate: new Date(),
+                    numberOfMonths: 2,
                     onDraw: () => {
                         //TODO: callback function for when the picker draws a new month
                     },
@@ -444,6 +489,7 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
             }
             this.selectedPackage = selectedPackage[0];
             this.showProducts(this.selectedPackage);
+            this.checkDependencies();
             this.showDateTimeSelection(this.selectedPackage).then(() => {
                 this.showContactForm(this.selectedPackage);
             });

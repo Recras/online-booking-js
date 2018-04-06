@@ -86,13 +86,22 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
     }
 
     checkDependencies() {
+        [...document.querySelectorAll('.recras-product-dependency')].forEach(el => {
+            el.parentNode.removeChild(el);
+        });
+        this.requiresProduct = false;
+
         this.productCounts().forEach(line => {
             if (line.aantal > 0) {
                 let packageLineID = line.arrangementsregel_id;
                 let product = this.findProduct(packageLineID).product;
                 product.vereist_product.forEach(vp => {
                     if (!this.dependencySatisfied(line.aantal, vp)) {
-                        console.log(`Product ${ product.weergavenaam } vereist`, vp);
+                        this.requiresProduct = true;
+                        let requiredAmount = this.requiredAmount(line.aantal, vp);
+                        let requiredProductName = this.getProductByID(vp.vereist_product_id).weergavenaam;
+                        let message = `<span class="recras-product-dependency">${ line.aantal } ${ product.weergavenaam } requires ${ requiredAmount } ${ requiredProductName } to also be booked.</span>`;
+                        document.querySelector('.recras-amountsform').insertAdjacentHTML('beforeend', message);
                     }
                 });
             }
@@ -224,6 +233,11 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
                 this.packages = json;
                 return this.packages;
             });
+    }
+
+    getProductByID(id) {
+        let products = this.selectedPackage.regels.map(r => r.product);
+        return products.filter(p => (p.id === id))[0];
     }
 
     loadCSS(content) {

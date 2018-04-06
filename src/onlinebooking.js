@@ -39,11 +39,14 @@ class RecrasBooking {
         const CSS = `
 @import url('https://cdn.rawgit.com/dbushell/Pikaday/eddaaa3b/css/pikaday.css');
 
-.recras-onlinebooking > div {
-border-top: 2px solid #dedede; /* Any love for Kirby out there? */
+.recras-onlinebooking > * {
     padding: 1em 0;
 }
+.recras-onlinebooking > * + * {
+    border-top: 2px solid #dedede; /* Any love for Kirby out there? */
+}
 .recras-contactform div, .recras-amountsform div {
+    align-items: start;
     display: flex;
     justify-content: space-between;
     padding: 0.25em 0;
@@ -421,7 +424,7 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
     }
 
     showBookButton() {
-        let html = `<button type="submit" id="bookPackage" disabled>Book now</button>`;
+        let html = `<div><button type="submit" id="bookPackage" disabled>Book now</button></div>`;
         this.appendHtml(html);
     }
 
@@ -569,7 +572,7 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
         });
 
         let html = '<select id="recras-package-selection"><option>' + options.join('') + '</select>';
-        this.setHtml(`<p>TODO: tekst pre</p>${ html }<p>TODO: tekst post</p>`);
+        this.setHtml(`<div class="recras-package-select"><p>TODO: tekst pre</p>${ html }<p>TODO: tekst post</p></div>`);
 
         let packageSelectEl = document.getElementById('recras-package-selection');
         packageSelectEl.addEventListener('change', () => {

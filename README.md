@@ -9,7 +9,7 @@ In your HTML document,
 1. give the element a unique ID, i.e. `<div id="recras-onlinebooking"></div>`
 1. initialize the script like this:
 ```
-new Recrasbooking({
+new RecrasBooking({
     recras_hostname: 'demo.recras.nl', // Required
     element: document.getElementById('recras-onlinebooking'), // Required
 });

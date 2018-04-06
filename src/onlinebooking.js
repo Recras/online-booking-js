@@ -108,7 +108,7 @@ class RecrasBooking {
                 return false;
             }
         });
-        if (this.shouldShowBookingSize(this.selectedPackage) && document.getElementById('bookingsize').value > 0) {
+        if (this.shouldShowBookingSize(this.selectedPackage) && this.bookingSize() > 0) {
             hasAtLeastOneProduct = true;
         }
         return hasAtLeastOneProduct;
@@ -116,6 +116,14 @@ class RecrasBooking {
 
     appendHtml(msg) {
         this.element.insertAdjacentHTML('beforeend', msg);
+    }
+
+    bookingSize() {
+        let bookingSizeEl = document.getElementById('bookingsize');
+        if (!bookingSizeEl) {
+            return 0;
+        }
+        return bookingSizeEl.value;
     }
 
     changePackage(packageID) {
@@ -132,6 +140,7 @@ class RecrasBooking {
 
         if (selectedPackage.length === 0) {
             // Reset form
+            this.selectedPackage = null;
             this.showPackages(packages);
             return false;
         }
@@ -397,6 +406,10 @@ class RecrasBooking {
         return requiredAmount;
     }
 
+    resetForm() {
+        this.changePackage(null);
+    }
+
     setHtml(msg) {
         this.element.innerHTML = msg;
     }
@@ -426,6 +439,7 @@ class RecrasBooking {
     showBookButton() {
         let html = `<div><button type="submit" id="bookPackage" disabled>Book now</button></div>`;
         this.appendHtml(html);
+        document.getElementById('bookPackage').addEventListener('click', this.submitBooking);
     }
 
     showContactForm(pack) {
@@ -616,6 +630,45 @@ class RecrasBooking {
     clearTimes() {
         document.getElementById('recras-onlinebooking-time').innerHTML = '';
         document.getElementById('recras-onlinebooking-time').setAttribute('disabled', 'disabled');
+    }
+
+    submitBooking() {
+        return false; //TODO
+        /**************************************************/
+        let productCounts = this.productCounts().map(line => line.aantal);
+        let productSum = productCounts.reduce((a, b) => a + b, 0);
+        if (this.bookingSize() === 0 && productSum === 0) {
+            alert('No product selected');
+            return false;
+        }
+
+        document.getElementById('bookPackage').setAttribute('disabled', 'disabled');
+        console.log(this.selectedDate, this.selectedTime);
+
+        let bookingParams = {
+            arrangement_id: this.selectedPackage.id,
+            producten: this.productCounts(),
+            begin: null, //TODO: this.selectedDate, this.selectedTime
+            betaalmethode: 'factuur', //TODO
+            status: 'informatie', //TODO
+            contactformulier: {}, //TODO
+            stuur_bevestiging_email: true,
+        };
+        if (this.shouldShowBookingSize(this.selectedPackage)) {
+            bookingParams.boekingsgrootte = this.bookingSize();
+        }
+
+        return this.postJson(this.apiBase + 'onlineboeking/reserveer', bookingParams).then(json => {
+            document.getElementById('bookPackage').removeAttribute('disabled');
+
+            if (typeof json.boeking_id !== 'undefined') {
+
+            } else {
+                alert('Yay!');
+                this.resetForm();
+            }
+            console.log(json);
+        });
     }
 
     updateProductAmounts() {

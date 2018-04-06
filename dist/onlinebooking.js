@@ -1354,7 +1354,7 @@ var RecrasBooking = function () {
                     return false;
                 }
             });
-            if (this.shouldShowBookingSize(this.selectedPackage) && document.getElementById('bookingsize').value > 0) {
+            if (this.shouldShowBookingSize(this.selectedPackage) && this.bookingSize() > 0) {
                 hasAtLeastOneProduct = true;
             }
             return hasAtLeastOneProduct;
@@ -1363,6 +1363,15 @@ var RecrasBooking = function () {
         key: 'appendHtml',
         value: function appendHtml(msg) {
             this.element.insertAdjacentHTML('beforeend', msg);
+        }
+    }, {
+        key: 'bookingSize',
+        value: function bookingSize() {
+            var bookingSizeEl = document.getElementById('bookingsize');
+            if (!bookingSizeEl) {
+                return 0;
+            }
+            return bookingSizeEl.value;
         }
     }, {
         key: 'changePackage',
@@ -1382,6 +1391,7 @@ var RecrasBooking = function () {
 
             if (selectedPackage.length === 0) {
                 // Reset form
+                this.selectedPackage = null;
                 this.showPackages(packages);
                 return false;
             }
@@ -1693,6 +1703,11 @@ var RecrasBooking = function () {
             return requiredAmount;
         }
     }, {
+        key: 'resetForm',
+        value: function resetForm() {
+            this.changePackage(null);
+        }
+    }, {
         key: 'setHtml',
         value: function setHtml(msg) {
             this.element.innerHTML = msg;
@@ -1724,8 +1739,9 @@ var RecrasBooking = function () {
     }, {
         key: 'showBookButton',
         value: function showBookButton() {
-            var html = '<button type="submit" id="bookPackage" disabled>Book now</button>';
+            var html = '<div><button type="submit" id="bookPackage" disabled>Book now</button></div>';
             this.appendHtml(html);
+            document.getElementById('bookPackage').addEventListener('click', this.submitBooking);
         }
     }, {
         key: 'showContactForm',
@@ -1939,9 +1955,53 @@ var RecrasBooking = function () {
             document.getElementById('recras-onlinebooking-time').setAttribute('disabled', 'disabled');
         }
     }, {
+        key: 'submitBooking',
+        value: function submitBooking() {
+            var _this18 = this;
+
+            return false; //TODO
+            /**************************************************/
+            var productCounts = this.productCounts().map(function (line) {
+                return line.aantal;
+            });
+            var productSum = productCounts.reduce(function (a, b) {
+                return a + b;
+            }, 0);
+            if (this.bookingSize() === 0 && productSum === 0) {
+                alert('No product selected');
+                return false;
+            }
+
+            document.getElementById('bookPackage').setAttribute('disabled', 'disabled');
+            console.log(this.selectedDate, this.selectedTime);
+
+            var bookingParams = {
+                arrangement_id: this.selectedPackage.id,
+                producten: this.productCounts(),
+                begin: null, //TODO: this.selectedDate, this.selectedTime
+                betaalmethode: 'factuur', //TODO
+                status: 'informatie', //TODO
+                contactformulier: {}, //TODO
+                stuur_bevestiging_email: true
+            };
+            if (this.shouldShowBookingSize(this.selectedPackage)) {
+                bookingParams.boekingsgrootte = this.bookingSize();
+            }
+
+            return this.postJson(this.apiBase + 'onlineboeking/reserveer', bookingParams).then(function (json) {
+                document.getElementById('bookPackage').removeAttribute('disabled');
+
+                if (typeof json.boeking_id !== 'undefined') {} else {
+                    alert('Yay!');
+                    _this18.resetForm();
+                }
+                console.log(json);
+            });
+        }
+    }, {
         key: 'updateProductAmounts',
         value: function updateProductAmounts() {
-            var _this18 = this;
+            var _this19 = this;
 
             var startDate = new Date();
             var endDate = new Date();
@@ -1951,7 +2011,7 @@ var RecrasBooking = function () {
                 var datePickerEl = document.getElementById('recras-onlinebooking-date');
                 if (datePickerEl.value && availableDays.indexOf(datePickerEl.value) === -1) {
                     datePickerEl.value = '';
-                    _this18.clearTimes();
+                    _this19.clearTimes();
                 } else {
                     datePickerEl.removeAttribute('disabled');
                 }

@@ -20,6 +20,7 @@ See the chapter Options below for an overview of all options
 * `recras_hostname` - the name of your Recras, i.e. `demo.recras.nl`
 * `element` - a single HTML element, using `getElementById` or `querySelector`
 * `locale` - a valid locale (de_DE, en_GB, and nl_NL). This is used for country names, error messages, etc. Package names from Recras are not affected.
+* `package_id` - the ID of a package. This will hide the package selection dropdown and skip this step.
 * `start_time` - to be added later
 * `skip_steps` - to be added later
 * `group_size` - to be added later

@@ -77,7 +77,11 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
         this.loadCSS(CSS);
 
         this.getPackages().then(packages => {
-            this.showPackages(packages);
+            if (options.package_id) {
+                this.changePackage(options.package_id);
+            } else {
+                this.showPackages(packages);
+            }
         });
     }
 
@@ -99,6 +103,31 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
 
     appendHtml(msg) {
         this.element.insertAdjacentHTML('beforeend', msg);
+    }
+
+    changePackage(packageID) {
+        let selectedPackage = this.packages.filter(p => {
+            return p.id === packageID;
+        });
+
+        if (this.datePicker) {
+            this.datePicker.destroy();
+        }
+        [...document.querySelectorAll('.recras-amountsform, .recras-datetime, .recras-contactform')].forEach(el => {
+            el.parentNode.removeChild(el);
+        });
+
+        if (selectedPackage.length === 0) {
+            // Reset form
+            this.showPackages(packages);
+            return false;
+        }
+        this.selectedPackage = selectedPackage[0];
+        this.showProducts(this.selectedPackage);
+        this.checkDependencies();
+        this.showDateTimeSelection(this.selectedPackage).then(() => {
+            this.showContactForm(this.selectedPackage);
+        });
     }
 
     checkDependencies() {
@@ -543,28 +572,7 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
         let packageSelectEl = document.getElementById('recras-package-selection');
         packageSelectEl.addEventListener('change', () => {
             let selectedPackageId = parseInt(packageSelectEl.value, 10);
-            let selectedPackage = this.packages.filter(p => {
-                return p.id === selectedPackageId;
-            });
-
-            if (this.datePicker) {
-                this.datePicker.destroy();
-            }
-            [...document.querySelectorAll('.recras-amountsform, .recras-datetime, .recras-contactform')].forEach(el => {
-                el.parentNode.removeChild(el);
-            });
-
-            if (selectedPackage.length === 0) {
-                // Reset form
-                this.showPackages(packages);
-                return false;
-            }
-            this.selectedPackage = selectedPackage[0];
-            this.showProducts(this.selectedPackage);
-            this.checkDependencies();
-            this.showDateTimeSelection(this.selectedPackage).then(() => {
-                this.showContactForm(this.selectedPackage);
-            });
+            this.changePackage(selectedPackageId);
         });
     }
 

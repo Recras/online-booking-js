@@ -1266,6 +1266,12 @@ var RecrasDateHelper = function () {
             return date.toISOString().substr(0, 10); // Format as 2018-03-13
         }
     }, {
+        key: 'setTimeForDate',
+        value: function setTimeForDate(date, timeStr) {
+            date.setHours(timeStr.substr(0, 2), timeStr.substr(3, 2));
+            return date;
+        }
+    }, {
         key: 'timePartOnly',
         value: function timePartOnly(date) {
             return date.toTimeString().substr(0, 5); // Format at 09:00
@@ -1347,10 +1353,11 @@ var RecrasBooking = function () {
         value: function amountsValid() {
             var hasAtLeastOneProduct = false;
             this.getLinesNoBookingSize(this.selectedPackage).forEach(function (line) {
-                if (line.aantal > 0) {
+                var aantal = document.querySelector('[data-package-id="' + line.id + '"]').value;
+                if (aantal > 0) {
                     hasAtLeastOneProduct = true;
                 }
-                if (line.aantal > 0 && line.aantal < line.aantal_personen) {
+                if (aantal > 0 && aantal < line.aantal_personen) {
                     return false;
                 }
             });
@@ -1669,7 +1676,7 @@ var RecrasBooking = function () {
                 var packageStart = new Date(Math.min.apply(Math, _toConsumableArray(linesBegin))); // Math.min transforms dates to timestamps
 
                 var bookingStart = this.selectedDate;
-                bookingStart.setHours(this.selectedTime.substr(0, 2), this.selectedTime.substr(3, 2));
+                bookingStart = RecrasDateHelper.setTimeForDate(bookingStart, this.selectedTime);
 
                 var linesNoBookingSize = this.getLinesNoBookingSize(this.selectedPackage);
                 linesNoBookingSize.forEach(function (line, idx) {
@@ -1741,7 +1748,7 @@ var RecrasBooking = function () {
         value: function showBookButton() {
             var html = '<div><button type="submit" id="bookPackage" disabled>Book now</button></div>';
             this.appendHtml(html);
-            document.getElementById('bookPackage').addEventListener('click', this.submitBooking);
+            document.getElementById('bookPackage').addEventListener('click', this.submitBooking.bind(this));
         }
     }, {
         key: 'showContactForm',
@@ -1961,6 +1968,9 @@ var RecrasBooking = function () {
 
             return false; //TODO
             /**************************************************/
+            var bookingStart = this.selectedDate;
+            bookingStart = RecrasDateHelper.setTimeForDate(bookingStart, this.selectedTime);
+
             var productCounts = this.productCounts().map(function (line) {
                 return line.aantal;
             });
@@ -1977,11 +1987,12 @@ var RecrasBooking = function () {
 
             var bookingParams = {
                 arrangement_id: this.selectedPackage.id,
-                producten: this.productCounts(),
-                begin: null, //TODO: this.selectedDate, this.selectedTime
-                betaalmethode: 'factuur', //TODO
-                status: 'informatie', //TODO
+                begin: bookingStart,
+                betaalmethode: 'mollie',
                 contactformulier: {}, //TODO
+                kortingscode: null, //TODO
+                producten: this.productCounts(),
+                status: 'informatie', //TODO
                 stuur_bevestiging_email: true
             };
             if (this.shouldShowBookingSize(this.selectedPackage)) {

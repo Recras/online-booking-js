@@ -9,6 +9,11 @@ class RecrasDateHelper {
         return date.toISOString().substr(0, 10); // Format as 2018-03-13
     }
 
+    static setTimeForDate(date, timeStr) {
+        date.setHours(timeStr.substr(0, 2), timeStr.substr(3, 2));
+        return date;
+    }
+
     static timePartOnly(date) {
         return date.toTimeString().substr(0, 5); // Format at 09:00
     }
@@ -101,10 +106,11 @@ class RecrasBooking {
     amountsValid() {
         let hasAtLeastOneProduct = false;
         this.getLinesNoBookingSize(this.selectedPackage).forEach(line => {
-            if (line.aantal > 0) {
+            let aantal = document.querySelector(`[data-package-id="${ line.id }"]`).value;
+            if (aantal > 0) {
                 hasAtLeastOneProduct = true;
             }
-            if (line.aantal > 0 && line.aantal < line.aantal_personen) {
+            if (aantal > 0 && aantal < line.aantal_personen) {
                 return false;
             }
         });
@@ -371,7 +377,7 @@ class RecrasBooking {
             let packageStart = new Date(Math.min(...linesBegin)); // Math.min transforms dates to timestamps
 
             let bookingStart = this.selectedDate;
-            bookingStart.setHours(this.selectedTime.substr(0, 2), this.selectedTime.substr(3, 2));
+            bookingStart = RecrasDateHelper.setTimeForDate(bookingStart, this.selectedTime);
 
             let linesNoBookingSize = this.getLinesNoBookingSize(this.selectedPackage);
             linesNoBookingSize.forEach((line, idx) => {
@@ -439,7 +445,7 @@ class RecrasBooking {
     showBookButton() {
         let html = `<div><button type="submit" id="bookPackage" disabled>Book now</button></div>`;
         this.appendHtml(html);
-        document.getElementById('bookPackage').addEventListener('click', this.submitBooking);
+        document.getElementById('bookPackage').addEventListener('click', this.submitBooking.bind(this));
     }
 
     showContactForm(pack) {
@@ -635,6 +641,9 @@ class RecrasBooking {
     submitBooking() {
         return false; //TODO
         /**************************************************/
+        let bookingStart = this.selectedDate;
+        bookingStart = RecrasDateHelper.setTimeForDate(bookingStart, this.selectedTime);
+
         let productCounts = this.productCounts().map(line => line.aantal);
         let productSum = productCounts.reduce((a, b) => a + b, 0);
         if (this.bookingSize() === 0 && productSum === 0) {
@@ -647,11 +656,12 @@ class RecrasBooking {
 
         let bookingParams = {
             arrangement_id: this.selectedPackage.id,
-            producten: this.productCounts(),
-            begin: null, //TODO: this.selectedDate, this.selectedTime
-            betaalmethode: 'factuur', //TODO
-            status: 'informatie', //TODO
+            begin: bookingStart,
+            betaalmethode: 'mollie',
             contactformulier: {}, //TODO
+            kortingscode: null, //TODO
+            producten: this.productCounts(),
+            status: 'informatie', //TODO
             stuur_bevestiging_email: true,
         };
         if (this.shouldShowBookingSize(this.selectedPackage)) {

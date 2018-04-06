@@ -1,10 +1,20 @@
 /**********************************
 *  Recras Online Booking library  *
-*  v 0.0.1                        *
+*  v 0.1.0                        *
 **********************************/
 'use strict';
 
-class Recrasbooking {
+class RecrasDateHelper {
+    static datePartOnly(date) {
+        return date.toISOString().substr(0, 10); // Format as 2018-03-13
+    }
+
+    static timePartOnly(date) {
+        return date.toTimeString().substr(0, 5); // Format at 09:00
+    }
+}
+
+class RecrasBooking {
     constructor(options) {
         this.PACKAGE_SELECTION = 'package_selection';
         this.DATE_SELECTION = 'date_selection';
@@ -179,10 +189,6 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
         });
     }
 
-    datePartOnly(date) {
-        return date.toISOString().substr(0, 10); // Format as 2018-03-13
-    }
-
     dependencySatisfied(hasNow, requiredProduct) {
         let productLines = this.productCounts();
         for (let i = 0; i < productLines.length; i++) {
@@ -201,10 +207,6 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
             return line.aantal >= requiredAmount;
         }
         return false;
-    }
-
-    timePartOnly(date) {
-        return date.toTimeString().substr(0, 5); // Format at 09:00
     }
 
     error(msg) {
@@ -234,8 +236,8 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
     getAvailableDays(packageID, begin, end) {
         return this.postJson(this.apiBase + 'onlineboeking/beschikbaredagen', {
             arrangement_id: packageID,
-            begin: this.datePartOnly(begin),
-            eind: this.datePartOnly(end),
+            begin: RecrasDateHelper.datePartOnly(begin),
+            eind: RecrasDateHelper.datePartOnly(end),
             producten: this.productCounts(),
         }).then(json => {
             this.availableDays = json;
@@ -246,7 +248,7 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
     getAvailableTimes(packageID, date) {
         return this.postJson(this.apiBase + 'onlineboeking/beschikbaretijden', {
             arrangement_id: packageID,
-            datum: this.datePartOnly(date),
+            datum: RecrasDateHelper.datePartOnly(date),
             producten: this.productCounts(),
         }).then(json => {
             this.availableTimes = json;
@@ -365,7 +367,7 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
                 let normalisedEnd = this.normaliseDate(new Date(line.eind), packageStart, bookingStart);
                 document.querySelector(`label[for="packageline${ idx }"]`).insertAdjacentHTML(
                     'beforeend',
-                    `<span class="time-preview">(${ this.timePartOnly(normalisedStart) } – ${ this.timePartOnly(normalisedEnd) })</span>`
+                    `<span class="time-preview">(${ RecrasDateHelper.timePartOnly(normalisedStart) } – ${ RecrasDateHelper.timePartOnly(normalisedEnd) })</span>`
                 );
             });
         }
@@ -518,7 +520,7 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
 
         return this.getAvailableDays(pack.id, startDate, endDate)
             .then(availableDays => {
-                let today = this.datePartOnly(new Date());
+                let today = RecrasDateHelper.datePartOnly(new Date());
                 let html = `<div class="recras-datetime">`;
                 html += `<label for="recras-onlinebooking-date">Date</label><input type="text" id="recras-onlinebooking-date" min="${ today }" disabled>`;
                 html += '<label for="recras-onlinebooking-time">Time</label><select id="recras-onlinebooking-time" disabled></select>';
@@ -527,7 +529,7 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
 
                 this.datePicker = new Pikaday({
                     disableDayFn: (day) => {
-                        let dateFmt = this.datePartOnly(day);
+                        let dateFmt = RecrasDateHelper.datePartOnly(day);
                         //TODO: because of timezones, this is off by 1
                         return this.availableDays.indexOf(dateFmt) === -1;
                     },
@@ -543,11 +545,11 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
                     onSelect: (date) => {
                         this.selectedDate = date;
                         this.getAvailableTimes(pack.id, date).then(times => {
-                            times = times.map(time => this.timePartOnly(new Date(time)));
+                            times = times.map(time => RecrasDateHelper.timePartOnly(new Date(time)));
                             this.showTimes(times);
                         });
                     },
-                    toString: (date) => this.datePartOnly(date),
+                    toString: (date) => RecrasDateHelper.datePartOnly(date),
                 });
 
                 document.getElementById('recras-onlinebooking-time').addEventListener('change', () => {

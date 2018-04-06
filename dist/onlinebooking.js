@@ -1245,7 +1245,7 @@
 }));
 /**********************************
 *  Recras Online Booking library  *
-*  v 0.0.1                        *
+*  v 0.1.0                        *
 **********************************/
 'use strict';
 
@@ -1255,11 +1255,31 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Recrasbooking = function () {
-    function Recrasbooking(options) {
+var RecrasDateHelper = function () {
+    function RecrasDateHelper() {
+        _classCallCheck(this, RecrasDateHelper);
+    }
+
+    _createClass(RecrasDateHelper, null, [{
+        key: 'datePartOnly',
+        value: function datePartOnly(date) {
+            return date.toISOString().substr(0, 10); // Format as 2018-03-13
+        }
+    }, {
+        key: 'timePartOnly',
+        value: function timePartOnly(date) {
+            return date.toTimeString().substr(0, 5); // Format at 09:00
+        }
+    }]);
+
+    return RecrasDateHelper;
+}();
+
+var RecrasBooking = function () {
+    function RecrasBooking(options) {
         var _this = this;
 
-        _classCallCheck(this, Recrasbooking);
+        _classCallCheck(this, RecrasBooking);
 
         this.PACKAGE_SELECTION = 'package_selection';
         this.DATE_SELECTION = 'date_selection';
@@ -1322,7 +1342,7 @@ var Recrasbooking = function () {
         });
     }
 
-    _createClass(Recrasbooking, [{
+    _createClass(RecrasBooking, [{
         key: 'amountsValid',
         value: function amountsValid() {
             var hasAtLeastOneProduct = false;
@@ -1428,11 +1448,6 @@ var Recrasbooking = function () {
             });
         }
     }, {
-        key: 'datePartOnly',
-        value: function datePartOnly(date) {
-            return date.toISOString().substr(0, 10); // Format as 2018-03-13
-        }
-    }, {
         key: 'dependencySatisfied',
         value: function dependencySatisfied(hasNow, requiredProduct) {
             var productLines = this.productCounts();
@@ -1452,11 +1467,6 @@ var Recrasbooking = function () {
                 return line.aantal >= requiredAmount;
             }
             return false;
-        }
-    }, {
-        key: 'timePartOnly',
-        value: function timePartOnly(date) {
-            return date.toTimeString().substr(0, 5); // Format at 09:00
         }
     }, {
         key: 'error',
@@ -1496,8 +1506,8 @@ var Recrasbooking = function () {
 
             return this.postJson(this.apiBase + 'onlineboeking/beschikbaredagen', {
                 arrangement_id: packageID,
-                begin: this.datePartOnly(begin),
-                eind: this.datePartOnly(end),
+                begin: RecrasDateHelper.datePartOnly(begin),
+                eind: RecrasDateHelper.datePartOnly(end),
                 producten: this.productCounts()
             }).then(function (json) {
                 _this6.availableDays = json;
@@ -1511,7 +1521,7 @@ var Recrasbooking = function () {
 
             return this.postJson(this.apiBase + 'onlineboeking/beschikbaretijden', {
                 arrangement_id: packageID,
-                datum: this.datePartOnly(date),
+                datum: RecrasDateHelper.datePartOnly(date),
                 producten: this.productCounts()
             }).then(function (json) {
                 _this7.availableTimes = json;
@@ -1655,7 +1665,7 @@ var Recrasbooking = function () {
                 linesNoBookingSize.forEach(function (line, idx) {
                     var normalisedStart = _this12.normaliseDate(new Date(line.begin), packageStart, bookingStart);
                     var normalisedEnd = _this12.normaliseDate(new Date(line.eind), packageStart, bookingStart);
-                    document.querySelector('label[for="packageline' + idx + '"]').insertAdjacentHTML('beforeend', '<span class="time-preview">(' + _this12.timePartOnly(normalisedStart) + ' \u2013 ' + _this12.timePartOnly(normalisedEnd) + ')</span>');
+                    document.querySelector('label[for="packageline' + idx + '"]').insertAdjacentHTML('beforeend', '<span class="time-preview">(' + RecrasDateHelper.timePartOnly(normalisedStart) + ' \u2013 ' + RecrasDateHelper.timePartOnly(normalisedEnd) + ')</span>');
                 });
             }
         }
@@ -1822,7 +1832,7 @@ var Recrasbooking = function () {
             endDate.setMonth(endDate.getMonth() + 3);
 
             return this.getAvailableDays(pack.id, startDate, endDate).then(function (availableDays) {
-                var today = _this15.datePartOnly(new Date());
+                var today = RecrasDateHelper.datePartOnly(new Date());
                 var html = '<div class="recras-datetime">';
                 html += '<label for="recras-onlinebooking-date">Date</label><input type="text" id="recras-onlinebooking-date" min="' + today + '" disabled>';
                 html += '<label for="recras-onlinebooking-time">Time</label><select id="recras-onlinebooking-time" disabled></select>';
@@ -1831,7 +1841,7 @@ var Recrasbooking = function () {
 
                 _this15.datePicker = new Pikaday({
                     disableDayFn: function disableDayFn(day) {
-                        var dateFmt = _this15.datePartOnly(day);
+                        var dateFmt = RecrasDateHelper.datePartOnly(day);
                         //TODO: because of timezones, this is off by 1
                         return _this15.availableDays.indexOf(dateFmt) === -1;
                     },
@@ -1848,13 +1858,13 @@ var Recrasbooking = function () {
                         _this15.selectedDate = date;
                         _this15.getAvailableTimes(pack.id, date).then(function (times) {
                             times = times.map(function (time) {
-                                return _this15.timePartOnly(new Date(time));
+                                return RecrasDateHelper.timePartOnly(new Date(time));
                             });
                             _this15.showTimes(times);
                         });
                     },
                     toString: function toString(date) {
-                        return _this15.datePartOnly(date);
+                        return RecrasDateHelper.datePartOnly(date);
                     }
                 });
 
@@ -1952,5 +1962,5 @@ var Recrasbooking = function () {
         }
     }]);
 
-    return Recrasbooking;
+    return RecrasBooking;
 }();

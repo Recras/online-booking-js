@@ -81,6 +81,22 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
         });
     }
 
+    amountsValid() {
+        let hasAtLeastOneProduct = false;
+        this.getLinesNoBookingSize(this.selectedPackage).forEach(line => {
+            if (line.aantal > 0) {
+                hasAtLeastOneProduct = true;
+            }
+            if (line.aantal > 0 && line.aantal < line.aantal_personen) {
+                return false;
+            }
+        });
+        if (this.shouldShowBookingSize(this.selectedPackage) && document.getElementById('bookingsize').value > 0) {
+            hasAtLeastOneProduct = true;
+        }
+        return hasAtLeastOneProduct;
+    };
+
     appendHtml(msg) {
         this.element.insertAdjacentHTML('beforeend', msg);
     }
@@ -106,6 +122,8 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
                 });
             }
         });
+
+        this.maybeDisableBookButton();
     }
 
     checkMinimumAmounts() {
@@ -248,6 +266,36 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
         refNode.parentNode.insertBefore(styleEl, refNode);
     }
 
+    maybeDisableBookButton() {
+        let button = document.getElementById('bookPackage');
+        if (!button) {
+            return false;
+        }
+
+        let shouldDisable = false;
+        if (this.requiresProduct) {
+            shouldDisable = true;
+        }
+        if (!this.amountsValid()) {
+            shouldDisable = true;
+        }
+        if (!document.getElementById('recras-onlinebooking-date').value) {
+            shouldDisable = true;
+        }
+        if (!document.getElementById('recras-onlinebooking-time').value) {
+            shouldDisable = true;
+        }
+        if (!document.querySelector('.recras-contactform').checkValidity()) {
+            shouldDisable = true;
+        }
+
+        if (shouldDisable) {
+            button.setAttribute('disabled', 'disabled');
+        } else {
+            button.removeAttribute('disabled');
+        }
+    }
+
     postJson(url, data) {
         return fetch(url, {
             body: JSON.stringify(data),
@@ -341,6 +389,11 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
         }).length > 0;
     }
 
+    showBookButton() {
+        let html = `<button type="submit" id="bookPackage" disabled>Book now</button>`;
+        this.appendHtml(html);
+    }
+
     showContactForm(pack) {
         this.getContactFormFields(pack).then(fields => {
             fields = fields.sort((a, b) => {
@@ -357,12 +410,17 @@ border-top: 2px solid #dedede; /* Any love for Kirby out there? */
                 waitFor.push(this.getCountryList(this.locale));
             }
             Promise.all(waitFor).then(() => {
-                let html = '<div class="recras-contactform">';
+                let html = '<form class="recras-contactform">';
                 fields.forEach((field, idx) => {
                     html += '<div>' + this.showContactFormField(field, idx) + '</div>';
                 });
-                html += '</div>';
+                html += '</form>';
                 this.appendHtml(html);
+                this.showBookButton();
+
+                [...document.querySelectorAll('[id^="contactformulier-"]')].forEach(el => {
+                    el.addEventListener('change', this.maybeDisableBookButton.bind(this));
+                });
             });
         });
     }

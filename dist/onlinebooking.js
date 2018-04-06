@@ -1319,6 +1319,23 @@ var Recrasbooking = function () {
     }
 
     _createClass(Recrasbooking, [{
+        key: 'amountsValid',
+        value: function amountsValid() {
+            var hasAtLeastOneProduct = false;
+            this.getLinesNoBookingSize(this.selectedPackage).forEach(function (line) {
+                if (line.aantal > 0) {
+                    hasAtLeastOneProduct = true;
+                }
+                if (line.aantal > 0 && line.aantal < line.aantal_personen) {
+                    return false;
+                }
+            });
+            if (this.shouldShowBookingSize(this.selectedPackage) && document.getElementById('bookingsize').value > 0) {
+                hasAtLeastOneProduct = true;
+            }
+            return hasAtLeastOneProduct;
+        }
+    }, {
         key: 'appendHtml',
         value: function appendHtml(msg) {
             this.element.insertAdjacentHTML('beforeend', msg);
@@ -1328,17 +1345,28 @@ var Recrasbooking = function () {
         value: function checkDependencies() {
             var _this2 = this;
 
+            [].concat(_toConsumableArray(document.querySelectorAll('.recras-product-dependency'))).forEach(function (el) {
+                el.parentNode.removeChild(el);
+            });
+            this.requiresProduct = false;
+
             this.productCounts().forEach(function (line) {
                 if (line.aantal > 0) {
                     var packageLineID = line.arrangementsregel_id;
                     var product = _this2.findProduct(packageLineID).product;
                     product.vereist_product.forEach(function (vp) {
                         if (!_this2.dependencySatisfied(line.aantal, vp)) {
-                            console.log('Product ' + product.weergavenaam + ' vereist', vp);
+                            _this2.requiresProduct = true;
+                            var requiredAmount = _this2.requiredAmount(line.aantal, vp);
+                            var requiredProductName = _this2.getProductByID(vp.vereist_product_id).weergavenaam;
+                            var message = '<span class="recras-product-dependency">' + line.aantal + ' ' + product.weergavenaam + ' requires ' + requiredAmount + ' ' + requiredProductName + ' to also be booked.</span>';
+                            document.querySelector('.recras-amountsform').insertAdjacentHTML('beforeend', message);
                         }
                     });
                 }
             });
+
+            this.maybeDisableBookButton();
         }
     }, {
         key: 'checkMinimumAmounts',
@@ -1496,6 +1524,16 @@ var Recrasbooking = function () {
             });
         }
     }, {
+        key: 'getProductByID',
+        value: function getProductByID(id) {
+            var products = this.selectedPackage.regels.map(function (r) {
+                return r.product;
+            });
+            return products.filter(function (p) {
+                return p.id === id;
+            })[0];
+        }
+    }, {
         key: 'loadCSS',
         value: function loadCSS(content) {
             var styleEl = document.createElement('style');
@@ -1503,6 +1541,30 @@ var Recrasbooking = function () {
 
             var refNode = document.head;
             refNode.parentNode.insertBefore(styleEl, refNode);
+        }
+    }, {
+        key: 'maybeDisableBookButton',
+        value: function maybeDisableBookButton() {
+            console.log('maybe baby');
+            var button = document.getElementById('bookPackage');
+            if (!button) {
+                return false;
+            }
+
+            var shouldDisable = false;
+            if (this.requiresProduct) {
+                shouldDisable = true;
+            }
+            if (!this.amountsValid()) {
+                shouldDisable = true;
+            }
+            if (!document.querySelector('.recras-contactform').checkValidity()) {
+                shouldDisable = true;
+            }
+
+            if (shouldDisable) {
+                button.setAttribute('disabled', 'disabled');
+            }
         }
     }, {
         key: 'postJson',
@@ -1611,6 +1673,12 @@ var Recrasbooking = function () {
             }).length > 0;
         }
     }, {
+        key: 'showBookButton',
+        value: function showBookButton() {
+            var html = '<button type="submit" id="bookPackage" disabled>Book now</button>';
+            this.appendHtml(html);
+        }
+    }, {
         key: 'showContactForm',
         value: function showContactForm(pack) {
             var _this12 = this;
@@ -1630,12 +1698,17 @@ var Recrasbooking = function () {
                     waitFor.push(_this12.getCountryList(_this12.locale));
                 }
                 Promise.all(waitFor).then(function () {
-                    var html = '<div class="recras-contactform">';
+                    var html = '<form class="recras-contactform">';
                     fields.forEach(function (field, idx) {
                         html += '<div>' + _this12.showContactFormField(field, idx) + '</div>';
                     });
-                    html += '</div>';
+                    html += '</form>';
                     _this12.appendHtml(html);
+                    _this12.showBookButton();
+
+                    [].concat(_toConsumableArray(document.querySelectorAll('[id^="contactformulier-"]'))).forEach(function (el) {
+                        el.addEventListener('change', _this12.maybeDisableBookButton.bind(_this12));
+                    });
                 });
             });
         }

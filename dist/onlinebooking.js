@@ -1517,6 +1517,15 @@ var RecrasBooking = function () {
             })[0];
         }
     }, {
+        key: 'generateContactForm',
+        value: function generateContactForm() {
+            var contactForm = {};
+            [].concat(_toConsumableArray(document.querySelectorAll('[id^="contactformulier-"]'))).forEach(function (field) {
+                console.log(field);
+            });
+            return contactForm;
+        }
+    }, {
         key: 'getAvailableDays',
         value: function getAvailableDays(packageID, begin, end) {
             var _this6 = this;
@@ -1796,36 +1805,37 @@ var RecrasBooking = function () {
             var label = this.showContactFormLabel(field, idx);
             var attrRequired = field.verplicht ? 'required' : '';
             var html = void 0;
+            var fixedAttributes = 'id="contactformulier-' + idx + '" name="contactformulier' + idx + '" ' + attrRequired + ' data-identifier="' + field.field_identifier + '"';
             switch (field.soort_invoer) {
                 case 'contactpersoon.geslacht':
-                    html = '<select id="contactformulier-' + idx + '" name="contactformulier' + idx + '" ' + attrRequired + ' autocomplete="sex">';
+                    html = '<select ' + fixedAttributes + ' autocomplete="sex">';
                     Object.keys(this.GENDERS).forEach(function (key) {
                         html += '<option value="' + key + '">' + _this14.GENDERS[key];
                     });
                     html += '</select>';
                     return label + html;
                 case 'keuze':
-                    html = '<select id="contactformulier-' + idx + '" name="contactformulier' + idx + '" ' + attrRequired + ' multiple>';
+                    html = '<select ' + fixedAttributes + ' multiple>';
                     field.mogelijke_keuzes.forEach(function (choice) {
                         html += '<option value="' + choice + '">' + choice;
                     });
                     html += '</select>';
                     return label + html;
                 case 'veel_tekst':
-                    return label + ('<textarea id="contactformulier-' + idx + '" name="contactformulier' + idx + '" ' + attrRequired + '></textarea>');
+                    return label + ('<textarea ' + fixedAttributes + '></textarea>');
                 case 'contactpersoon.telefoon1':
-                    return label + ('<input type="tel" id="contactformulier-' + idx + '" name="contactformulier' + idx + '" ' + attrRequired + ' autocomplete="tel">');
+                    return label + ('<input type="tel" ' + fixedAttributes + ' autocomplete="tel">');
                 case 'contactpersoon.email1':
-                    return label + ('<input type="email" id="contactformulier-' + idx + '" name="contactformulier' + idx + '" ' + attrRequired + ' autocomplete="email">');
+                    return label + ('<input type="email" ' + fixedAttributes + ' autocomplete="email">');
                 case 'contactpersoon.nieuwsbrieven':
-                    html = '<select id="contactformulier-' + idx + '" name="contactformulier' + idx + '" ' + attrRequired + ' multiple>';
+                    html = '<select ' + fixedAttributes + ' multiple>';
                     Object.keys(field.newsletter_options).forEach(function (key) {
                         html += '<option value="' + key + '">' + field.newsletter_options[key];
                     });
                     html += '</select>';
                     return label + html;
                 case 'contact.landcode':
-                    html = '<select id="contactformulier-' + idx + '" name="contactformulier' + idx + '" ' + attrRequired + '>';
+                    html = '<select ' + fixedAttributes + '>';
                     Object.keys(this.countries).forEach(function (code) {
                         html += '<option value="' + code + '">' + _this14.countries[code];
                     });
@@ -1833,7 +1843,7 @@ var RecrasBooking = function () {
                     return label + html;
                 default:
                     var autocomplete = this.AUTOCOMPLETE_OPTIONS[field.soort_invoer] ? this.AUTOCOMPLETE_OPTIONS[field.soort_invoer] : '';
-                    return label + ('<input type="text" id="contactformulier-' + idx + '" name="contactformulier' + idx + '" ' + attrRequired + ' autocomplete="' + autocomplete + '">');
+                    return label + ('<input type="text" ' + fixedAttributes + ' autocomplete="' + autocomplete + '">');
             }
         }
     }, {

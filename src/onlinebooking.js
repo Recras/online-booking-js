@@ -251,6 +251,14 @@ class RecrasBooking {
         return this.selectedPackage.regels.filter(line => (line.id === packageLineID))[0];
     }
 
+    generateContactForm() {
+        let contactForm = {};
+        [...document.querySelectorAll('[id^="contactformulier-"]')].forEach(field => {
+            contactForm[field.dataset.identifier] = field.value;
+        });
+        return contactForm;
+    }
+
     getAvailableDays(packageID, begin, end) {
         return this.postJson(this.apiBase + 'onlineboeking/beschikbaredagen', {
             arrangement_id: packageID,
@@ -487,36 +495,37 @@ class RecrasBooking {
         let label = this.showContactFormLabel(field, idx);
         let attrRequired = field.verplicht ? 'required' : '';
         let html;
+        let fixedAttributes = `id="contactformulier-${ idx }" name="contactformulier${ idx }" ${ attrRequired } data-identifier="${ field.field_identifier }"`;
         switch (field.soort_invoer) {
             case 'contactpersoon.geslacht':
-                html = `<select id="contactformulier-${ idx }" name="contactformulier${ idx }" ${ attrRequired } autocomplete="sex">`;
+                html = `<select ${ fixedAttributes } autocomplete="sex">`;
                 Object.keys(this.GENDERS).forEach(key => {
                     html += `<option value="${ key }">${ this.GENDERS[key] }`;
                 });
                 html += '</select>';
                 return label + html;
             case 'keuze':
-                html = `<select id="contactformulier-${ idx }" name="contactformulier${ idx }" ${ attrRequired } multiple>`;
+                html = `<select ${ fixedAttributes } multiple>`;
                 field.mogelijke_keuzes.forEach(choice => {
                     html += `<option value="${ choice }">${ choice }`;
                 });
                 html += '</select>';
                 return label + html;
             case 'veel_tekst':
-                return label + `<textarea id="contactformulier-${ idx }" name="contactformulier${ idx }" ${ attrRequired }></textarea>`;
+                return label + `<textarea ${ fixedAttributes }></textarea>`;
             case 'contactpersoon.telefoon1':
-                return label + `<input type="tel" id="contactformulier-${ idx }" name="contactformulier${ idx }" ${ attrRequired } autocomplete="tel">`;
+                return label + `<input type="tel" ${ fixedAttributes } autocomplete="tel">`;
             case 'contactpersoon.email1':
-                return label + `<input type="email" id="contactformulier-${ idx }" name="contactformulier${ idx }" ${ attrRequired } autocomplete="email">`;
+                return label + `<input type="email" ${ fixedAttributes } autocomplete="email">`;
             case 'contactpersoon.nieuwsbrieven':
-                html = `<select id="contactformulier-${ idx }" name="contactformulier${ idx }" ${ attrRequired } multiple>`;
+                html = `<select ${ fixedAttributes } multiple>`;
                 Object.keys(field.newsletter_options).forEach(key => {
                     html += `<option value="${ key }">${ field.newsletter_options[key] }`;
                 });
                 html += '</select>';
                 return label + html;
             case 'contact.landcode':
-                html = `<select id="contactformulier-${ idx }" name="contactformulier${ idx }" ${ attrRequired }>`;
+                html = `<select ${ fixedAttributes }>`;
                 Object.keys(this.countries).forEach(code => {
                     html += `<option value="${ code }">${ this.countries[code] }`;
                 });
@@ -524,7 +533,7 @@ class RecrasBooking {
                 return label + html;
             default:
                 let autocomplete = this.AUTOCOMPLETE_OPTIONS[field.soort_invoer] ? this.AUTOCOMPLETE_OPTIONS[field.soort_invoer] : '';
-                return label + `<input type="text" id="contactformulier-${ idx }" name="contactformulier${ idx }" ${ attrRequired } autocomplete="${ autocomplete }">`;
+                return label + `<input type="text" ${ fixedAttributes } autocomplete="${ autocomplete }">`;
         }
     }
 
@@ -658,7 +667,7 @@ class RecrasBooking {
             arrangement_id: this.selectedPackage.id,
             begin: bookingStart,
             betaalmethode: 'mollie',
-            contactformulier: {}, //TODO
+            contactformulier: this.generateContactForm(),
             kortingscode: null, //TODO
             producten: this.productCounts(),
             status: 'informatie', //TODO

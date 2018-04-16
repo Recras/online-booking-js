@@ -86,11 +86,10 @@ class RecrasBooking {
         }
 
         this.element = options.element;
-        this.baseUrl = 'https://' + options.recras_hostname + '/';
+        this.apiBase = 'https://' + options.recras_hostname + '/api2/';
         if (options.recras_hostname === '172.16.0.2') {
-            this.baseUrl = this.baseUrl.replace('https://', 'http://');
+            this.apiBase = this.apiBase.replace('https://', 'http://');
         }
-        this.baseApi = this.baseUrl + 'api2/';
 
         this.element.classList.add('recras-onlinebooking');
         this.loadCSS(CSS);
@@ -189,12 +188,12 @@ class RecrasBooking {
         this.maybeDisableBookButton();
     }
 
-    checkDiscountcode(packageID, date, code, amount) {
+    checkDiscountcode(packageID, date, code) {
         let statusEl = document.getElementById('discount-status');
         if (statusEl) {
             statusEl.parentNode.removeChild(statusEl);
         }
-        return this.fetchJson(this.baseUrl + 'onlineboeking/controleerkortingscode/datum/' + date + '/arrangement/' + packageID + '/kortingscode/' + code + '/bedrag/' + amount)
+        return this.fetchJson(this.apiBase + 'onlineboeking/controleerkortingscode?datum=' + date + '&arrangement=' + packageID + '&kortingscode=' + code)
             .then(json => {
                 //<span id="discount-status"></span>
                 if (json === false) {
@@ -298,7 +297,7 @@ class RecrasBooking {
     }
 
     getAvailableDays(packageID, begin, end) {
-        return this.postJson(this.baseApi + 'onlineboeking/beschikbaredagen', {
+        return this.postJson(this.apiBase + 'onlineboeking/beschikbaredagen', {
             arrangement_id: packageID,
             begin: RecrasDateHelper.datePartOnly(begin),
             eind: RecrasDateHelper.datePartOnly(end),
@@ -310,7 +309,7 @@ class RecrasBooking {
     }
 
     getAvailableTimes(packageID, date) {
-        return this.postJson(this.baseApi + 'onlineboeking/beschikbaretijden', {
+        return this.postJson(this.apiBase + 'onlineboeking/beschikbaretijden', {
             arrangement_id: packageID,
             datum: RecrasDateHelper.datePartOnly(date),
             producten: this.productCounts(),
@@ -321,7 +320,7 @@ class RecrasBooking {
     }
 
     getContactFormFields(pack) {
-        return this.fetchJson(this.baseApi + 'contactformulieren/' + pack.onlineboeking_contactformulier_id + '/velden')
+        return this.fetchJson(this.apiBase + 'contactformulieren/' + pack.onlineboeking_contactformulier_id + '/velden')
             .then(json => {
                 this.contactFormFields = json;
                 return this.contactFormFields;
@@ -341,7 +340,7 @@ class RecrasBooking {
     }
 
     getPackages() {
-        return this.fetchJson(this.baseApi + 'arrangementen')
+        return this.fetchJson(this.apiBase + 'arrangementen')
             .then(json => {
                 this.packages = json;
                 return this.packages;
@@ -473,7 +472,7 @@ class RecrasBooking {
 
     setCurrency() {
         this.currency = 'eur'; //TODO
-        /*this.fetchJson(this.baseApi + 'instellingen/currency')
+        /*this.fetchJson(this.apiBase + 'instellingen/currency')
             .then(setting => {
                 this.currency = setting.waarde;
             });*/
@@ -523,8 +522,7 @@ class RecrasBooking {
             this.checkDiscountcode(
                 this.selectedPackage.id,
                 document.getElementById('recras-onlinebooking-date').value,
-                document.getElementById('discountcode').value,
-                this.getTotalPrice()
+                document.getElementById('discountcode').value
             );
         });
 
@@ -767,7 +765,7 @@ class RecrasBooking {
             bookingParams.boekingsgrootte = this.bookingSize();
         }
 
-        return this.postJson(this.baseApi + 'onlineboeking/reserveer', bookingParams).then(json => {
+        return this.postJson(this.apiBase + 'onlineboeking/reserveer', bookingParams).then(json => {
             document.getElementById('bookPackage').removeAttribute('disabled');
 
             if (typeof json.boeking_id !== 'undefined') {

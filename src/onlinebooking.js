@@ -93,6 +93,7 @@ class RecrasBooking {
 
         this.element.classList.add('recras-onlinebooking');
         this.loadCSS(CSS);
+        this.setCurrency();
 
         this.getPackages().then(packages => {
             if (options.package_id) {
@@ -249,6 +250,22 @@ class RecrasBooking {
 
     findProduct(packageLineID) {
         return this.selectedPackage.regels.filter(line => (line.id === packageLineID))[0];
+    }
+
+    formatLocale(what) {
+        switch (what) {
+            case 'currency':
+                return this.locale.replace('_', '-').toUpperCase();
+            default:
+                return this.locale;
+        }
+    }
+
+    formatPrice(price) {
+        return price.toLocaleString(this.formatLocale('currency'), {
+            currency: this.currency,
+            style: 'currency',
+        });
     }
 
     generateContactForm() {
@@ -422,6 +439,14 @@ class RecrasBooking {
 
     resetForm() {
         this.changePackage(null);
+    }
+
+    setCurrency() {
+        this.currency = 'eur'; //TODO
+        /*this.fetchJson(this.apiBase + 'instellingen/currency')
+            .then(setting => {
+                this.currency = setting.waarde;
+            });*/
     }
 
     setHtml(msg) {
@@ -623,6 +648,7 @@ class RecrasBooking {
             html += `<label for="packageline${ idx }">${ line.beschrijving_templated }</label>`;
             let maxAttr = line.max ? `max="${ line.max }"` : '';
             html += `</div><input id="packageline${ idx }" type="number" min="0" ${ maxAttr } data-package-id="${ line.id }">`;
+            html += `<div class="recras-price">${ this.formatPrice(line.product.verkoop) }</div>`;
             html += '</div>';
         });
         html += '</div>';

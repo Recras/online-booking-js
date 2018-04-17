@@ -194,13 +194,13 @@ class RecrasBooking {
             statusEl.parentNode.removeChild(statusEl);
         }
         return this.fetchJson(this.apiBase + 'onlineboeking/controleerkortingscode?datum=' + date + '&arrangement=' + packageID + '&kortingscode=' + code)
-            .then(json => {
-                //<span id="discount-status"></span>
-                if (json === false) {
-                    console.log('Invalid');
+            .then(discount => {
+                if (discount === false) {
+                    document.querySelector('.recras-discountcode').insertAdjacentHTML('beforeend', `<span id="discount-status">Invalid discount code</span>`);
+                    return;
                 }
-                console.log('check', json);
-                //{"naam":"test (25%)","kortingsbedrag":"\u20ac\u00a010,00-","totaal":"\u20ac\u00a030,00"}
+                this.discountCode = code;
+                this.processDiscount(discount);
             });
     }
 
@@ -445,6 +445,18 @@ class RecrasBooking {
         }
     }
 
+    processDiscount(discount) {
+        [...document.querySelectorAll('.discountLine')].forEach(el => {
+            el.parentNode.removeChild(el);
+        });
+
+        let discountPrice = (discount.percentage / 100) * this.getTotalPrice() * -1;
+        let html = `<div class="discountLine"><div>${ discount.naam }</div><div>${ this.formatPrice(discountPrice) }</div></div>`;
+        html += `<div class="discountLine"><div>Total including discount</div><div>${ this.formatPrice(this.getTotalPrice() + discountPrice) }</div></div>`;
+
+        document.querySelector('.priceLine').parentElement.insertAdjacentHTML('beforeend', html);
+    }
+
     productCounts() {
         let counts = [];
         [...document.querySelectorAll('[id^="packageline"]')].forEach(line => {
@@ -511,6 +523,10 @@ class RecrasBooking {
     }
 
     showDiscountFields() {
+        [...document.querySelectorAll('.recras-discountcode, .recras-vouchers')].forEach(el => {
+            el.parentNode.removeChild(el);
+        });
+
         this.appendHtml(`
             <div class="recras-discountcode">
                 <label for="discountcode">Discount code</label>
@@ -711,7 +727,7 @@ class RecrasBooking {
             html += `<div class="recras-price">${ this.formatPrice(line.product.verkoop) }</div>`;
             html += '</div>';
         });
-        html += `<div><div>Total</div><div id="totalPrice"></div>`;
+        html += `<div class="priceLine"><div>Total</div><div id="totalPrice"></div>`;
         html += '</div>';
         this.appendHtml(html);
 
@@ -755,7 +771,7 @@ class RecrasBooking {
             begin: bookingStart,
             betaalmethode: 'mollie',
             contactformulier: this.generateContactForm(),
-            kortingscode: null, //TODO
+            kortingscode: this.discountCode || null,
             producten: this.productCounts(),
             status: 'informatie', //TODO: is allowed to be null
             stuur_bevestiging_email: true,

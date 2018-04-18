@@ -1844,12 +1844,12 @@ var RecrasBooking = function () {
                 el.parentNode.removeChild(el);
             });
 
-            this.appendHtml('\n            <div class="recras-discountcode">\n                <label for="discountcode">Discount code</label>\n                <input type="text" id="discountcode">\n                <button>Check</button>\n            </div>\n        ');
+            var html = '\n            <div class="recras-discountcode">\n                <label for="discountcode">Discount code</label>\n                <input type="text" id="discountcode">\n                <button>Check</button>\n            </div>\n            <div class="recras-vouchers">\n                <div>\n                    <label for="voucher">Voucher</label>\n                    <input type="text" id="voucher">\n                    <button>Apply</button>\n                </div>\n            </div>\n        ';
+            document.querySelector('.recras-contactform').insertAdjacentHTML('beforebegin', html);
+
             document.querySelector('.recras-discountcode > button').addEventListener('click', function () {
                 _this15.checkDiscountcode(_this15.selectedPackage.id, document.getElementById('recras-onlinebooking-date').value, document.getElementById('discountcode').value);
             });
-
-            this.appendHtml('\n            <div class="recras-vouchers">\n                <div>\n                    <label for="voucher">Voucher</label>\n                    <input type="text" id="voucher">\n                    <button>Apply</button>\n                </div>\n            </div>\n        ');
             document.querySelector('.recras-vouchers button').addEventListener('click', function () {
                 _this15.applyVoucher(_this15.selectedPackage.id);
             });

@@ -527,22 +527,12 @@ class RecrasBooking {
             el.parentNode.removeChild(el);
         });
 
-        this.appendHtml(`
+        let html = `
             <div class="recras-discountcode">
                 <label for="discountcode">Discount code</label>
                 <input type="text" id="discountcode">
                 <button>Check</button>
             </div>
-        `);
-        document.querySelector('.recras-discountcode > button').addEventListener('click', () => {
-            this.checkDiscountcode(
-                this.selectedPackage.id,
-                document.getElementById('recras-onlinebooking-date').value,
-                document.getElementById('discountcode').value
-            );
-        });
-
-        this.appendHtml(`
             <div class="recras-vouchers">
                 <div>
                     <label for="voucher">Voucher</label>
@@ -550,7 +540,16 @@ class RecrasBooking {
                     <button>Apply</button>
                 </div>
             </div>
-        `);
+        `;
+        document.querySelector('.recras-contactform').insertAdjacentHTML('beforebegin', html);
+
+        document.querySelector('.recras-discountcode > button').addEventListener('click', () => {
+            this.checkDiscountcode(
+                this.selectedPackage.id,
+                document.getElementById('recras-onlinebooking-date').value,
+                document.getElementById('discountcode').value
+            );
+        });
         document.querySelector('.recras-vouchers button').addEventListener('click', () => {
             this.applyVoucher(this.selectedPackage.id);
         });

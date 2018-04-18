@@ -1374,8 +1374,36 @@ var RecrasBooking = function () {
         }
     }, {
         key: 'applyVoucher',
-        value: function applyVoucher() {
-            //TODO
+        value: function applyVoucher(packageID, voucherCode) {
+            var statusEl = document.getElementById('voucher-status');
+            if (statusEl) {
+                statusEl.parentNode.removeChild(statusEl);
+            }
+
+            if (!voucherCode) {
+                document.querySelector('.recras-vouchers').insertAdjacentHTML('beforeend', '<span id="voucher-status">Empty voucher code</span>');
+                return false;
+            }
+            var date = document.getElementById('recras-onlinebooking-date').value;
+            if (isNaN(Date.parse(date))) {
+                document.querySelector('.recras-vouchers').insertAdjacentHTML('beforeend', '<span id="voucher-status">Invalid date</span>');
+                return false;
+            }
+
+            this.postJson(this.apiBase + 'onlineboeking/controleervoucher', {
+                arrangement_id: packageID,
+                datum: RecrasDateHelper.datePartOnly(new Date(date)),
+                producten: this.productCounts(),
+                vouchers: [voucherCode]
+            }).then(function (json) {
+                var result = json[voucherCode];
+                if (!result.valid) {
+                    document.querySelector('.recras-vouchers').insertAdjacentHTML('beforeend', '<span id="voucher-status">Invalid voucher code</span>');
+                    return false;
+                }
+                console.log(result.processed);
+                //TODO
+            });
         }
     }, {
         key: 'bookingSize',
@@ -1844,14 +1872,14 @@ var RecrasBooking = function () {
                 el.parentNode.removeChild(el);
             });
 
-            var html = '\n            <div class="recras-discountcode">\n                <label for="discountcode">Discount code</label>\n                <input type="text" id="discountcode">\n                <button>Check</button>\n            </div>\n            <div class="recras-vouchers">\n                <div>\n                    <label for="voucher">Voucher</label>\n                    <input type="text" id="voucher">\n                    <button>Apply</button>\n                </div>\n            </div>\n        ';
+            var html = '\n            <div class="recras-discountcode">\n                <label for="discountcode">Discount code</label>\n                <input type="text" id="discountcode">\n                <button>Check</button>\n            </div>\n            <div class="recras-vouchers">\n                <div>\n                    <label for="voucher">Voucher</label>\n                    <input type="text" class="voucher">\n                    <button>Apply</button>\n                </div>\n            </div>\n        ';
             document.querySelector('.recras-contactform').insertAdjacentHTML('beforebegin', html);
 
             document.querySelector('.recras-discountcode > button').addEventListener('click', function () {
                 _this15.checkDiscountcode(_this15.selectedPackage.id, document.getElementById('recras-onlinebooking-date').value, document.getElementById('discountcode').value);
             });
-            document.querySelector('.recras-vouchers button').addEventListener('click', function () {
-                _this15.applyVoucher(_this15.selectedPackage.id);
+            document.querySelector('.recras-vouchers button').addEventListener('click', function (e) {
+                _this15.applyVoucher(_this15.selectedPackage.id, e.srcElement.parentElement.querySelector('input').value);
             });
         }
     }, {

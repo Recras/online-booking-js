@@ -125,8 +125,36 @@ class RecrasBooking {
         this.element.insertAdjacentHTML('beforeend', msg);
     }
 
-    applyVoucher() {
-        //TODO
+    applyVoucher(packageID, voucherCode) {
+        let statusEl = document.getElementById('voucher-status');
+        if (statusEl) {
+            statusEl.parentNode.removeChild(statusEl);
+        }
+
+        if (!voucherCode) {
+            document.querySelector('.recras-vouchers').insertAdjacentHTML('beforeend', `<span id="voucher-status">Empty voucher code</span>`);
+            return false;
+        }
+        let date = document.getElementById('recras-onlinebooking-date').value;
+        if (isNaN(Date.parse(date))) {
+            document.querySelector('.recras-vouchers').insertAdjacentHTML('beforeend', `<span id="voucher-status">Invalid date</span>`);
+            return false;
+        }
+
+        this.postJson(this.apiBase + 'onlineboeking/controleervoucher', {
+            arrangement_id: packageID,
+            datum: RecrasDateHelper.datePartOnly(new Date(date)),
+            producten: this.productCounts(),
+            vouchers: [voucherCode],
+        }).then(json => {
+            let result = json[voucherCode];
+            if (!result.valid) {
+                document.querySelector('.recras-vouchers').insertAdjacentHTML('beforeend', `<span id="voucher-status">Invalid voucher code</span>`);
+                return false;
+            }
+            console.log(result.processed);
+            //TODO
+        });
     }
 
     bookingSize() {
@@ -536,7 +564,7 @@ class RecrasBooking {
             <div class="recras-vouchers">
                 <div>
                     <label for="voucher">Voucher</label>
-                    <input type="text" id="voucher">
+                    <input type="text" class="voucher">
                     <button>Apply</button>
                 </div>
             </div>
@@ -550,8 +578,8 @@ class RecrasBooking {
                 document.getElementById('discountcode').value
             );
         });
-        document.querySelector('.recras-vouchers button').addEventListener('click', () => {
-            this.applyVoucher(this.selectedPackage.id);
+        document.querySelector('.recras-vouchers button').addEventListener('click', e => {
+            this.applyVoucher(this.selectedPackage.id, e.srcElement.parentElement.querySelector('input').value);
         });
     }
 

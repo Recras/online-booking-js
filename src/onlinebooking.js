@@ -6,7 +6,8 @@
 
 class RecrasDateHelper {
     static datePartOnly(date) {
-        return date.toISOString().substr(0, 10); // Format as 2018-03-13
+        let x = new Date(date.getTime() - (date.getTimezoneOffset() * 60 * 1000)); // Fix off-by-1 errors
+        return x.toISOString().substr(0, 10); // Format as 2018-03-13
     }
 
     static setTimeForDate(date, timeStr) {
@@ -772,7 +773,6 @@ class RecrasBooking {
                 this.datePicker = new Pikaday({
                     disableDayFn: (day) => {
                         let dateFmt = RecrasDateHelper.datePartOnly(day);
-                        //TODO: because of timezones, this is off by 1
                         return this.availableDays.indexOf(dateFmt) === -1;
                     },
                     field: document.getElementById('recras-onlinebooking-date'),

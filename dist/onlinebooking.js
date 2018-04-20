@@ -1344,23 +1344,11 @@ var RecrasBooking = function () {
         this.datePicker = null;
 
         var CSS = '\n@import url(\'https://cdn.rawgit.com/dbushell/Pikaday/eddaaa3b/css/pikaday.css\');\n\n.recras-onlinebooking > * {\n    padding: 1em 0;\n}\n.recras-onlinebooking > * + * {\n    border-top: 2px solid #dedede; /* Any love for Kirby out there? */\n}\n.recras-contactform div, .recras-amountsform div {\n    align-items: start;\n    display: flex;\n    justify-content: space-between;\n    padding: 0.25em 0;\n}\n.time-preview, .minimum-amount {\n    padding-left: 0.5em;\n} \n.minimum-amount {\n    color: hsl(0, 50%, 50%);\n}\n';
-        var hostnameRegex = new RegExp(/^[a-z0-9\-]+\.recras\.nl$/, 'i');
         var validLocales = ['de_DE', 'en_GB', 'nl_NL'];
 
-        if (!options.element) {
-            throw new Error(this.translate('ERR_NO_ELEMENT'));
-        }
-        if (!options.recras_hostname) {
-            throw new Error(this.translate('ERR_NO_HOSTNAME'));
-        }
-        if (!hostnameRegex.test(options.recras_hostname) && options.recras_hostname !== '172.16.0.2') {
-            throw new Error(this.translate('ERR_INVALID_HOSTNAME'));
-        }
+        this.validateOptions(options);
 
         this.element = options.element;
-        if (options.element instanceof Element === false) {
-            throw new Error(this.translate('ERR_INVALID_ELEMENT'));
-        }
         this.element.classList.add('recras-onlinebooking');
 
         this.locale = 'nl_NL';
@@ -2281,6 +2269,25 @@ var RecrasBooking = function () {
             this.checkDependencies();
             this.checkMinimumAmounts();
             this.showTotalPrice();
+        }
+    }, {
+        key: 'validateOptions',
+        value: function validateOptions(options) {
+            var hostnameRegex = new RegExp(/^[a-z0-9\-]+\.recras\.nl$/, 'i');
+
+            if (!options.element) {
+                throw new Error(this.translate('ERR_NO_ELEMENT'));
+            }
+            if (options.element instanceof Element === false) {
+                throw new Error(this.translate('ERR_INVALID_ELEMENT'));
+            }
+
+            if (!options.recras_hostname) {
+                throw new Error(this.translate('ERR_NO_HOSTNAME'));
+            }
+            if (!hostnameRegex.test(options.recras_hostname) && options.recras_hostname !== '172.16.0.2') {
+                throw new Error(this.translate('ERR_INVALID_HOSTNAME'));
+            }
         }
     }]);
 

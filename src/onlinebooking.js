@@ -99,23 +99,11 @@ class RecrasBooking {
     color: hsl(0, 50%, 50%);
 }
 `;
-        const hostnameRegex = new RegExp(/^[a-z0-9\-]+\.recras\.nl$/, 'i');
         const validLocales = ['de_DE', 'en_GB', 'nl_NL'];
 
-        if (!options.element) {
-            throw new Error(this.translate('ERR_NO_ELEMENT'));
-        }
-        if (!options.recras_hostname) {
-            throw new Error(this.translate('ERR_NO_HOSTNAME'));
-        }
-        if (!hostnameRegex.test(options.recras_hostname) && options.recras_hostname !== '172.16.0.2') {
-            throw new Error(this.translate('ERR_INVALID_HOSTNAME'));
-        }
+        this.validateOptions(options);
 
         this.element = options.element;
-        if (options.element instanceof Element === false) {
-            throw new Error(this.translate('ERR_INVALID_ELEMENT'));
-        }
         this.element.classList.add('recras-onlinebooking');
 
         this.locale = 'nl_NL';
@@ -945,5 +933,23 @@ class RecrasBooking {
         this.checkDependencies();
         this.checkMinimumAmounts();
         this.showTotalPrice();
+    }
+
+    validateOptions(options) {
+        const hostnameRegex = new RegExp(/^[a-z0-9\-]+\.recras\.nl$/, 'i');
+
+        if (!options.element) {
+            throw new Error(this.translate('ERR_NO_ELEMENT'));
+        }
+        if (options.element instanceof Element === false) {
+            throw new Error(this.translate('ERR_INVALID_ELEMENT'));
+        }
+
+        if (!options.recras_hostname) {
+            throw new Error(this.translate('ERR_NO_HOSTNAME'));
+        }
+        if (!hostnameRegex.test(options.recras_hostname) && options.recras_hostname !== '172.16.0.2') {
+            throw new Error(this.translate('ERR_INVALID_HOSTNAME'));
+        }
     }
 }

@@ -5,7 +5,8 @@
   "main": "dist/onlinebooking.js",
   "scripts": {
     "build": "babel src -d dist && mv dist/onlinebooking.js dist/temp.js && cat node_modules/pikaday/pikaday.js dist/temp.js > dist/onlinebooking.js && rm dist/temp.js",
-    "jshint": "jshint src"
+    "jshint": "jshint src",
+    "karma": "karma start test/js-unit/karma.conf.js --verbose"
   },
   "repository": {
     "type": "git",
@@ -27,7 +28,14 @@
     "babel-cli": "^6.26.0",
     "babel-plugin-transform-es2015-arrow-functions": "^6.22.0",
     "babel-preset-env": "^1.6.1",
+    "jasmine-core": "^3.1.0",
+    "jasmine-spec-reporter": "^4.2.1",
     "jshint": "^2.9.5",
+    "karma": "^2.0.2",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-firefox-launcher": "^1.1.0",
+    "karma-jasmine": "^1.1.1",
+    "karma-spec-reporter": "0.0.32",
     "pikaday": "^1.7.0"
   }
 }

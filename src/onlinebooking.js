@@ -24,9 +24,9 @@ class RecrasBooking {
         this.PACKAGE_SELECTION = 'package_selection';
         this.DATE_SELECTION = 'date_selection';
         this.GENDERS = {
-            onbekend: 'Unknown',
-            man: 'Male',
-            vrouw: 'Female',
+            onbekend: 'GENDER_UNKNOWN',
+            man: 'GENDER_MALE',
+            vrouw: 'GENDER_FEMALE',
         };
         // https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#inappropriate-for-the-control
         this.AUTOCOMPLETE_OPTIONS = {
@@ -37,6 +37,36 @@ class RecrasBooking {
             'contactpersoon.adres': 'address-line1',
             'contactpersoon.postcode': 'postal-code',
             'contactpersoon.plaats': 'address-level2',
+        };
+
+        //TODO: what is the best way to handle multiple locales?
+        this.i18n = {
+            en_GB: {
+                ATTR_REQUIRED: 'Required',
+                BUTTON_BOOK_NOW: 'Book now',
+                DATE: 'Date',
+                DATE_INVALID: 'Invalid date',
+                DISCOUNT_CHECK: 'Check',
+                DISCOUNT_CODE: 'Discount code',
+                DISCOUNT_INVALID: 'Invalid discount code',
+                ERR_GENERAL: 'Something went wrong:',
+                ERR_INVALID_HOSTNAME: 'Option "recras_hostname" is invalid.',
+                ERR_INVALID_LOCALE: 'Invalid locale. Valid options are: {LOCALES}',
+                ERR_NO_ELEMENT: 'Option "element" not set.',
+                ERR_NO_HOSTNAME: 'Option "recras_hostname" not set.',
+                GENDER_UNKNOWN: 'Unknown',
+                GENDER_MALE: 'Male',
+                GENDER_FEMALE: 'Female',
+                NO_PRODUCTS: 'No product selected',
+                PRICE_TOTAL: 'Total',
+                PRICE_TOTAL_WITH_DISCOUNT: 'Total including discount',
+                PRODUCT_REQUIRED: '{NUM} {PRODUCT} requires {REQUIRED_AMOUNT} {REQUIRED_PRODUCT} to also be booked.',
+                TIME: 'Time',
+                VOUCHER: 'Voucher',
+                VOUCHER_APPLY: 'Apply',
+                VOUCHER_EMPTY: 'Empty voucher code',
+                VOUCHER_INVALID: 'Invalid voucher code',
+            },
         };
 
         this.datePicker = null;
@@ -67,19 +97,21 @@ class RecrasBooking {
         const validLocales = ['de_DE', 'en_GB', 'nl_NL'];
 
         if (!options.element) {
-            throw new Error('Option "element" not set.');
+            throw new Error(this.translate('ERR_NO_ELEMENT'));
         }
         if (!options.recras_hostname) {
-            throw new Error('Option "recras_hostname" not set.');
+            throw new Error(this.translate('ERR_NO_HOSTNAME'));
         }
         if (!hostnameRegex.test(options.recras_hostname) && options.recras_hostname !== '172.16.0.2') {
-            throw new Error('Option "recras_hostname" is invalid.');
+            throw new Error(this.translate('ERR_INVALID_HOSTNAME'));
         }
 
         this.locale = 'nl_NL';
         if (options.locale) {
             if (validLocales.indexOf(options.locale) === -1) {
-                console.warn('Invalid locale. Valid options are: ' + validLocales.join(', '));
+                console.warn(this.translate('ERR_INVALID_LOCALE', {
+                    LOCALES: validLocales.join(', '),
+                }));
             } else {
                 this.locale = options.locale;
             }
@@ -132,12 +164,12 @@ class RecrasBooking {
         }
 
         if (!voucherCode) {
-            document.querySelector('.recras-vouchers').insertAdjacentHTML('beforeend', `<span id="voucher-status">Empty voucher code</span>`);
+            document.querySelector('.recras-vouchers').insertAdjacentHTML('beforeend', `<span id="voucher-status">${ this.translate('VOUCHER_EMPTY') }</span>`);
             return false;
         }
         let date = document.getElementById('recras-onlinebooking-date').value;
         if (isNaN(Date.parse(date))) {
-            document.querySelector('.recras-vouchers').insertAdjacentHTML('beforeend', `<span id="voucher-status">Invalid date</span>`);
+            document.querySelector('.recras-vouchers').insertAdjacentHTML('beforeend', `<span id="voucher-status">${ this.translate('DATE_INVALID') }</span>`);
             return false;
         }
 
@@ -149,7 +181,7 @@ class RecrasBooking {
         }).then(json => {
             let result = json[voucherCode];
             if (!result.valid) {
-                document.querySelector('.recras-vouchers').insertAdjacentHTML('beforeend', `<span id="voucher-status">Invalid voucher code</span>`);
+                document.querySelector('.recras-vouchers').insertAdjacentHTML('beforeend', `<span id="voucher-status">${ this.translate('VOUCHER_INVALID') }</span>`);
                 return false;
             }
             console.log(result.processed);
@@ -206,8 +238,13 @@ class RecrasBooking {
                         this.requiresProduct = true;
                         let requiredAmount = this.requiredAmount(line.aantal, vp);
                         let requiredProductName = this.getProductByID(vp.vereist_product_id).weergavenaam;
-                        let message = `<span class="recras-product-dependency">${ line.aantal } ${ product.weergavenaam } requires ${ requiredAmount } ${ requiredProductName } to also be booked.</span>`;
-                        document.querySelector('.recras-amountsform').insertAdjacentHTML('beforeend', message);
+                        let message = this.translate('PRODUCT_REQUIRED', {
+                            NUM: line.aantal,
+                            PRODUCT: product.weergavenaam,
+                            REQUIRED_AMOUNT: requiredAmount,
+                            REQUIRED_PRODUCT: requiredProductName,
+                        });
+                        document.querySelector('.recras-amountsform').insertAdjacentHTML('beforeend', `<span class="recras-product-dependency">${ message }</span>`);
                     }
                 });
             }
@@ -224,7 +261,7 @@ class RecrasBooking {
         return this.fetchJson(this.apiBase + 'onlineboeking/controleerkortingscode?datum=' + date + '&arrangement=' + packageID + '&kortingscode=' + code)
             .then(discount => {
                 if (discount === false) {
-                    document.querySelector('.recras-discountcode').insertAdjacentHTML('beforeend', `<span id="discount-status">Invalid discount code</span>`);
+                    document.querySelector('.recras-discountcode').insertAdjacentHTML('beforeend', `<span id="discount-status">${ this.translate('DISCOUNT_INVALID') }</span>`);
                     return;
                 }
                 this.discountCode = code;
@@ -277,7 +314,7 @@ class RecrasBooking {
     }
 
     error(msg) {
-        this.setHtml(`<strong>Something went wrong:</strong><p>${ msg }</p>`);
+        this.setHtml(`<strong>{ this.translate('ERR_GENERAL') }</strong><p>${ msg }</p>`);
     }
 
     fetchJson(url) {
@@ -480,7 +517,7 @@ class RecrasBooking {
 
         let discountPrice = (discount.percentage / 100) * this.getTotalPrice() * -1;
         let html = `<div class="discountLine"><div>${ discount.naam }</div><div>${ this.formatPrice(discountPrice) }</div></div>`;
-        html += `<div class="discountLine"><div>Total including discount</div><div>${ this.formatPrice(this.getTotalPrice() + discountPrice) }</div></div>`;
+        html += `<div class="discountLine"><div>${ this.translate('PRICE_TOTAL_WITH_DISCOUNT') }</div><div>${ this.formatPrice(this.getTotalPrice() + discountPrice) }</div></div>`;
 
         document.querySelector('.priceLine').parentElement.insertAdjacentHTML('beforeend', html);
     }
@@ -545,7 +582,7 @@ class RecrasBooking {
     }
 
     showBookButton() {
-        let html = `<div><button type="submit" id="bookPackage" disabled>Book now</button></div>`;
+        let html = `<div><button type="submit" id="bookPackage" disabled>${ this.translate('BUTTON_BOOK_NOW') }</button></div>`;
         this.appendHtml(html);
         document.getElementById('bookPackage').addEventListener('click', this.submitBooking.bind(this));
     }
@@ -557,17 +594,11 @@ class RecrasBooking {
 
         let html = `
             <div class="recras-discountcode">
-                <label for="discountcode">Discount code</label>
+                <label for="discountcode">${ this.translate('DISCOUNT_CODE') }</label>
                 <input type="text" id="discountcode">
-                <button>Check</button>
+                <button>${ this.translate('DISCOUNT_CHECK') }</button>
             </div>
-            <div class="recras-vouchers">
-                <div>
-                    <label for="voucher">Voucher</label>
-                    <input type="text" class="voucher">
-                    <button>Apply</button>
-                </div>
-            </div>
+            <div class="recras-vouchers">${ this.voucherField() }</div>
         `;
         document.querySelector('.recras-contactform').insertAdjacentHTML('beforebegin', html);
 
@@ -627,7 +658,7 @@ class RecrasBooking {
             case 'contactpersoon.geslacht':
                 html = `<select ${ fixedAttributes } autocomplete="sex">`;
                 Object.keys(this.GENDERS).forEach(key => {
-                    html += `<option value="${ key }">${ this.GENDERS[key] }`;
+                    html += `<option value="${ key }">${ this.translate(this.GENDERS[key]) }`;
                 });
                 html += '</select>';
                 return label + html;
@@ -667,7 +698,7 @@ class RecrasBooking {
     showContactFormLabel(field, idx) {
         let labelText = field.naam;
         if (field.verplicht) {
-            labelText += '<span title="Required">*</span>';
+            labelText += `<span title="${ this.translate('ATTR_REQUIRED') }">*</span>`;
         }
         return `<label for="contactformulier-${ idx }">${ labelText }</label>`;
     }
@@ -681,8 +712,8 @@ class RecrasBooking {
             .then(availableDays => {
                 let today = RecrasDateHelper.datePartOnly(new Date());
                 let html = `<div class="recras-datetime">`;
-                html += `<label for="recras-onlinebooking-date">Date</label><input type="text" id="recras-onlinebooking-date" min="${ today }" disabled>`;
-                html += '<label for="recras-onlinebooking-time">Time</label><select id="recras-onlinebooking-time" disabled></select>';
+                html += `<label for="recras-onlinebooking-date">${ this.translate('DATE') }</label><input type="text" id="recras-onlinebooking-date" min="${ today }" disabled>`;
+                html += `<label for="recras-onlinebooking-time">${ this.translate('TIME') }</label><select id="recras-onlinebooking-time" disabled></select>`;
                 html += '</div>';
                 this.appendHtml(html);
 
@@ -754,7 +785,7 @@ class RecrasBooking {
             html += `<div class="recras-price">${ this.formatPrice(line.product.verkoop) }</div>`;
             html += '</div>';
         });
-        html += `<div class="priceLine"><div>Total</div><div id="totalPrice"></div>`;
+        html += `<div class="priceLine"><div>${ this.translate('PRICE_TOTAL') }</div><div id="totalPrice"></div>`;
         html += '</div>';
         this.appendHtml(html);
 
@@ -786,7 +817,7 @@ class RecrasBooking {
         let productCounts = this.productCounts().map(line => line.aantal);
         let productSum = productCounts.reduce((a, b) => a + b, 0);
         if (this.bookingSize() === 0 && productSum === 0) {
-            alert('No product selected');
+            alert(this.translate('NO_PRODUCTS'));
             return false;
         }
 
@@ -821,6 +852,16 @@ class RecrasBooking {
         });
     }
 
+    translate(string, vars = {}) {
+        let translated = (this.i18n[this.locale] && this.i18n[this.locale][string]) ? this.i18n[this.locale][string] : this.i18n['en_GB'][string];
+        if (Object.keys(vars).length > 0) {
+            Object.keys(vars).forEach(key => {
+                translated = translated.replace('{' + key + '}', vars[key]);
+            });
+        }
+        return translated;
+    }
+
     updateProductAmounts() {
         let startDate = new Date();
         let endDate = new Date();
@@ -844,5 +885,14 @@ class RecrasBooking {
 
     updateTotalPrice() {
         document.getElementById('totalPrice').innerHTML = this.formatPrice(this.getTotalPrice());
+    }
+
+    voucherField() {
+        return `
+            <div>
+                <label for="voucher">${ this.translate('VOUCHER') }</label>
+                <input type="text" class="voucher">
+                <button>${ this.translate('VOUCHER_APPLY') }</button>
+            </div>`;
     }
 }

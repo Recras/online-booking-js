@@ -21,6 +21,8 @@ class RecrasDateHelper {
 
 class RecrasBooking {
     constructor(options) {
+        options = options || {};
+
         this.PACKAGE_SELECTION = 'package_selection';
         this.DATE_SELECTION = 'date_selection';
         this.GENDERS = {
@@ -50,6 +52,7 @@ class RecrasBooking {
                 DISCOUNT_CODE: 'Discount code',
                 DISCOUNT_INVALID: 'Invalid discount code',
                 ERR_GENERAL: 'Something went wrong:',
+                ERR_INVALID_ELEMENT: 'Option "element" is not a valid Element',
                 ERR_INVALID_HOSTNAME: 'Option "recras_hostname" is invalid.',
                 ERR_INVALID_LOCALE: 'Invalid locale. Valid options are: {LOCALES}',
                 ERR_NO_ELEMENT: 'Option "element" not set.',
@@ -106,6 +109,12 @@ class RecrasBooking {
             throw new Error(this.translate('ERR_INVALID_HOSTNAME'));
         }
 
+        this.element = options.element;
+        if (options.element instanceof Element === false) {
+            throw new Error(this.translate('ERR_INVALID_ELEMENT'));
+        }
+        this.element.classList.add('recras-onlinebooking');
+
         this.locale = 'nl_NL';
         if (options.locale) {
             if (validLocales.indexOf(options.locale) === -1) {
@@ -117,13 +126,11 @@ class RecrasBooking {
             }
         }
 
-        this.element = options.element;
         this.apiBase = 'https://' + options.recras_hostname + '/api2/';
         if (options.recras_hostname === '172.16.0.2') {
             this.apiBase = this.apiBase.replace('https://', 'http://');
         }
 
-        this.element.classList.add('recras-onlinebooking');
         this.loadCSS(CSS);
         this.setCurrency();
 

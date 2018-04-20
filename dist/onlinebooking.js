@@ -1245,7 +1245,7 @@
 }));
 /**********************************
 *  Recras Online Booking library  *
-*  v 0.1.0                        *
+*  v 0.2.0                        *
 **********************************/
 'use strict';
 
@@ -1263,7 +1263,8 @@ var RecrasDateHelper = function () {
     _createClass(RecrasDateHelper, null, [{
         key: 'datePartOnly',
         value: function datePartOnly(date) {
-            return date.toISOString().substr(0, 10); // Format as 2018-03-13
+            var x = new Date(date.getTime() - date.getTimezoneOffset() * 60 * 1000); // Fix off-by-1 errors
+            return x.toISOString().substr(0, 10); // Format as 2018-03-13
         }
     }, {
         key: 'setTimeForDate',
@@ -2086,7 +2087,6 @@ var RecrasBooking = function () {
                 _this19.datePicker = new Pikaday({
                     disableDayFn: function disableDayFn(day) {
                         var dateFmt = RecrasDateHelper.datePartOnly(day);
-                        //TODO: because of timezones, this is off by 1
                         return _this19.availableDays.indexOf(dateFmt) === -1;
                     },
                     field: document.getElementById('recras-onlinebooking-date'),
@@ -2188,10 +2188,6 @@ var RecrasBooking = function () {
     }, {
         key: 'submitBooking',
         value: function submitBooking() {
-            var _this22 = this;
-
-            return false; //TODO
-            /**************************************************/
             var bookingStart = this.selectedDate;
             bookingStart = RecrasDateHelper.setTimeForDate(bookingStart, this.selectedTime);
 
@@ -2207,8 +2203,9 @@ var RecrasBooking = function () {
             }
 
             document.getElementById('bookPackage').setAttribute('disabled', 'disabled');
-            console.log(this.selectedDate, this.selectedTime);
+            console.log(this.selectedDate, this.selectedTime, document.getElementById('recras-onlinebooking-date').value);
 
+            var vouchers = Object.keys(this.appliedVouchers).length > 0 ? Object.keys(this.appliedVouchers) : null;
             var bookingParams = {
                 arrangement_id: this.selectedPackage.id,
                 begin: bookingStart,
@@ -2216,22 +2213,25 @@ var RecrasBooking = function () {
                 contactformulier: this.generateContactForm(),
                 kortingscode: this.discount && this.discount.code || null,
                 producten: this.productCounts(),
-                status: 'informatie', //TODO: is allowed to be null
+                status: null,
                 stuur_bevestiging_email: true,
-                vouchers: [] //TODO
+                vouchers: vouchers
             };
             if (this.shouldShowBookingSize(this.selectedPackage)) {
                 bookingParams.boekingsgrootte = this.bookingSize();
             }
 
             return this.postJson(this.apiBase + 'onlineboeking/reserveer', bookingParams).then(function (json) {
+                console.log('reserveer', json);
                 document.getElementById('bookPackage').removeAttribute('disabled');
 
-                if (typeof json.boeking_id !== 'undefined') {} else {
-                    alert('Yay!');
-                    _this22.resetForm();
+                if (typeof json.boeking_id !== 'undefined') {
+                    //TODO
+                } else {
+                    if (json.payment_url) {
+                        window.location.href = json.payment_url;
+                    }
                 }
-                console.log(json);
             });
         }
     }, {
@@ -2250,7 +2250,7 @@ var RecrasBooking = function () {
     }, {
         key: 'updateProductAmounts',
         value: function updateProductAmounts() {
-            var _this23 = this;
+            var _this22 = this;
 
             var startDate = new Date();
             var endDate = new Date();
@@ -2260,7 +2260,7 @@ var RecrasBooking = function () {
                 var datePickerEl = document.getElementById('recras-onlinebooking-date');
                 if (datePickerEl.value && availableDays.indexOf(datePickerEl.value) === -1) {
                     datePickerEl.value = '';
-                    _this23.clearTimes();
+                    _this22.clearTimes();
                 } else {
                     datePickerEl.removeAttribute('disabled');
                 }

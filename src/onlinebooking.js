@@ -1,6 +1,6 @@
 /**********************************
 *  Recras Online Booking library  *
-*  v 0.1.0                        *
+*  v 0.2.0                        *
 **********************************/
 'use strict';
 
@@ -861,8 +861,6 @@ class RecrasBooking {
     }
 
     submitBooking() {
-        return false; //TODO
-        /**************************************************/
         let bookingStart = this.selectedDate;
         bookingStart = RecrasDateHelper.setTimeForDate(bookingStart, this.selectedTime);
 
@@ -874,8 +872,9 @@ class RecrasBooking {
         }
 
         document.getElementById('bookPackage').setAttribute('disabled', 'disabled');
-        console.log(this.selectedDate, this.selectedTime);
+        console.log(this.selectedDate, this.selectedTime, document.getElementById('recras-onlinebooking-date').value);
 
+        let vouchers = Object.keys(this.appliedVouchers).length > 0 ? Object.keys(this.appliedVouchers) : null;
         let bookingParams = {
             arrangement_id: this.selectedPackage.id,
             begin: bookingStart,
@@ -883,24 +882,25 @@ class RecrasBooking {
             contactformulier: this.generateContactForm(),
             kortingscode: (this.discount && this.discount.code) || null,
             producten: this.productCounts(),
-            status: 'informatie', //TODO: is allowed to be null
+            status: null,
             stuur_bevestiging_email: true,
-            vouchers: [], //TODO
+            vouchers: vouchers,
         };
         if (this.shouldShowBookingSize(this.selectedPackage)) {
             bookingParams.boekingsgrootte = this.bookingSize();
         }
 
         return this.postJson(this.apiBase + 'onlineboeking/reserveer', bookingParams).then(json => {
+            console.log('reserveer', json);
             document.getElementById('bookPackage').removeAttribute('disabled');
 
             if (typeof json.boeking_id !== 'undefined') {
-
+                //TODO
             } else {
-                alert('Yay!');
-                this.resetForm();
+                if (json.payment_url) {
+                    window.location.href = json.payment_url;
+                }
             }
-            console.log(json);
         });
     }
 

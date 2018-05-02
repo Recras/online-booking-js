@@ -11,7 +11,7 @@ describe('RecrasBooking', () => {
         describe('options', () => {
             it('fails without options', () => {
                 expect(() => {
-                    let rb = new RecrasBooking();
+                    new RecrasBooking();
                 }).toThrow();
             });
 

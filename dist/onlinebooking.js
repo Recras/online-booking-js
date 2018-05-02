@@ -1243,10 +1243,6 @@
 
     return Pikaday;
 }));
-/**********************************
-*  Recras Online Booking library  *
-*  v 0.2.0                        *
-**********************************/
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1255,32 +1251,10 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var RecrasDateHelper = function () {
-    function RecrasDateHelper() {
-        _classCallCheck(this, RecrasDateHelper);
-    }
-
-    _createClass(RecrasDateHelper, null, [{
-        key: 'datePartOnly',
-        value: function datePartOnly(date) {
-            var x = new Date(date.getTime() - date.getTimezoneOffset() * 60 * 1000); // Fix off-by-1 errors
-            return x.toISOString().substr(0, 10); // Format as 2018-03-13
-        }
-    }, {
-        key: 'setTimeForDate',
-        value: function setTimeForDate(date, timeStr) {
-            date.setHours(timeStr.substr(0, 2), timeStr.substr(3, 2));
-            return date;
-        }
-    }, {
-        key: 'timePartOnly',
-        value: function timePartOnly(date) {
-            return date.toTimeString().substr(0, 5); // Format at 09:00
-        }
-    }]);
-
-    return RecrasDateHelper;
-}();
+/**********************************
+*  Recras Online Booking library  *
+*  v 0.2.0                        *
+**********************************/
 
 var RecrasBooking = function () {
     function RecrasBooking(options) {
@@ -1345,18 +1319,16 @@ var RecrasBooking = function () {
         this.datePicker = null;
 
         var CSS = '\n@import url(\'https://cdn.rawgit.com/dbushell/Pikaday/eddaaa3b/css/pikaday.css\');\n\n.recras-onlinebooking > * {\n    padding: 1em 0;\n}\n.recras-onlinebooking > * + * {\n    border-top: 2px solid #dedede; /* Any love for Kirby out there? */\n}\n.recras-contactform div, .recras-amountsform div {\n    align-items: start;\n    display: flex;\n    justify-content: space-between;\n    padding: 0.25em 0;\n}\n.time-preview, .minimum-amount {\n    padding-left: 0.5em;\n} \n.minimum-amount {\n    color: hsl(0, 50%, 50%);\n}\n';
-        var validLocales = ['de_DE', 'en_GB', 'nl_NL'];
-
         this.validateOptions(options);
 
         this.element = options.element;
         this.element.classList.add('recras-onlinebooking');
 
-        this.locale = 'nl_NL';
+        this.locale = RecrasLanguageHelper.defaultLocale;
         if (options.locale) {
-            if (validLocales.indexOf(options.locale) === -1) {
+            if (!RecrasLanguageHelper.isValid(options.locale)) {
                 console.warn(this.translate('ERR_INVALID_LOCALE', {
-                    LOCALES: validLocales.join(', ')
+                    LOCALES: RecrasLanguageHelper.validLocales.join(', ')
                 }));
             } else {
                 this.locale = options.locale;
@@ -1382,9 +1354,9 @@ var RecrasBooking = function () {
 
     _createClass(RecrasBooking, [{
         key: 'amountsValid',
-        value: function amountsValid() {
+        value: function amountsValid(pack) {
             var hasAtLeastOneProduct = false;
-            this.getLinesNoBookingSize(this.selectedPackage).forEach(function (line) {
+            this.getLinesNoBookingSize(pack).forEach(function (line) {
                 var aantal = document.querySelector('[data-package-id="' + line.id + '"]').value;
                 if (aantal > 0) {
                     hasAtLeastOneProduct = true;
@@ -1393,7 +1365,7 @@ var RecrasBooking = function () {
                     return false;
                 }
             });
-            if (this.shouldShowBookingSize(this.selectedPackage) && this.bookingSize() > 0) {
+            if (this.shouldShowBookingSize(pack) && this.bookingSize() > 0) {
                 hasAtLeastOneProduct = true;
             }
             return hasAtLeastOneProduct;
@@ -1784,7 +1756,7 @@ var RecrasBooking = function () {
             if (this.requiresProduct) {
                 shouldDisable = true;
             }
-            if (!this.amountsValid()) {
+            if (!this.amountsValid(this.selectedPackage)) {
                 shouldDisable = true;
             }
             if (!document.getElementById('recras-onlinebooking-date').value) {
@@ -1888,7 +1860,7 @@ var RecrasBooking = function () {
     }, {
         key: 'setCurrency',
         value: function setCurrency() {
-            this.currency = 'eur'; //TODO
+            this.currency = 'eur'; //TODO: will be available on 2018-05-07
             /*this.fetchJson(this.apiBase + 'instellingen/currency')
                 .then(setting => {
                     this.currency = setting.waarde;
@@ -2292,4 +2264,68 @@ var RecrasBooking = function () {
     }]);
 
     return RecrasBooking;
+}();"use strict";
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var RecrasDateHelper = function () {
+    function RecrasDateHelper() {
+        _classCallCheck(this, RecrasDateHelper);
+    }
+
+    _createClass(RecrasDateHelper, null, [{
+        key: "datePartOnly",
+        value: function datePartOnly(date) {
+            var x = new Date(date.getTime() - date.getTimezoneOffset() * 60 * 1000); // Fix off-by-1 errors
+            return x.toISOString().substr(0, 10); // Format as 2018-03-13
+        }
+    }, {
+        key: "setTimeForDate",
+        value: function setTimeForDate(date, timeStr) {
+            date.setHours(timeStr.substr(0, 2), timeStr.substr(3, 2));
+            return date;
+        }
+    }, {
+        key: "timePartOnly",
+        value: function timePartOnly(date) {
+            return date.toTimeString().substr(0, 5); // Format at 09:00
+        }
+    }]);
+
+    return RecrasDateHelper;
+}();'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var RecrasLocaleHelper = function () {
+    function RecrasLocaleHelper() {
+        _classCallCheck(this, RecrasLocaleHelper);
+    }
+
+    _createClass(RecrasLocaleHelper, [{
+        key: 'isValid',
+        value: function isValid(locale) {
+            return this.validLocales.indexOf(locale) > -1;
+        }
+    }]);
+
+    return RecrasLocaleHelper;
 }();
+
+RecrasLocaleHelper.defaultLocale = 'nl_NL';
+RecrasLocaleHelper.validLocales = ['de_DE', 'en_GB', 'nl_NL'];"use strict";
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/****************************
+ *  Recras voucher library  *
+ *  v 0.0.1                 *
+ ***************************/
+
+var RecrasVoucher = function RecrasVoucher() {
+  _classCallCheck(this, RecrasVoucher);
+};

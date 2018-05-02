@@ -2,23 +2,6 @@
 *  Recras Online Booking library  *
 *  v 0.2.0                        *
 **********************************/
-'use strict';
-
-class RecrasDateHelper {
-    static datePartOnly(date) {
-        let x = new Date(date.getTime() - (date.getTimezoneOffset() * 60 * 1000)); // Fix off-by-1 errors
-        return x.toISOString().substr(0, 10); // Format as 2018-03-13
-    }
-
-    static setTimeForDate(date, timeStr) {
-        date.setHours(timeStr.substr(0, 2), timeStr.substr(3, 2));
-        return date;
-    }
-
-    static timePartOnly(date) {
-        return date.toTimeString().substr(0, 5); // Format at 09:00
-    }
-}
 
 class RecrasBooking {
     constructor(options) {
@@ -100,18 +83,16 @@ class RecrasBooking {
     color: hsl(0, 50%, 50%);
 }
 `;
-        const validLocales = ['de_DE', 'en_GB', 'nl_NL'];
-
         this.validateOptions(options);
 
         this.element = options.element;
         this.element.classList.add('recras-onlinebooking');
 
-        this.locale = 'nl_NL';
+        this.locale = RecrasLanguageHelper.defaultLocale;
         if (options.locale) {
-            if (validLocales.indexOf(options.locale) === -1) {
+            if (!RecrasLanguageHelper.isValid(options.locale)) {
                 console.warn(this.translate('ERR_INVALID_LOCALE', {
-                    LOCALES: validLocales.join(', '),
+                    LOCALES: RecrasLanguageHelper.validLocales.join(', '),
                 }));
             } else {
                 this.locale = options.locale;
@@ -135,9 +116,9 @@ class RecrasBooking {
         });
     }
 
-    amountsValid() {
+    amountsValid(pack) {
         let hasAtLeastOneProduct = false;
-        this.getLinesNoBookingSize(this.selectedPackage).forEach(line => {
+        this.getLinesNoBookingSize(pack).forEach(line => {
             let aantal = document.querySelector(`[data-package-id="${ line.id }"]`).value;
             if (aantal > 0) {
                 hasAtLeastOneProduct = true;
@@ -146,7 +127,7 @@ class RecrasBooking {
                 return false;
             }
         });
-        if (this.shouldShowBookingSize(this.selectedPackage) && this.bookingSize() > 0) {
+        if (this.shouldShowBookingSize(pack) && this.bookingSize() > 0) {
             hasAtLeastOneProduct = true;
         }
         return hasAtLeastOneProduct;
@@ -482,7 +463,7 @@ class RecrasBooking {
         if (this.requiresProduct) {
             shouldDisable = true;
         }
-        if (!this.amountsValid()) {
+        if (!this.amountsValid(this.selectedPackage)) {
             shouldDisable = true;
         }
         if (!document.getElementById('recras-onlinebooking-date').value) {
@@ -574,7 +555,7 @@ class RecrasBooking {
     }
 
     setCurrency() {
-        this.currency = 'eur'; //TODO
+        this.currency = 'eur'; //TODO: will be available on 2018-05-07
         /*this.fetchJson(this.apiBase + 'instellingen/currency')
             .then(setting => {
                 this.currency = setting.waarde;

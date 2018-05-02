@@ -1,6 +1,6 @@
 {
   "name": "online-booking-js",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "JS library for easy online booking integration",
   "main": "dist/onlinebooking.js",
   "scripts": {
@@ -28,6 +28,7 @@
   "homepage": "https://github.com/Recras/online-booking-js#readme",
   "devDependencies": {
     "babel-cli": "^6.26.0",
+    "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-es2015-arrow-functions": "^6.22.0",
     "babel-preset-env": "^1.6.1",
     "jasmine-core": "^3.1.0",
@@ -39,5 +40,6 @@
     "karma-jasmine": "^1.1.1",
     "karma-spec-reporter": "0.0.32",
     "pikaday": "^1.7.0"
-  }
+  },
+  "dependencies": {}
 }

@@ -1448,7 +1448,7 @@ var RecrasBooking = function () {
             if (selectedPackage.length === 0) {
                 // Reset form
                 this.selectedPackage = null;
-                this.showPackages(packages);
+                this.showPackages(this.packages);
                 return false;
             }
             this.selectedPackage = selectedPackage[0];
@@ -2048,7 +2048,7 @@ var RecrasBooking = function () {
             var endDate = new Date();
             endDate.setMonth(endDate.getMonth() + 3);
 
-            return this.getAvailableDays(pack.id, startDate, endDate).then(function (availableDays) {
+            return this.getAvailableDays(pack.id, startDate, endDate).then(function () {
                 var today = RecrasDateHelper.datePartOnly(new Date());
                 var html = '<div class="recras-datetime">';
                 html += '<label for="recras-onlinebooking-date">' + _this19.translate('DATE') + '</label><input type="text" id="recras-onlinebooking-date" min="' + today + '" disabled>';
@@ -2170,12 +2170,12 @@ var RecrasBooking = function () {
                 return a + b;
             }, 0);
             if (this.bookingSize() === 0 && productSum === 0) {
-                alert(this.translate('NO_PRODUCTS'));
+                window.alert(this.translate('NO_PRODUCTS'));
                 return false;
             }
 
             document.getElementById('bookPackage').setAttribute('disabled', 'disabled');
-            console.log(this.selectedDate, this.selectedTime, document.getElementById('recras-onlinebooking-date').value);
+            //console.log(this.selectedDate, this.selectedTime, document.getElementById('recras-onlinebooking-date').value);
 
             var vouchers = Object.keys(this.appliedVouchers).length > 0 ? Object.keys(this.appliedVouchers) : null;
             var bookingParams = {
@@ -2194,7 +2194,7 @@ var RecrasBooking = function () {
             }
 
             return this.postJson(this.apiBase + 'onlineboeking/reserveer', bookingParams).then(function (json) {
-                console.log('reserveer', json);
+                //console.log('reserveer', json);
                 document.getElementById('bookPackage').removeAttribute('disabled');
 
                 if (typeof json.boeking_id !== 'undefined') {
@@ -2211,7 +2211,15 @@ var RecrasBooking = function () {
         value: function translate(string) {
             var vars = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
-            var translated = this.i18n[this.locale] && this.i18n[this.locale][string] ? this.i18n[this.locale][string] : this.i18n['en_GB'][string];
+            var translated = void 0;
+            if (this.i18n[this.locale] && this.i18n[this.locale][string]) {
+                translated = this.i18n[this.locale][string];
+            } else if (this.i18n.en_GB[string]) {
+                translated = this.i18n.en_GB[string];
+            } else {
+                translated = string;
+                console.warn('String not translated: ' + string);
+            }
             if (Object.keys(vars).length > 0) {
                 Object.keys(vars).forEach(function (key) {
                     translated = translated.replace('{' + key + '}', vars[key]);

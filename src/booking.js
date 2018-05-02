@@ -131,7 +131,7 @@ class RecrasBooking {
             hasAtLeastOneProduct = true;
         }
         return hasAtLeastOneProduct;
-    };
+    }
 
     appendHtml(msg) {
         this.element.insertAdjacentHTML('beforeend', msg);
@@ -202,7 +202,7 @@ class RecrasBooking {
         if (selectedPackage.length === 0) {
             // Reset form
             this.selectedPackage = null;
-            this.showPackages(packages);
+            this.showPackages(this.packages);
             return false;
         }
         this.selectedPackage = selectedPackage[0];
@@ -743,7 +743,7 @@ class RecrasBooking {
         endDate.setMonth(endDate.getMonth() + 3);
 
         return this.getAvailableDays(pack.id, startDate, endDate)
-            .then(availableDays => {
+            .then(() => {
                 let today = RecrasDateHelper.datePartOnly(new Date());
                 let html = `<div class="recras-datetime">`;
                 html += `<label for="recras-onlinebooking-date">${ this.translate('DATE') }</label><input type="text" id="recras-onlinebooking-date" min="${ today }" disabled>`;
@@ -848,12 +848,12 @@ class RecrasBooking {
         let productCounts = this.productCounts().map(line => line.aantal);
         let productSum = productCounts.reduce((a, b) => a + b, 0);
         if (this.bookingSize() === 0 && productSum === 0) {
-            alert(this.translate('NO_PRODUCTS'));
+            window.alert(this.translate('NO_PRODUCTS'));
             return false;
         }
 
         document.getElementById('bookPackage').setAttribute('disabled', 'disabled');
-        console.log(this.selectedDate, this.selectedTime, document.getElementById('recras-onlinebooking-date').value);
+        //console.log(this.selectedDate, this.selectedTime, document.getElementById('recras-onlinebooking-date').value);
 
         let vouchers = Object.keys(this.appliedVouchers).length > 0 ? Object.keys(this.appliedVouchers) : null;
         let bookingParams = {
@@ -872,7 +872,7 @@ class RecrasBooking {
         }
 
         return this.postJson(this.apiBase + 'onlineboeking/reserveer', bookingParams).then(json => {
-            console.log('reserveer', json);
+            //console.log('reserveer', json);
             document.getElementById('bookPackage').removeAttribute('disabled');
 
             if (typeof json.boeking_id !== 'undefined') {
@@ -886,7 +886,15 @@ class RecrasBooking {
     }
 
     translate(string, vars = {}) {
-        let translated = (this.i18n[this.locale] && this.i18n[this.locale][string]) ? this.i18n[this.locale][string] : this.i18n['en_GB'][string];
+        let translated;
+        if (this.i18n[this.locale] && this.i18n[this.locale][string]) {
+            translated = this.i18n[this.locale][string];
+        } else if (this.i18n.en_GB[string]) {
+            translated = this.i18n.en_GB[string];
+        } else {
+            translated = string;
+            console.warn('String not translated: ' + string);
+        }
         if (Object.keys(vars).length > 0) {
             Object.keys(vars).forEach(key => {
                 translated = translated.replace('{' + key + '}', vars[key]);

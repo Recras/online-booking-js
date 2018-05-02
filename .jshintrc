@@ -1,4 +1,6 @@
 {
+  "browser": true,
+
   "camelcase": false,
 
   // Prohibit use of == and != in favor of === and !==.
@@ -11,8 +13,8 @@
 
   "globals": {
     "console": true,
-    "document": true,
-    "fetch": true
+    "Pikaday": true,
+    "RecrasDateHelper": true
   },
 
   // Enforce tab width of 4 spaces.

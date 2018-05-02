@@ -4,7 +4,7 @@ JS library for easy online booking integration
 
 ## Getting started
 In your HTML document,
-1. include the `src/onlinebooking.js` script
+1. include the `dist/onlinebooking.js` script
 1. add an element where you want the integration to appear
 1. give the element a unique ID, i.e. `<div id="recras-onlinebooking"></div>`
 1. initialize the script like this:

@@ -4,9 +4,11 @@
   "description": "JS library for easy online booking integration",
   "main": "dist/onlinebooking.js",
   "scripts": {
-    "build": "babel src -d dist && mv dist/onlinebooking.js dist/temp.js && cat node_modules/pikaday/pikaday.js dist/temp.js > dist/onlinebooking.js && rm dist/temp.js",
+    "build": "npm run _babelSrc && npm run _catFiles",
     "jshint": "jshint src",
-    "karma": "karma start test/js-unit/karma.conf.js --verbose"
+    "karma": "karma start test/js-unit/karma.conf.js --verbose",
+    "_babelSrc": "babel src -d tmp",
+    "_catFiles": "cat node_modules/pikaday/pikaday.js tmp/*.js > dist/onlinebooking.js && rm tmp/*.js"
   },
   "repository": {
     "type": "git",

@@ -64,10 +64,10 @@ class RecrasBooking {
         const CSS = `
 @import url('https://cdn.rawgit.com/dbushell/Pikaday/eddaaa3b/css/pikaday.css');
 
-.recras-onlinebooking > * {
+.recras-onlinebooking > *:not(#latestError) {
     padding: 1em 0;
 }
-.recras-onlinebooking > * + * {
+.recras-onlinebooking > *:not(:first-child) + * {
     border-top: 2px solid #dedede; /* Any love for Kirby out there? */
 }
 .recras-contactform div, .recras-amountsform div {
@@ -106,6 +106,7 @@ class RecrasBooking {
 
         this.loadCSS(CSS);
         this.setCurrency();
+        this.clearAll();
 
         this.getPackages().then(packages => {
             if (options.package_id) {
@@ -192,12 +193,7 @@ class RecrasBooking {
         this.appliedVouchers = {};
         this.discount = null;
 
-        if (this.datePicker) {
-            this.datePicker.destroy();
-        }
-        [...document.querySelectorAll('.recras-amountsform, .recras-datetime, .recras-contactform')].forEach(el => {
-            el.parentNode.removeChild(el);
-        });
+        this.clearAll();
 
         if (selectedPackage.length === 0) {
             // Reset form
@@ -285,6 +281,17 @@ class RecrasBooking {
         });
     }
 
+    clearAll() {
+        if (this.datePicker) {
+            this.datePicker.destroy();
+        }
+        console.log(this.element);
+        [...document.querySelectorAll('.recras-amountsform, .recras-datetime, .recras-contactform')].forEach(el => {
+            el.parentNode.removeChild(el);
+        });
+        this.appendHtml(`<div id="latestError"></div>`);
+    }
+
     dependencySatisfied(hasNow, requiredProduct) {
         let productLines = this.productCounts();
         for (let i = 0; i < productLines.length; i++) {
@@ -306,7 +313,7 @@ class RecrasBooking {
     }
 
     error(msg) {
-        this.setHtml(`<strong>{ this.translate('ERR_GENERAL') }</strong><p>${ msg }</p>`);
+        document.getElementById('latestError').innerHTML = `<strong>{ this.translate('ERR_GENERAL') }</strong><p>${ msg }</p>`;
     }
 
     fetchJson(url) {
@@ -793,7 +800,7 @@ class RecrasBooking {
         });
 
         let html = '<select id="recras-package-selection"><option>' + options.join('') + '</select>';
-        this.setHtml(`<div class="recras-package-select"><p>TODO: tekst pre</p>${ html }<p>TODO: tekst post</p></div>`);
+        this.appendHtml(`<div class="recras-package-select"><p>TODO: tekst pre</p>${ html }<p>TODO: tekst post</p></div>`);
 
         let packageSelectEl = document.getElementById('recras-package-selection');
         packageSelectEl.addEventListener('change', () => {

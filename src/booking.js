@@ -4,9 +4,7 @@
 **********************************/
 
 class RecrasBooking {
-    constructor(options) {
-        options = options || {};
-
+    constructor(options = {}) {
         this.PACKAGE_SELECTION = 'package_selection';
         this.DATE_SELECTION = 'date_selection';
         this.GENDERS = {
@@ -49,36 +47,35 @@ class RecrasBooking {
     color: hsl(0, 50%, 50%);
 }
 `;
-        this.validateOptions(options);
+        this.languageHelper = new RecrasLanguageHelper();
 
-        this.element = options.element;
+        if ((options instanceof RecrasOptions) === false) {
+            throw new Error(this.languageHelper.translate('ERR_OPTIONS_INVALID'));
+        }
+        this.options = options;
+        this.languageHelper.setCurrency(options);
+
+        this.element = this.options.getElement();
         this.element.classList.add('recras-onlinebooking');
 
         this.fetchJson = url => RecrasHttpHelper.fetchJson(url, this.error);
-        this.languageHelper = new RecrasLanguageHelper();
 
-        if (options.locale) {
-            if (!RecrasLanguageHelper.isValid(options.locale)) {
+        if (this.options.getLocale()) {
+            if (!RecrasLanguageHelper.isValid(this.options.getLocale())) {
                 console.warn(this.languageHelper.translate('ERR_INVALID_LOCALE', {
                     LOCALES: RecrasLanguageHelper.validLocales.join(', '),
                 }));
             } else {
-                this.languageHelper.setLocale(options.locale);
+                this.languageHelper.setLocale(this.options.getLocale());
             }
         }
 
-        this.apiBase = 'https://' + options.recras_hostname + '/api2/';
-        if (options.recras_hostname === '172.16.0.2') {
-            this.apiBase = this.apiBase.replace('https://', 'http://');
-        }
-
         this.loadCSS(CSS);
-        this.setCurrency();
         this.clearAll();
 
         this.getPackages().then(packages => {
-            if (options.package_id) {
-                this.changePackage(options.package_id);
+            if (this.options.getPackageId()) {
+                this.changePackage(this.options.getPackageId());
             } else {
                 this.showPackages(packages);
             }
@@ -126,7 +123,7 @@ class RecrasBooking {
             return false;
         }
 
-        this.postJson(this.apiBase + 'onlineboeking/controleervoucher', {
+        this.postJson('onlineboeking/controleervoucher', {
             arrangement_id: packageID,
             datum: RecrasDateHelper.datePartOnly(new Date(date)),
             producten: this.productCounts(),
@@ -212,7 +209,7 @@ class RecrasBooking {
         if (statusEl) {
             statusEl.parentNode.removeChild(statusEl);
         }
-        return this.fetchJson(this.apiBase + 'onlineboeking/controleerkortingscode?datum=' + date + '&arrangement=' + packageID + '&kortingscode=' + code)
+        return this.fetchJson(this.options.getApiBase() + 'onlineboeking/controleerkortingscode?datum=' + date + '&arrangement=' + packageID + '&kortingscode=' + code)
             .then(discount => {
                 if (discount === false) {
                     document.querySelector('.recras-discountcode').insertAdjacentHTML('beforeend', `<span id="discount-status">${ this.languageHelper.translate('DISCOUNT_INVALID') }</span>`);
@@ -289,20 +286,8 @@ class RecrasBooking {
         return this.selectedPackage.regels.filter(line => (line.id === packageLineID))[0];
     }
 
-    formatLocale(what) {
-        switch (what) {
-            case 'currency':
-                return this.languageHelper.locale.replace('_', '-').toUpperCase();
-            default:
-                return this.languageHelper.locale;
-        }
-    }
-
     formatPrice(price) {
-        return price.toLocaleString(this.formatLocale('currency'), {
-            currency: this.currency,
-            style: 'currency',
-        });
+        return this.languageHelper.formatPrice(price);
     }
 
     generateContactForm() {
@@ -314,7 +299,7 @@ class RecrasBooking {
     }
 
     getAvailableDays(packageID, begin, end) {
-        return this.postJson(this.apiBase + 'onlineboeking/beschikbaredagen', {
+        return this.postJson('onlineboeking/beschikbaredagen', {
             arrangement_id: packageID,
             begin: RecrasDateHelper.datePartOnly(begin),
             eind: RecrasDateHelper.datePartOnly(end),
@@ -326,7 +311,7 @@ class RecrasBooking {
     }
 
     getAvailableTimes(packageID, date) {
-        return this.postJson(this.apiBase + 'onlineboeking/beschikbaretijden', {
+        return this.postJson('onlineboeking/beschikbaretijden', {
             arrangement_id: packageID,
             datum: RecrasDateHelper.datePartOnly(date),
             producten: this.productCounts(),
@@ -337,7 +322,7 @@ class RecrasBooking {
     }
 
     getContactFormFields(pack) {
-        return this.fetchJson(this.apiBase + 'contactformulieren/' + pack.onlineboeking_contactformulier_id + '/velden')
+        return this.fetchJson(this.options.getApiBase() + 'contactformulieren/' + pack.onlineboeking_contactformulier_id + '/velden')
             .then(json => {
                 this.contactFormFields = json;
                 return this.contactFormFields;
@@ -364,7 +349,7 @@ class RecrasBooking {
     }
 
     getPackages() {
-        return this.fetchJson(this.apiBase + 'arrangementen')
+        return this.fetchJson(this.options.getApiBase() + 'arrangementen')
             .then(json => {
                 this.packages = json;
                 return this.packages;
@@ -444,7 +429,7 @@ class RecrasBooking {
     }
 
     postJson(url, data) {
-        return fetch(url, {
+        return fetch(this.options.getApiBase() + url, {
             body: JSON.stringify(data),
             method: 'post',
         }).then(response => {
@@ -512,14 +497,6 @@ class RecrasBooking {
 
     resetForm() {
         this.changePackage(null);
-    }
-
-    setCurrency() {
-        this.currency = 'eur'; //TODO: will be available on 2018-05-07
-        /*this.fetchJson(this.apiBase + 'instellingen/currency')
-            .then(setting => {
-                this.currency = setting.waarde;
-            });*/
     }
 
     setHtml(msg) {
@@ -748,11 +725,11 @@ class RecrasBooking {
             return p.mag_online;
         });
         let packagesSorted = this.sortPackages(packages);
-        let options = packagesSorted.map(pack => {
+        let packageOptions = packagesSorted.map(pack => {
             return `<option value="${ pack.id }">${ pack.weergavenaam || pack.arrangement }`;
         });
 
-        let html = '<select id="recras-package-selection"><option>' + options.join('') + '</select>';
+        let html = '<select id="recras-package-selection"><option>' + packageOptions.join('') + '</select>';
         this.appendHtml(`<div class="recras-package-select"><p>TODO: tekst pre</p>${ html }<p>TODO: tekst post</p></div>`);
 
         let packageSelectEl = document.getElementById('recras-package-selection');
@@ -831,7 +808,7 @@ class RecrasBooking {
             bookingParams.boekingsgrootte = this.bookingSize();
         }
 
-        return this.postJson(this.apiBase + 'onlineboeking/reserveer', bookingParams).then(json => {
+        return this.postJson('onlineboeking/reserveer', bookingParams).then(json => {
             //console.log('reserveer', json);
             document.getElementById('bookPackage').removeAttribute('disabled');
 
@@ -868,23 +845,5 @@ class RecrasBooking {
         this.checkDependencies();
         this.checkMinimumAmounts();
         this.showTotalPrice();
-    }
-
-    validateOptions(options) {
-        const hostnameRegex = new RegExp(/^[a-z0-9\-]+\.recras\.nl$/, 'i');
-
-        if (!options.element) {
-            throw new Error(this.languageHelper.translate('ERR_NO_ELEMENT'));
-        }
-        if (options.element instanceof Element === false) {
-            throw new Error(this.languageHelper.translate('ERR_INVALID_ELEMENT'));
-        }
-
-        if (!options.recras_hostname) {
-            throw new Error(this.languageHelper.translate('ERR_NO_HOSTNAME'));
-        }
-        if (!hostnameRegex.test(options.recras_hostname) && options.recras_hostname !== '172.16.0.2') {
-            throw new Error(this.languageHelper.translate('ERR_INVALID_HOSTNAME'));
-        }
     }
 }

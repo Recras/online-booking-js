@@ -72,8 +72,40 @@ class RecrasLanguageHelper {
         };
     }
 
+    error(msg) {
+        console.log('Error', msg); //TODO
+    }
+
+    formatLocale(what) {
+        switch (what) {
+            case 'currency':
+                return this.locale.replace('_', '-').toUpperCase();
+            default:
+                return this.locale;
+        }
+    }
+
+    formatPrice(price) {
+        return price.toLocaleString(this.formatLocale('currency'), {
+            currency: this.currency,
+            style: 'currency',
+        });
+    }
+
     static isValid(locale) {
         return (this.validLocales.indexOf(locale) > -1);
+    }
+
+    setCurrency(options) {
+        const errorHandler = err => {
+            this.currency = 'eur';
+            this.error(err);
+        };
+
+        RecrasHttpHelper.fetchJson(options.getApiBase() + 'instellingen/currency', errorHandler)
+            .then(setting => {
+                this.currency = setting.waarde;
+            });
     }
 
     setLocale(locale) {

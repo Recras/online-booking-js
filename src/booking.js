@@ -85,7 +85,7 @@ class RecrasBooking {
     amountsValid(pack) {
         let hasAtLeastOneProduct = false;
         this.getLinesNoBookingSize(pack).forEach(line => {
-            let aantal = document.querySelector(`[data-package-id="${ line.id }"]`).value;
+            let aantal = this.findElement(`[data-package-id="${ line.id }"]`).value;
             if (aantal > 0) {
                 hasAtLeastOneProduct = true;
             }
@@ -104,22 +104,26 @@ class RecrasBooking {
     }
 
     applyVoucher(packageID, voucherCode) {
-        let statusEl = document.getElementById('voucher-status');
+        let statusEl = this.findElement('.voucher-status');
         if (statusEl) {
-            statusEl.parentNode.removeChild(statusEl);
+            statusEl.innerHTML = '';
+        } else {
+            this.element.querySelector('.recras-vouchers').insertAdjacentHTML('beforeend', `<span class="voucher-status"></span>`);
+            statusEl = this.findElement('.voucher-status');
         }
 
         if (!voucherCode) {
-            document.querySelector('.recras-vouchers').insertAdjacentHTML('beforeend', `<span id="voucher-status">${ this.languageHelper.translate('VOUCHER_EMPTY') }</span>`);
+            statusEl.innerHTML = this.languageHelper.translate('VOUCHER_EMPTY');
+            statusEl.innerHTML= this.languageHelper.translate('VOUCHER_EMPTY');
             return false;
         }
         if (this.appliedVouchers[voucherCode]) {
-            document.querySelector('.recras-vouchers').insertAdjacentHTML('beforeend', `<span id="voucher-status">${ this.languageHelper.translate('VOUCHER_ALREADY_APPLIED') }</span>`);
+            statusEl.innerHTML = this.languageHelper.translate('VOUCHER_ALREADY_APPLIED');
             return false;
         }
-        let date = document.getElementById('recras-onlinebooking-date').value;
+        let date = this.findElement('#recras-onlinebooking-date').value;
         if (isNaN(Date.parse(date))) {
-            document.querySelector('.recras-vouchers').insertAdjacentHTML('beforeend', `<span id="voucher-status">${ this.languageHelper.translate('DATE_INVALID') }</span>`);
+            statusEl.innerHTML = this.languageHelper.translate('DATE_INVALID');
             return false;
         }
 
@@ -131,19 +135,19 @@ class RecrasBooking {
         }).then(json => {
             let result = json[voucherCode];
             if (!result.valid) {
-                document.querySelector('.recras-vouchers').insertAdjacentHTML('beforeend', `<span id="voucher-status">${ this.languageHelper.translate('VOUCHER_INVALID') }</span>`);
+                statusEl.innerHTML = this.languageHelper.translate('VOUCHER_INVALID');
                 return false;
             }
 
             this.appliedVouchers[voucherCode] = result.processed;
             this.showTotalPrice();
 
-            document.querySelector('.recras-vouchers').insertAdjacentHTML('beforeend', `<span id="voucher-status">${ this.languageHelper.translate('VOUCHER_APPLIED') }</span>`);
+            statusEl.innerHTML = this.languageHelper.translate('VOUCHER_APPLIED');
         });
     }
 
     bookingSize() {
-        let bookingSizeEl = document.getElementById('bookingsize');
+        let bookingSizeEl = this.findElement('#bookingsize');
         if (!bookingSizeEl) {
             return 0;
         }
@@ -175,7 +179,7 @@ class RecrasBooking {
     }
 
     checkDependencies() {
-        [...document.querySelectorAll('.recras-product-dependency')].forEach(el => {
+        [...this.findElements('.recras-product-dependency')].forEach(el => {
             el.parentNode.removeChild(el);
         });
         this.requiresProduct = false;
@@ -195,7 +199,7 @@ class RecrasBooking {
                             REQUIRED_AMOUNT: requiredAmount,
                             REQUIRED_PRODUCT: requiredProductName,
                         });
-                        document.querySelector('.recras-amountsform').insertAdjacentHTML('beforeend', `<span class="recras-product-dependency">${ message }</span>`);
+                        this.findElement('.recras-amountsform').insertAdjacentHTML('beforeend', `<span class="recras-product-dependency">${ message }</span>`);
                     }
                 });
             }
@@ -205,14 +209,14 @@ class RecrasBooking {
     }
 
     checkDiscountcode(packageID, date, code) {
-        let statusEl = document.getElementById('discount-status');
+        let statusEl = this.findElement('#discount-status');
         if (statusEl) {
             statusEl.parentNode.removeChild(statusEl);
         }
         return this.fetchJson(this.options.getApiBase() + 'onlineboeking/controleerkortingscode?datum=' + date + '&arrangement=' + packageID + '&kortingscode=' + code)
             .then(discount => {
                 if (discount === false) {
-                    document.querySelector('.recras-discountcode').insertAdjacentHTML('beforeend', `<span id="discount-status">${ this.languageHelper.translate('DISCOUNT_INVALID') }</span>`);
+                    this.findElement('.recras-discountcode').insertAdjacentHTML('beforeend', `<span id="discount-status">${ this.languageHelper.translate('DISCOUNT_INVALID') }</span>`);
                     return;
                 }
                 discount.code = code;
@@ -223,7 +227,7 @@ class RecrasBooking {
     }
 
     checkMinimumAmounts() {
-        [...document.querySelectorAll('.minimum-amount')].forEach(el => {
+        [...this.findElements('.minimum-amount')].forEach(el => {
             el.parentNode.removeChild(el);
         });
 
@@ -234,8 +238,8 @@ class RecrasBooking {
 
                 let packageLine = this.findProduct(packageLineID);
                 if (p.aantal < packageLine.aantal_personen) {
-                    let input = document.querySelector(`[data-package-id="${ packageLineID }"]`);
-                    let label = document.querySelector(`label[for="${ input.id }"]`);
+                    let input = this.findElement(`[data-package-id="${ packageLineID }"]`);
+                    let label = this.findElement(`label[for="${ input.id }"]`);
 
                     let warnEl = document.createElement('span');
                     warnEl.classList.add('minimum-amount');
@@ -279,7 +283,15 @@ class RecrasBooking {
     }
 
     error(msg) {
-        document.getElementById('latestError').innerHTML = `<strong>{ this.languageHelper.translate('ERR_GENERAL') }</strong><p>${ msg }</p>`;
+        this.findElement('#latestError').innerHTML = `<strong>{ this.languageHelper.translate('ERR_GENERAL') }</strong><p>${ msg }</p>`;
+    }
+
+    findElement(querystring) {
+        return this.element.querySelector(querystring);
+    }
+
+    findElements(querystring) {
+        return this.element.querySelectorAll(querystring);
     }
 
     findProduct(packageLineID) {
@@ -292,7 +304,7 @@ class RecrasBooking {
 
     generateContactForm() {
         let contactForm = {};
-        [...document.querySelectorAll('[id^="contactformulier-"]')].forEach(field => {
+        [...this.findElements('[id^="contactformulier-"]')].forEach(field => {
             contactForm[field.dataset.identifier] = field.value;
         });
         return contactForm;
@@ -399,7 +411,7 @@ class RecrasBooking {
     }
 
     maybeDisableBookButton() {
-        let button = document.getElementById('bookPackage');
+        let button = this.findElement('#bookPackage');
         if (!button) {
             return false;
         }
@@ -411,13 +423,13 @@ class RecrasBooking {
         if (!this.amountsValid(this.selectedPackage)) {
             shouldDisable = true;
         }
-        if (!document.getElementById('recras-onlinebooking-date').value) {
+        if (!this.findElement('#recras-onlinebooking-date').value) {
             shouldDisable = true;
         }
-        if (!document.getElementById('recras-onlinebooking-time').value) {
+        if (!this.findElement('#recras-onlinebooking-time').value) {
             shouldDisable = true;
         }
-        if (!document.querySelector('.recras-contactform').checkValidity()) {
+        if (!this.findElement('.recras-contactform').checkValidity()) {
             shouldDisable = true;
         }
 
@@ -451,7 +463,7 @@ class RecrasBooking {
     }
 
     previewTimes() {
-        [...document.querySelectorAll('.time-preview')].forEach(el => {
+        [...this.findElements('.time-preview')].forEach(el => {
             el.parentNode.removeChild(el);
         });
         if (this.selectedTime) {
@@ -466,7 +478,7 @@ class RecrasBooking {
             linesNoBookingSize.forEach((line, idx) => {
                 let normalisedStart = this.normaliseDate(new Date(line.begin), packageStart, bookingStart);
                 let normalisedEnd = this.normaliseDate(new Date(line.eind), packageStart, bookingStart);
-                document.querySelector(`label[for="packageline${ idx }"]`).insertAdjacentHTML(
+                this.findElement(`label[for="packageline${ idx }"]`).insertAdjacentHTML(
                     'beforeend',
                     `<span class="time-preview">(${ RecrasDateHelper.timePartOnly(normalisedStart) } – ${ RecrasDateHelper.timePartOnly(normalisedEnd) })</span>`
                 );
@@ -476,7 +488,7 @@ class RecrasBooking {
 
     productCounts() {
         let counts = [];
-        [...document.querySelectorAll('[id^="packageline"]')].forEach(line => {
+        [...this.findElements('[id^="packageline"]')].forEach(line => {
             counts.push({
                 aantal: (isNaN(parseInt(line.value)) ? 0 : parseInt(line.value)),
                 arrangementsregel_id: parseInt(line.dataset.packageId, 10),
@@ -504,7 +516,7 @@ class RecrasBooking {
     }
 
     showTotalPrice() {
-        [...document.querySelectorAll('.discountLine, .voucherLine, .priceTotal')].forEach(el => {
+        [...this.findElements('.discountLine, .voucherLine, .priceTotal')].forEach(el => {
             el.parentNode.removeChild(el);
         });
 
@@ -520,8 +532,8 @@ class RecrasBooking {
             html += `<div class="priceTotal"><div>${ this.languageHelper.translate('PRICE_TOTAL_WITH_DISCOUNT') }</div><div>${ this.formatPrice(this.getTotalPrice()) }</div></div>`;
         }
 
-        document.querySelector('.priceLine').parentElement.insertAdjacentHTML('beforeend', html);
-        document.getElementById('priceSubtotal').innerHTML = this.formatPrice(this.getSubTotal());
+        this.findElement('.priceLine').parentElement.insertAdjacentHTML('beforeend', html);
+        this.findElement('#priceSubtotal').innerHTML = this.formatPrice(this.getSubTotal());
     }
 
     sortPackages(packages) {
@@ -549,11 +561,11 @@ class RecrasBooking {
     showBookButton() {
         let html = `<div><button type="submit" id="bookPackage" disabled>${ this.languageHelper.translate('BUTTON_BOOK_NOW') }</button></div>`;
         this.appendHtml(html);
-        document.getElementById('bookPackage').addEventListener('click', this.submitBooking.bind(this));
+        this.findElement('#bookPackage').addEventListener('click', this.submitBooking.bind(this));
     }
 
     showDiscountFields() {
-        [...document.querySelectorAll('.recras-discountcode, .recras-vouchers')].forEach(el => {
+        [...this.findElements('.recras-discountcode, .recras-vouchers')].forEach(el => {
             el.parentNode.removeChild(el);
         });
 
@@ -571,16 +583,16 @@ class RecrasBooking {
                 </div>
             </div>
         `;
-        document.querySelector('.recras-contactform').insertAdjacentHTML('beforebegin', html);
+        this.findElement('.recras-contactform').insertAdjacentHTML('beforebegin', html);
 
-        document.querySelector('.recras-discountcode > button').addEventListener('click', () => {
+        this.findElement('.recras-discountcode > button').addEventListener('click', () => {
             this.checkDiscountcode(
                 this.selectedPackage.id,
-                document.getElementById('recras-onlinebooking-date').value,
-                document.getElementById('discountcode').value
+                this.findElement('#recras-onlinebooking-date').value,
+                this.findElement('#discountcode').value
             );
         });
-        document.querySelector('.recras-vouchers button').addEventListener('click', e => {
+        this.findElement('.recras-vouchers button').addEventListener('click', e => {
             this.applyVoucher(this.selectedPackage.id, e.srcElement.parentElement.querySelector('input').value.trim());
         });
     }
@@ -609,7 +621,7 @@ class RecrasBooking {
                 this.appendHtml(html);
                 this.showBookButton();
 
-                [...document.querySelectorAll('[id^="contactformulier-"]')].forEach(el => {
+                [...this.findElements('[id^="contactformulier-"]')].forEach(el => {
                     el.addEventListener('change', this.maybeDisableBookButton.bind(this));
                 });
             });
@@ -693,7 +705,7 @@ class RecrasBooking {
                         let dateFmt = RecrasDateHelper.datePartOnly(day);
                         return this.availableDays.indexOf(dateFmt) === -1;
                     },
-                    field: document.getElementById('recras-onlinebooking-date'),
+                    field: this.findElement('#recras-onlinebooking-date'),
                     firstDay: 1, // Monday
                     format: 'yyyy-MM-dd', //Only used when Moment is loaded?
                     /*i18n: {}*/ //TODO: i18n
@@ -713,8 +725,8 @@ class RecrasBooking {
                     toString: (date) => RecrasDateHelper.datePartOnly(date),
                 });
 
-                document.getElementById('recras-onlinebooking-time').addEventListener('change', () => {
-                    this.selectedTime = document.getElementById('recras-onlinebooking-time').value;
+                this.findElement('#recras-onlinebooking-time').addEventListener('change', () => {
+                    this.selectedTime = this.findElement('#recras-onlinebooking-time').value;
                     this.previewTimes();
                 });
             });
@@ -732,7 +744,7 @@ class RecrasBooking {
         let html = '<select id="recras-package-selection"><option>' + packageOptions.join('') + '</select>';
         this.appendHtml(`<div class="recras-package-select"><p>TODO: tekst pre</p>${ html }<p>TODO: tekst post</p></div>`);
 
-        let packageSelectEl = document.getElementById('recras-package-selection');
+        let packageSelectEl = this.findElement('#recras-package-selection');
         packageSelectEl.addEventListener('change', () => {
             let selectedPackageId = parseInt(packageSelectEl.value, 10);
             this.changePackage(selectedPackageId);
@@ -759,7 +771,7 @@ class RecrasBooking {
         html += '</div>';
         this.appendHtml(html);
 
-        [...document.querySelectorAll('[id^="packageline"], #bookingsize')].forEach(el => {
+        [...this.findElements('[id^="packageline"], #bookingsize')].forEach(el => {
             el.addEventListener('input', this.updateProductAmounts.bind(this));
         });
     }
@@ -769,13 +781,13 @@ class RecrasBooking {
         times.forEach(time => {
             html += `<option value="${ time }">${ time }`;
         });
-        document.getElementById('recras-onlinebooking-time').innerHTML = html;
-        document.getElementById('recras-onlinebooking-time').removeAttribute('disabled');
+        this.findElement('#recras-onlinebooking-time').innerHTML = html;
+        this.findElement('#recras-onlinebooking-time').removeAttribute('disabled');
     }
 
     clearTimes() {
-        document.getElementById('recras-onlinebooking-time').innerHTML = '';
-        document.getElementById('recras-onlinebooking-time').setAttribute('disabled', 'disabled');
+        this.findElement('#recras-onlinebooking-time').innerHTML = '';
+        this.findElement('#recras-onlinebooking-time').setAttribute('disabled', 'disabled');
     }
 
     submitBooking() {
@@ -789,8 +801,8 @@ class RecrasBooking {
             return false;
         }
 
-        document.getElementById('bookPackage').setAttribute('disabled', 'disabled');
-        //console.log(this.selectedDate, this.selectedTime, document.getElementById('recras-onlinebooking-date').value);
+        this.findElement('#bookPackage').setAttribute('disabled', 'disabled');
+        //console.log(this.selectedDate, this.selectedTime, this.findElement('#recras-onlinebooking-date').value);
 
         let vouchers = Object.keys(this.appliedVouchers).length > 0 ? Object.keys(this.appliedVouchers) : null;
         let bookingParams = {
@@ -810,7 +822,7 @@ class RecrasBooking {
 
         return this.postJson('onlineboeking/reserveer', bookingParams).then(json => {
             //console.log('reserveer', json);
-            document.getElementById('bookPackage').removeAttribute('disabled');
+            this.findElement('#bookPackage').removeAttribute('disabled');
 
             if (typeof json.boeking_id !== 'undefined') {
                 //TODO
@@ -833,7 +845,7 @@ class RecrasBooking {
 
         this.getAvailableDays(this.selectedPackage.id, startDate, endDate)
             .then(availableDays => {
-                let datePickerEl = document.getElementById('recras-onlinebooking-date');
+                let datePickerEl = this.findElement('#recras-onlinebooking-date');
                 if (datePickerEl.value && availableDays.indexOf(datePickerEl.value) === -1) {
                     datePickerEl.value = '';
                     this.clearTimes();

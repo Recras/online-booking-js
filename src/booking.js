@@ -1,28 +1,10 @@
 /**********************************
 *  Recras Online Booking library  *
-*  v 0.2.0                        *
+*  v 0.3.0                        *
 **********************************/
 
 class RecrasBooking {
     constructor(options = {}) {
-        this.PACKAGE_SELECTION = 'package_selection';
-        this.DATE_SELECTION = 'date_selection';
-        this.GENDERS = {
-            onbekend: 'GENDER_UNKNOWN',
-            man: 'GENDER_MALE',
-            vrouw: 'GENDER_FEMALE',
-        };
-        // https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#inappropriate-for-the-control
-        this.AUTOCOMPLETE_OPTIONS = {
-            'contactpersoon.voornaam': 'given-name',
-            'contactpersoon.achternaam': 'family-name',
-            'contact.landcode': 'country',
-            'contact.naam': 'organization',
-            'contactpersoon.adres': 'address-line1',
-            'contactpersoon.postcode': 'postal-code',
-            'contactpersoon.plaats': 'address-level2',
-        };
-
         this.datePicker = null;
 
         const CSS = `
@@ -302,14 +284,6 @@ class RecrasBooking {
         return this.languageHelper.formatPrice(price);
     }
 
-    generateContactForm() {
-        let contactForm = {};
-        [...this.findElements('[id^="contactformulier-"]')].forEach(field => {
-            contactForm[field.dataset.identifier] = field.value;
-        });
-        return contactForm;
-    }
-
     getAvailableDays(packageID, begin, end) {
         return this.postJson('onlineboeking/beschikbaredagen', {
             arrangement_id: packageID,
@@ -334,11 +308,11 @@ class RecrasBooking {
     }
 
     getContactFormFields(pack) {
-        return this.fetchJson(this.options.getApiBase() + 'contactformulieren/' + pack.onlineboeking_contactformulier_id + '/velden')
-            .then(json => {
-                this.contactFormFields = json;
-                return this.contactFormFields;
-            });
+        let contactForm = new RecrasContactForm(this.options);
+        return contactForm.fromPackage(pack).then(formFields => {
+            this.contactForm = contactForm;
+            return formFields;
+        });
     }
 
     getCountryList(locale) {
@@ -615,7 +589,7 @@ class RecrasBooking {
             Promise.all(waitFor).then(() => {
                 let html = '<form class="recras-contactform">';
                 fields.forEach((field, idx) => {
-                    html += '<div>' + this.showContactFormField(field, idx) + '</div>';
+                    html += '<div>' + this.contactForm.showField(field, idx) + '</div>';
                 });
                 html += '</form>';
                 this.appendHtml(html);
@@ -626,64 +600,6 @@ class RecrasBooking {
                 });
             });
         });
-    }
-
-    showContactFormField(field, idx) {
-        if (field.soort_invoer === 'header') {
-            return `<h3>${ field.naam }</h3>`;
-        }
-
-        let label = this.showContactFormLabel(field, idx);
-        let attrRequired = field.verplicht ? 'required' : '';
-        let html;
-        let fixedAttributes = `id="contactformulier-${ idx }" name="contactformulier${ idx }" ${ attrRequired } data-identifier="${ field.field_identifier }"`;
-        switch (field.soort_invoer) {
-            case 'contactpersoon.geslacht':
-                html = `<select ${ fixedAttributes } autocomplete="sex">`;
-                Object.keys(this.GENDERS).forEach(key => {
-                    html += `<option value="${ key }">${ this.languageHelper.translate(this.GENDERS[key]) }`;
-                });
-                html += '</select>';
-                return label + html;
-            case 'keuze':
-                html = `<select ${ fixedAttributes } multiple>`;
-                field.mogelijke_keuzes.forEach(choice => {
-                    html += `<option value="${ choice }">${ choice }`;
-                });
-                html += '</select>';
-                return label + html;
-            case 'veel_tekst':
-                return label + `<textarea ${ fixedAttributes }></textarea>`;
-            case 'contactpersoon.telefoon1':
-                return label + `<input type="tel" ${ fixedAttributes } autocomplete="tel">`;
-            case 'contactpersoon.email1':
-                return label + `<input type="email" ${ fixedAttributes } autocomplete="email">`;
-            case 'contactpersoon.nieuwsbrieven':
-                html = `<select ${ fixedAttributes } multiple>`;
-                Object.keys(field.newsletter_options).forEach(key => {
-                    html += `<option value="${ key }">${ field.newsletter_options[key] }`;
-                });
-                html += '</select>';
-                return label + html;
-            case 'contact.landcode':
-                html = `<select ${ fixedAttributes }>`;
-                Object.keys(this.countries).forEach(code => {
-                    html += `<option value="${ code }">${ this.countries[code] }`;
-                });
-                html += '</select>';
-                return label + html;
-            default:
-                let autocomplete = this.AUTOCOMPLETE_OPTIONS[field.soort_invoer] ? this.AUTOCOMPLETE_OPTIONS[field.soort_invoer] : '';
-                return label + `<input type="text" ${ fixedAttributes } autocomplete="${ autocomplete }">`;
-        }
-    }
-
-    showContactFormLabel(field, idx) {
-        let labelText = field.naam;
-        if (field.verplicht) {
-            labelText += `<span title="${ this.languageHelper.translate('ATTR_REQUIRED') }">*</span>`;
-        }
-        return `<label for="contactformulier-${ idx }">${ labelText }</label>`;
     }
 
     showDateTimeSelection(pack) {
@@ -809,7 +725,7 @@ class RecrasBooking {
             arrangement_id: this.selectedPackage.id,
             begin: bookingStart,
             betaalmethode: 'mollie',
-            contactformulier: this.generateContactForm(),
+            contactformulier: this.contactForm.generateJson(),
             kortingscode: (this.discount && this.discount.code) || null,
             producten: this.productCounts(),
             status: null,

@@ -1253,7 +1253,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /**********************************
 *  Recras Online Booking library  *
-*  v 0.2.0                        *
+*  v 0.3.0                        *
 **********************************/
 
 var RecrasBooking = function () {
@@ -1263,24 +1263,6 @@ var RecrasBooking = function () {
         var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
         _classCallCheck(this, RecrasBooking);
-
-        this.PACKAGE_SELECTION = 'package_selection';
-        this.DATE_SELECTION = 'date_selection';
-        this.GENDERS = {
-            onbekend: 'GENDER_UNKNOWN',
-            man: 'GENDER_MALE',
-            vrouw: 'GENDER_FEMALE'
-        };
-        // https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#inappropriate-for-the-control
-        this.AUTOCOMPLETE_OPTIONS = {
-            'contactpersoon.voornaam': 'given-name',
-            'contactpersoon.achternaam': 'family-name',
-            'contact.landcode': 'country',
-            'contact.naam': 'organization',
-            'contactpersoon.adres': 'address-line1',
-            'contactpersoon.postcode': 'postal-code',
-            'contactpersoon.plaats': 'address-level2'
-        };
 
         this.datePicker = null;
 
@@ -1571,15 +1553,6 @@ var RecrasBooking = function () {
             return this.languageHelper.formatPrice(price);
         }
     }, {
-        key: 'generateContactForm',
-        value: function generateContactForm() {
-            var contactForm = {};
-            [].concat(_toConsumableArray(this.findElements('[id^="contactformulier-"]'))).forEach(function (field) {
-                contactForm[field.dataset.identifier] = field.value;
-            });
-            return contactForm;
-        }
-    }, {
         key: 'getAvailableDays',
         value: function getAvailableDays(packageID, begin, end) {
             var _this8 = this;
@@ -1613,9 +1586,10 @@ var RecrasBooking = function () {
         value: function getContactFormFields(pack) {
             var _this10 = this;
 
-            return this.fetchJson(this.options.getApiBase() + 'contactformulieren/' + pack.onlineboeking_contactformulier_id + '/velden').then(function (json) {
-                _this10.contactFormFields = json;
-                return _this10.contactFormFields;
+            var contactForm = new RecrasContactForm(this.options);
+            return contactForm.fromPackage(pack).then(function (formFields) {
+                _this10.contactForm = contactForm;
+                return formFields;
             });
         }
     }, {
@@ -1918,7 +1892,7 @@ var RecrasBooking = function () {
                 Promise.all(waitFor).then(function () {
                     var html = '<form class="recras-contactform">';
                     fields.forEach(function (field, idx) {
-                        html += '<div>' + _this17.showContactFormField(field, idx) + '</div>';
+                        html += '<div>' + _this17.contactForm.showField(field, idx) + '</div>';
                     });
                     html += '</form>';
                     _this17.appendHtml(html);
@@ -1931,15 +1905,298 @@ var RecrasBooking = function () {
             });
         }
     }, {
-        key: 'showContactFormField',
-        value: function showContactFormField(field, idx) {
+        key: 'showDateTimeSelection',
+        value: function showDateTimeSelection(pack) {
             var _this18 = this;
+
+            var startDate = new Date();
+            var endDate = new Date();
+            endDate.setMonth(endDate.getMonth() + 3);
+
+            return this.getAvailableDays(pack.id, startDate, endDate).then(function () {
+                var today = RecrasDateHelper.datePartOnly(new Date());
+                var html = '<div class="recras-datetime">';
+                html += '<label for="recras-onlinebooking-date">' + _this18.languageHelper.translate('DATE') + '</label><input type="text" id="recras-onlinebooking-date" class="recras-onlinebooking-date" min="' + today + '" disabled>';
+                html += '<label for="recras-onlinebooking-time">' + _this18.languageHelper.translate('TIME') + '</label><select id="recras-onlinebooking-time" class="recras-onlinebooking-time" disabled></select>';
+                html += '</div>';
+                _this18.appendHtml(html);
+
+                _this18.datePicker = new Pikaday({
+                    disableDayFn: function disableDayFn(day) {
+                        var dateFmt = RecrasDateHelper.datePartOnly(day);
+                        return _this18.availableDays.indexOf(dateFmt) === -1;
+                    },
+                    field: _this18.findElement('.recras-onlinebooking-date'),
+                    firstDay: 1, // Monday
+                    format: 'yyyy-MM-dd', //Only used when Moment is loaded?
+                    /*i18n: {}*/ //TODO: i18n
+                    minDate: new Date(),
+                    numberOfMonths: 2,
+                    onDraw: function onDraw() {
+                        //TODO: callback function for when the picker draws a new month
+                    },
+                    onSelect: function onSelect(date) {
+                        _this18.selectedDate = date;
+                        _this18.getAvailableTimes(pack.id, date).then(function (times) {
+                            times = times.map(function (time) {
+                                return RecrasDateHelper.timePartOnly(new Date(time));
+                            });
+                            _this18.showTimes(times);
+                        });
+                        _this18.showDiscountFields();
+                    },
+                    toString: function toString(date) {
+                        return RecrasDateHelper.datePartOnly(date);
+                    }
+                });
+
+                _this18.findElement('.recras-onlinebooking-time').addEventListener('change', function () {
+                    _this18.selectedTime = _this18.findElement('.recras-onlinebooking-time').value;
+                    _this18.previewTimes();
+                });
+            });
+        }
+    }, {
+        key: 'showPackages',
+        value: function showPackages(packages) {
+            var _this19 = this;
+
+            packages = packages.filter(function (p) {
+                return p.mag_online;
+            });
+            var packagesSorted = this.sortPackages(packages);
+            var packageOptions = packagesSorted.map(function (pack) {
+                return '<option value="' + pack.id + '">' + (pack.weergavenaam || pack.arrangement);
+            });
+
+            var html = '<select class="recras-package-selection"><option>' + packageOptions.join('') + '</select>';
+            this.appendHtml('<div class="recras-package-select"><p>TODO: tekst pre</p>' + html + '<p>TODO: tekst post</p></div>');
+
+            var packageSelectEl = this.findElement('.recras-package-selection');
+            packageSelectEl.addEventListener('change', function () {
+                var selectedPackageId = parseInt(packageSelectEl.value, 10);
+                _this19.changePackage(selectedPackageId);
+            });
+        }
+    }, {
+        key: 'showProducts',
+        value: function showProducts(pack) {
+            var _this20 = this;
+
+            var html = '<div class="recras-amountsform">';
+
+            if (this.shouldShowBookingSize(pack)) {
+                html += '<div><div><label for="bookingsize">' + (pack.weergavenaam || pack.arrangement) + '</label></div><input type="number" id="bookingsize" class="bookingsize" min="0"></div>';
+            }
+
+            var linesNoBookingSize = this.getLinesNoBookingSize(pack);
+            linesNoBookingSize.forEach(function (line, idx) {
+                html += '<div><div>';
+                html += '<label for="packageline' + idx + '">' + line.beschrijving_templated + '</label>';
+                var maxAttr = line.max ? 'max="' + line.max + '"' : '';
+                html += '</div><input id="packageline' + idx + '" type="number" min="0" ' + maxAttr + ' data-package-id="' + line.id + '">';
+                html += '<div class="recras-price">' + _this20.formatPrice(line.product.verkoop) + '</div>';
+                html += '</div>';
+            });
+            html += '<div class="priceLine"><div>' + this.languageHelper.translate('PRICE_TOTAL') + '</div><div class="priceSubtotal"></div>';
+            html += '</div>';
+            this.appendHtml(html);
+
+            [].concat(_toConsumableArray(this.findElements('[id^="packageline"], .bookingsize'))).forEach(function (el) {
+                el.addEventListener('input', _this20.updateProductAmounts.bind(_this20));
+            });
+        }
+    }, {
+        key: 'showTimes',
+        value: function showTimes(times) {
+            var html = '<option>';
+            times.forEach(function (time) {
+                html += '<option value="' + time + '">' + time;
+            });
+            this.findElement('.recras-onlinebooking-time').innerHTML = html;
+            this.findElement('.recras-onlinebooking-time').removeAttribute('disabled');
+        }
+    }, {
+        key: 'clearTimes',
+        value: function clearTimes() {
+            this.findElement('.recras-onlinebooking-time').innerHTML = '';
+            this.findElement('.recras-onlinebooking-time').setAttribute('disabled', 'disabled');
+        }
+    }, {
+        key: 'submitBooking',
+        value: function submitBooking() {
+            var _this21 = this;
+
+            var bookingStart = this.selectedDate;
+            bookingStart = RecrasDateHelper.setTimeForDate(bookingStart, this.selectedTime);
+
+            var productCounts = this.productCounts().map(function (line) {
+                return line.aantal;
+            });
+            var productSum = productCounts.reduce(function (a, b) {
+                return a + b;
+            }, 0);
+            if (this.bookingSize() === 0 && productSum === 0) {
+                window.alert(this.languageHelper.translate('NO_PRODUCTS'));
+                return false;
+            }
+
+            this.findElement('.bookPackage').setAttribute('disabled', 'disabled');
+            //console.log(this.selectedDate, this.selectedTime, this.findElement('.recras-onlinebooking-date').value);
+
+            var vouchers = Object.keys(this.appliedVouchers).length > 0 ? Object.keys(this.appliedVouchers) : null;
+            var bookingParams = {
+                arrangement_id: this.selectedPackage.id,
+                begin: bookingStart,
+                betaalmethode: 'mollie',
+                contactformulier: this.contactForm.generateJson(),
+                kortingscode: this.discount && this.discount.code || null,
+                producten: this.productCounts(),
+                status: null,
+                stuur_bevestiging_email: true,
+                vouchers: vouchers
+            };
+            if (this.shouldShowBookingSize(this.selectedPackage)) {
+                bookingParams.boekingsgrootte = this.bookingSize();
+            }
+            if (this.options.getRedirectUrl()) {
+                bookingParams.redirect_url = this.options.getRedirectUrl();
+            }
+
+            return this.postJson('onlineboeking/reserveer', bookingParams).then(function (json) {
+                //console.log('reserveer', json);
+                _this21.findElement('.bookPackage').removeAttribute('disabled');
+
+                if (typeof json.boeking_id !== 'undefined') {
+                    //TODO
+                } else {
+                    if (json.payment_url) {
+                        window.location.href = json.payment_url;
+                    }
+                }
+            });
+        }
+
+        /*translate(string, vars = {}) {
+            return this.languageHelper.translate(string, vars);
+        }*/
+
+    }, {
+        key: 'updateProductAmounts',
+        value: function updateProductAmounts() {
+            var _this22 = this;
+
+            var startDate = new Date();
+            var endDate = new Date();
+            endDate.setMonth(endDate.getMonth() + 3);
+
+            this.getAvailableDays(this.selectedPackage.id, startDate, endDate).then(function (availableDays) {
+                var datePickerEl = _this22.findElement('.recras-onlinebooking-date');
+                if (datePickerEl.value && availableDays.indexOf(datePickerEl.value) === -1) {
+                    datePickerEl.value = '';
+                    _this22.clearTimes();
+                } else {
+                    datePickerEl.removeAttribute('disabled');
+                }
+            });
+
+            this.checkDependencies();
+            this.checkMinimumAmounts();
+            this.showTotalPrice();
+        }
+    }]);
+
+    return RecrasBooking;
+}();'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var RecrasContactForm = function () {
+    function RecrasContactForm() {
+        var _this = this;
+
+        var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+        _classCallCheck(this, RecrasContactForm);
+
+        this.languageHelper = new RecrasLanguageHelper();
+
+        if (options instanceof RecrasOptions === false) {
+            throw new Error(this.languageHelper.translate('ERR_OPTIONS_INVALID'));
+        }
+        this.options = options;
+        this.languageHelper.setCurrency(options);
+
+        this.fetchJson = function (url) {
+            return RecrasHttpHelper.fetchJson(url, _this.error);
+        };
+
+        this.GENDERS = {
+            onbekend: 'GENDER_UNKNOWN',
+            man: 'GENDER_MALE',
+            vrouw: 'GENDER_FEMALE'
+        };
+        // https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#inappropriate-for-the-control
+        this.AUTOCOMPLETE_OPTIONS = {
+            'contactpersoon.voornaam': 'given-name',
+            'contactpersoon.achternaam': 'family-name',
+            'contact.landcode': 'country',
+            'contact.naam': 'organization',
+            'contactpersoon.adres': 'address-line1',
+            'contactpersoon.postcode': 'postal-code',
+            'contactpersoon.plaats': 'address-level2'
+        };
+    }
+
+    _createClass(RecrasContactForm, [{
+        key: 'error',
+        value: function error(msg) {
+            console.log('Error', msg); //TODO
+        }
+    }, {
+        key: 'fromPackage',
+        value: function fromPackage(pack) {
+            return this.getContactFormFields(pack.onlineboeking_contactformulier_id);
+        }
+    }, {
+        key: 'fromVoucherTemplate',
+        value: function fromVoucherTemplate(voucher) {
+            return this.getContactFormFields(voucher.contactform_id);
+        }
+    }, {
+        key: 'generateJson',
+        value: function generateJson() {
+            var elements = this.options.getElement().querySelectorAll('[id^="contactformulier-"]');
+            var contactForm = {};
+            [].concat(_toConsumableArray(elements)).forEach(function (field) {
+                contactForm[field.dataset.identifier] = field.value;
+            });
+            return contactForm;
+        }
+    }, {
+        key: 'getContactFormFields',
+        value: function getContactFormFields(formId) {
+            var _this2 = this;
+
+            return this.fetchJson(this.options.getApiBase() + 'contactformulieren/' + formId + '/velden').then(function (json) {
+                _this2.contactFormFields = json;
+                return _this2.contactFormFields;
+            });
+        }
+    }, {
+        key: 'showField',
+        value: function showField(field, idx) {
+            var _this3 = this;
 
             if (field.soort_invoer === 'header') {
                 return '<h3>' + field.naam + '</h3>';
             }
 
-            var label = this.showContactFormLabel(field, idx);
+            var label = this.showLabel(field, idx);
             var attrRequired = field.verplicht ? 'required' : '';
             var html = void 0;
             var fixedAttributes = 'id="contactformulier-' + idx + '" name="contactformulier' + idx + '" ' + attrRequired + ' data-identifier="' + field.field_identifier + '"';
@@ -1947,7 +2204,7 @@ var RecrasBooking = function () {
                 case 'contactpersoon.geslacht':
                     html = '<select ' + fixedAttributes + ' autocomplete="sex">';
                     Object.keys(this.GENDERS).forEach(function (key) {
-                        html += '<option value="' + key + '">' + _this18.languageHelper.translate(_this18.GENDERS[key]);
+                        html += '<option value="' + key + '">' + _this3.languageHelper.translate(_this3.GENDERS[key]);
                     });
                     html += '</select>';
                     return label + html;
@@ -1974,7 +2231,7 @@ var RecrasBooking = function () {
                 case 'contact.landcode':
                     html = '<select ' + fixedAttributes + '>';
                     Object.keys(this.countries).forEach(function (code) {
-                        html += '<option value="' + code + '">' + _this18.countries[code];
+                        html += '<option value="' + code + '">' + _this3.countries[code];
                     });
                     html += '</select>';
                     return label + html;
@@ -1984,217 +2241,17 @@ var RecrasBooking = function () {
             }
         }
     }, {
-        key: 'showContactFormLabel',
-        value: function showContactFormLabel(field, idx) {
+        key: 'showLabel',
+        value: function showLabel(field, idx) {
             var labelText = field.naam;
             if (field.verplicht) {
-                labelText += '<span title="' + this.languageHelper.translate('ATTR_REQUIRED') + '">*</span>';
+                labelText += '<span class="recras-contactform-required" title="' + this.languageHelper.translate('ATTR_REQUIRED') + '"></span>';
             }
             return '<label for="contactformulier-' + idx + '">' + labelText + '</label>';
         }
-    }, {
-        key: 'showDateTimeSelection',
-        value: function showDateTimeSelection(pack) {
-            var _this19 = this;
-
-            var startDate = new Date();
-            var endDate = new Date();
-            endDate.setMonth(endDate.getMonth() + 3);
-
-            return this.getAvailableDays(pack.id, startDate, endDate).then(function () {
-                var today = RecrasDateHelper.datePartOnly(new Date());
-                var html = '<div class="recras-datetime">';
-                html += '<label for="recras-onlinebooking-date">' + _this19.languageHelper.translate('DATE') + '</label><input type="text" id="recras-onlinebooking-date" class="recras-onlinebooking-date" min="' + today + '" disabled>';
-                html += '<label for="recras-onlinebooking-time">' + _this19.languageHelper.translate('TIME') + '</label><select id="recras-onlinebooking-time" class="recras-onlinebooking-time" disabled></select>';
-                html += '</div>';
-                _this19.appendHtml(html);
-
-                _this19.datePicker = new Pikaday({
-                    disableDayFn: function disableDayFn(day) {
-                        var dateFmt = RecrasDateHelper.datePartOnly(day);
-                        return _this19.availableDays.indexOf(dateFmt) === -1;
-                    },
-                    field: _this19.findElement('.recras-onlinebooking-date'),
-                    firstDay: 1, // Monday
-                    format: 'yyyy-MM-dd', //Only used when Moment is loaded?
-                    /*i18n: {}*/ //TODO: i18n
-                    minDate: new Date(),
-                    numberOfMonths: 2,
-                    onDraw: function onDraw() {
-                        //TODO: callback function for when the picker draws a new month
-                    },
-                    onSelect: function onSelect(date) {
-                        _this19.selectedDate = date;
-                        _this19.getAvailableTimes(pack.id, date).then(function (times) {
-                            times = times.map(function (time) {
-                                return RecrasDateHelper.timePartOnly(new Date(time));
-                            });
-                            _this19.showTimes(times);
-                        });
-                        _this19.showDiscountFields();
-                    },
-                    toString: function toString(date) {
-                        return RecrasDateHelper.datePartOnly(date);
-                    }
-                });
-
-                _this19.findElement('.recras-onlinebooking-time').addEventListener('change', function () {
-                    _this19.selectedTime = _this19.findElement('.recras-onlinebooking-time').value;
-                    _this19.previewTimes();
-                });
-            });
-        }
-    }, {
-        key: 'showPackages',
-        value: function showPackages(packages) {
-            var _this20 = this;
-
-            packages = packages.filter(function (p) {
-                return p.mag_online;
-            });
-            var packagesSorted = this.sortPackages(packages);
-            var packageOptions = packagesSorted.map(function (pack) {
-                return '<option value="' + pack.id + '">' + (pack.weergavenaam || pack.arrangement);
-            });
-
-            var html = '<select class="recras-package-selection"><option>' + packageOptions.join('') + '</select>';
-            this.appendHtml('<div class="recras-package-select"><p>TODO: tekst pre</p>' + html + '<p>TODO: tekst post</p></div>');
-
-            var packageSelectEl = this.findElement('.recras-package-selection');
-            packageSelectEl.addEventListener('change', function () {
-                var selectedPackageId = parseInt(packageSelectEl.value, 10);
-                _this20.changePackage(selectedPackageId);
-            });
-        }
-    }, {
-        key: 'showProducts',
-        value: function showProducts(pack) {
-            var _this21 = this;
-
-            var html = '<div class="recras-amountsform">';
-
-            if (this.shouldShowBookingSize(pack)) {
-                html += '<div><div><label for="bookingsize">' + (pack.weergavenaam || pack.arrangement) + '</label></div><input type="number" id="bookingsize" class="bookingsize" min="0"></div>';
-            }
-
-            var linesNoBookingSize = this.getLinesNoBookingSize(pack);
-            linesNoBookingSize.forEach(function (line, idx) {
-                html += '<div><div>';
-                html += '<label for="packageline' + idx + '">' + line.beschrijving_templated + '</label>';
-                var maxAttr = line.max ? 'max="' + line.max + '"' : '';
-                html += '</div><input id="packageline' + idx + '" type="number" min="0" ' + maxAttr + ' data-package-id="' + line.id + '">';
-                html += '<div class="recras-price">' + _this21.formatPrice(line.product.verkoop) + '</div>';
-                html += '</div>';
-            });
-            html += '<div class="priceLine"><div>' + this.languageHelper.translate('PRICE_TOTAL') + '</div><div class="priceSubtotal"></div>';
-            html += '</div>';
-            this.appendHtml(html);
-
-            [].concat(_toConsumableArray(this.findElements('[id^="packageline"], .bookingsize'))).forEach(function (el) {
-                el.addEventListener('input', _this21.updateProductAmounts.bind(_this21));
-            });
-        }
-    }, {
-        key: 'showTimes',
-        value: function showTimes(times) {
-            var html = '<option>';
-            times.forEach(function (time) {
-                html += '<option value="' + time + '">' + time;
-            });
-            this.findElement('.recras-onlinebooking-time').innerHTML = html;
-            this.findElement('.recras-onlinebooking-time').removeAttribute('disabled');
-        }
-    }, {
-        key: 'clearTimes',
-        value: function clearTimes() {
-            this.findElement('.recras-onlinebooking-time').innerHTML = '';
-            this.findElement('.recras-onlinebooking-time').setAttribute('disabled', 'disabled');
-        }
-    }, {
-        key: 'submitBooking',
-        value: function submitBooking() {
-            var _this22 = this;
-
-            var bookingStart = this.selectedDate;
-            bookingStart = RecrasDateHelper.setTimeForDate(bookingStart, this.selectedTime);
-
-            var productCounts = this.productCounts().map(function (line) {
-                return line.aantal;
-            });
-            var productSum = productCounts.reduce(function (a, b) {
-                return a + b;
-            }, 0);
-            if (this.bookingSize() === 0 && productSum === 0) {
-                window.alert(this.languageHelper.translate('NO_PRODUCTS'));
-                return false;
-            }
-
-            this.findElement('.bookPackage').setAttribute('disabled', 'disabled');
-            //console.log(this.selectedDate, this.selectedTime, this.findElement('.recras-onlinebooking-date').value);
-
-            var vouchers = Object.keys(this.appliedVouchers).length > 0 ? Object.keys(this.appliedVouchers) : null;
-            var bookingParams = {
-                arrangement_id: this.selectedPackage.id,
-                begin: bookingStart,
-                betaalmethode: 'mollie',
-                contactformulier: this.generateContactForm(),
-                kortingscode: this.discount && this.discount.code || null,
-                producten: this.productCounts(),
-                status: null,
-                stuur_bevestiging_email: true,
-                vouchers: vouchers
-            };
-            if (this.shouldShowBookingSize(this.selectedPackage)) {
-                bookingParams.boekingsgrootte = this.bookingSize();
-            }
-            if (this.options.getRedirectUrl()) {
-                bookingParams.redirect_url = this.options.getRedirectUrl();
-            }
-
-            return this.postJson('onlineboeking/reserveer', bookingParams).then(function (json) {
-                //console.log('reserveer', json);
-                _this22.findElement('.bookPackage').removeAttribute('disabled');
-
-                if (typeof json.boeking_id !== 'undefined') {
-                    //TODO
-                } else {
-                    if (json.payment_url) {
-                        window.location.href = json.payment_url;
-                    }
-                }
-            });
-        }
-
-        /*translate(string, vars = {}) {
-            return this.languageHelper.translate(string, vars);
-        }*/
-
-    }, {
-        key: 'updateProductAmounts',
-        value: function updateProductAmounts() {
-            var _this23 = this;
-
-            var startDate = new Date();
-            var endDate = new Date();
-            endDate.setMonth(endDate.getMonth() + 3);
-
-            this.getAvailableDays(this.selectedPackage.id, startDate, endDate).then(function (availableDays) {
-                var datePickerEl = _this23.findElement('.recras-onlinebooking-date');
-                if (datePickerEl.value && availableDays.indexOf(datePickerEl.value) === -1) {
-                    datePickerEl.value = '';
-                    _this23.clearTimes();
-                } else {
-                    datePickerEl.removeAttribute('disabled');
-                }
-            });
-
-            this.checkDependencies();
-            this.checkMinimumAmounts();
-            this.showTotalPrice();
-        }
     }]);
 
-    return RecrasBooking;
+    return RecrasContactForm;
 }();"use strict";
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2550,6 +2607,38 @@ var RecrasVoucher = function () {
             this.element.insertAdjacentHTML('beforeend', msg);
         }
     }, {
+        key: 'buyTemplate',
+        value: function buyTemplate(el) {
+            console.log(el.dataset.templateId);
+            console.log(e, el);
+        }
+
+        /*
+         it('buys voucher', function(done) {
+            let payload = {
+                voucher_template_id: template.id,
+                number_of_vouchers: 3,
+                contact_form: {
+                    'contactpersoon.voornaam': 'Testpersoon',
+                    'contactpersoon.achternaam': 'de Online tegoedbon koper',
+                    'contactpersoon.geslacht': 'man',
+                    'contactpersoon.email1': 'test@voucher-verzamelaar.com',
+                    'contactpersoon.telefoon1': '0',
+                    'contactpersoon.adres': 'teststraat',
+                    'contactpersoon.postcode': '1337XD',
+                    'contactpersoon.plaats': 'test'
+                },
+            };
+             frisby.post(config.base_no_login + 'vouchers/buy', payload)
+                .expect('status', 201)
+                .then(function(result) {
+                    redirectUrl = result.redirect_url;
+                    done();
+                });
+        });
+          */
+
+    }, {
         key: 'clearAll',
         value: function clearAll() {
             [].concat(_toConsumableArray(this.element.children)).forEach(function (el) {
@@ -2563,31 +2652,51 @@ var RecrasVoucher = function () {
             console.log('Error', msg); //TODO
         }
     }, {
+        key: 'findElements',
+        value: function findElements(querystring) {
+            return this.element.querySelectorAll(querystring);
+        }
+    }, {
         key: 'formatPrice',
         value: function formatPrice(price) {
             return this.languageHelper.formatPrice(price);
         }
     }, {
-        key: 'getVoucherTemplates',
-        value: function getVoucherTemplates() {
+        key: 'getContactFormFields',
+        value: function getContactFormFields(template) {
             var _this2 = this;
 
+            var contactForm = new RecrasContactForm(this.options);
+            return contactForm.fromVoucherTemplate(template).then(function (formFields) {
+                _this2.contactForm = contactForm;
+                return formFields;
+            });
+        }
+    }, {
+        key: 'getVoucherTemplates',
+        value: function getVoucherTemplates() {
+            var _this3 = this;
+
             return this.fetchJson(this.options.getApiBase() + 'voucher_templates').then(function (templates) {
-                _this2.templates = templates;
+                _this3.templates = templates;
                 return templates;
             });
         }
     }, {
         key: 'showTemplates',
         value: function showTemplates(templates) {
-            var _this3 = this;
+            var _this4 = this;
 
             var vouchers = '<ol class="recrasVoucherTemplates">';
             templates.forEach(function (template) {
-                vouchers += '\n<li data-template-id="' + template.id + '">\n    <span class="voucherTemplateName">' + template.name + '</span>\n    <span class="voucherTemplatePrice">' + _this3.formatPrice(template.price) + '</span>\n</li>';
+                vouchers += '\n<li data-template-id="' + template.id + '">\n    <span class="voucherTemplateName">' + template.name + '</span>\n    <span class="voucherTemplatePrice">' + _this4.formatPrice(template.price) + '</span>\n</li>';
             });
             vouchers += '</ol>';
             this.appendHtml('<div id="recras-voucher-templates">' + vouchers + '</div>');
+
+            [].concat(_toConsumableArray(this.findElements('.recrasVoucherTemplates > li'))).forEach(function (el) {
+                el.addEventListener('click', _this4.buyTemplate.bind(null, el));
+            });
         }
     }]);
 

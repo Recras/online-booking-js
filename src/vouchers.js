@@ -10,13 +10,23 @@ class RecrasVoucher {
         if ((options instanceof RecrasOptions) === false) {
             throw new Error(this.languageHelper.translate('ERR_OPTIONS_INVALID'));
         }
-        this.options = new RecrasOptions(options);
+        this.options = options;
         this.languageHelper.setCurrency(options);
 
         this.element = this.options.getElement();
         this.element.classList.add('recras-buy-voucher');
 
         this.fetchJson = url => RecrasHttpHelper.fetchJson(url, this.error);
+
+        if (this.options.getLocale()) {
+            if (!RecrasLanguageHelper.isValid(this.options.getLocale())) {
+                console.warn(this.languageHelper.translate('ERR_INVALID_LOCALE', {
+                    LOCALES: RecrasLanguageHelper.validLocales.join(', '),
+                }));
+            } else {
+                this.languageHelper.setLocale(this.options.getLocale());
+            }
+        }
 
         this.getVoucherTemplates().then(templates => this.showTemplates(templates));
     }

@@ -2519,7 +2519,7 @@ var RecrasVoucher = function () {
         if (options instanceof RecrasOptions === false) {
             throw new Error(this.languageHelper.translate('ERR_OPTIONS_INVALID'));
         }
-        this.options = new RecrasOptions(options);
+        this.options = options;
         this.languageHelper.setCurrency(options);
 
         this.element = this.options.getElement();
@@ -2528,6 +2528,16 @@ var RecrasVoucher = function () {
         this.fetchJson = function (url) {
             return RecrasHttpHelper.fetchJson(url, _this.error);
         };
+
+        if (this.options.getLocale()) {
+            if (!RecrasLanguageHelper.isValid(this.options.getLocale())) {
+                console.warn(this.languageHelper.translate('ERR_INVALID_LOCALE', {
+                    LOCALES: RecrasLanguageHelper.validLocales.join(', ')
+                }));
+            } else {
+                this.languageHelper.setLocale(this.options.getLocale());
+            }
+        }
 
         this.getVoucherTemplates().then(function (templates) {
             return _this.showTemplates(templates);

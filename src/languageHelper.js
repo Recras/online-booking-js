@@ -94,6 +94,10 @@ class RecrasLanguageHelper {
         });
     }
 
+    getCountry() {
+        return this.locale.substr(3, 2); // nl_NL -> NL
+    }
+
     static isValid(locale) {
         return (this.validLocales.indexOf(locale) > -1);
     }

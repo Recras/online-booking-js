@@ -107,7 +107,8 @@ class RecrasContactForm {
             case 'contact.landcode':
                 html = `<select ${ fixedAttributes }>`;
                 Object.keys(this.countries).forEach(code => {
-                    html += `<option value="${ code }">${ this.countries[code] }`;
+                    let selectedText = code.toUpperCase() === this.languageHelper.getCountry() ? ' selected' : '';
+                    html += `<option value="${ code }"${ selectedText }>${ this.countries[code] }`;
                 });
                 html += '</select>';
                 return label + html;

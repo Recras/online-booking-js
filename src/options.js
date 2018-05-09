@@ -19,6 +19,9 @@ class RecrasOptions {
     getPackageId() {
         return this.options.package_id;
     }
+    getRedirectUrl() {
+        return this.options.redirect_url;
+    }
 
     setOptions(options) {
         options.apiBase = 'https://' + options.recras_hostname + '/api2/';
@@ -43,6 +46,11 @@ class RecrasOptions {
         }
         if (!hostnameRegex.test(options.recras_hostname) && options.recras_hostname !== RecrasOptions.hostnameDebug) {
             throw new Error(this.languageHelper.translate('ERR_INVALID_HOSTNAME'));
+        }
+        if (options.redirect_url) {
+            if (options.redirect_url.indexOf('http://') === -1 && options.redirect_url.indexOf('https://') === -1) {
+                throw new Error(this.languageHelper.translate('ERR_INVALID_REDIRECT_URL'));
+            }
         }
     }
 }

@@ -2140,13 +2140,15 @@ var RecrasBooking = function () {
                 contactformulier: this.generateContactForm(),
                 kortingscode: this.discount && this.discount.code || null,
                 producten: this.productCounts(),
-                //redirect_url: '', //TODO
                 status: null,
                 stuur_bevestiging_email: true,
                 vouchers: vouchers
             };
             if (this.shouldShowBookingSize(this.selectedPackage)) {
                 bookingParams.boekingsgrootte = this.bookingSize();
+            }
+            if (this.options.getRedirectUrl()) {
+                bookingParams.redirect_url = this.options.getRedirectUrl();
             }
 
             return this.postJson('onlineboeking/reserveer', bookingParams).then(function (json) {
@@ -2284,6 +2286,7 @@ var RecrasLanguageHelper = function () {
                 ERR_INVALID_ELEMENT: 'Option "element" is not a valid Element',
                 ERR_INVALID_HOSTNAME: 'Option "recras_hostname" is invalid.',
                 ERR_INVALID_LOCALE: 'Invalid locale. Valid options are: {LOCALES}',
+                ERR_INVALID_REDIRECT_URL: 'Invalid redirect URL. Make sure you it starts with http:// or https://',
                 ERR_NO_ELEMENT: 'Option "element" not set.',
                 ERR_NO_HOSTNAME: 'Option "recras_hostname" not set.',
                 GENDER_UNKNOWN: 'Unknown',
@@ -2315,6 +2318,7 @@ var RecrasLanguageHelper = function () {
                 ERR_INVALID_ELEMENT: 'Optie "element" is geen geldig Element',
                 ERR_INVALID_HOSTNAME: 'Optie "recras_hostname" is ongeldig.',
                 ERR_INVALID_LOCALE: 'Ongeldige locale. Geldige opties zijn: {LOCALES}',
+                ERR_INVALID_REDIRECT_URL: 'Ongeldige redirect-URL. Zorg ervoor dat deze begint met http:// of https://',
                 ERR_NO_ELEMENT: 'Optie "element" niet ingesteld.',
                 ERR_NO_HOSTNAME: 'Optie "recras_hostname" niet ingesteld.',
                 GENDER_UNKNOWN: 'Onbekend',
@@ -2447,6 +2451,11 @@ var RecrasOptions = function () {
             return this.options.package_id;
         }
     }, {
+        key: 'getRedirectUrl',
+        value: function getRedirectUrl() {
+            return this.options.redirect_url;
+        }
+    }, {
         key: 'setOptions',
         value: function setOptions(options) {
             options.apiBase = 'https://' + options.recras_hostname + '/api2/';
@@ -2472,6 +2481,11 @@ var RecrasOptions = function () {
             }
             if (!hostnameRegex.test(options.recras_hostname) && options.recras_hostname !== RecrasOptions.hostnameDebug) {
                 throw new Error(this.languageHelper.translate('ERR_INVALID_HOSTNAME'));
+            }
+            if (options.redirect_url) {
+                if (options.redirect_url.indexOf('http://') === -1 && options.redirect_url.indexOf('https://') === -1) {
+                    throw new Error(this.languageHelper.translate('ERR_INVALID_REDIRECT_URL'));
+                }
             }
         }
     }]);

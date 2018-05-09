@@ -812,13 +812,15 @@ class RecrasBooking {
             contactformulier: this.generateContactForm(),
             kortingscode: (this.discount && this.discount.code) || null,
             producten: this.productCounts(),
-            //redirect_url: '', //TODO
             status: null,
             stuur_bevestiging_email: true,
             vouchers: vouchers,
         };
         if (this.shouldShowBookingSize(this.selectedPackage)) {
             bookingParams.boekingsgrootte = this.bookingSize();
+        }
+        if (this.options.getRedirectUrl()) {
+            bookingParams.redirect_url = this.options.getRedirectUrl();
         }
 
         return this.postJson('onlineboeking/reserveer', bookingParams).then(json => {

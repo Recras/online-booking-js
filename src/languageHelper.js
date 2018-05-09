@@ -10,6 +10,7 @@ class RecrasLanguageHelper {
             en_GB: {
                 ATTR_REQUIRED: 'Required',
                 BUTTON_BOOK_NOW: 'Book now',
+                BUTTON_BUY_NOW: 'Buy now',
                 DATE: 'Date',
                 DATE_INVALID: 'Invalid date',
                 DISCOUNT_CHECK: 'Check',
@@ -42,6 +43,7 @@ class RecrasLanguageHelper {
             nl_NL: {
                 ATTR_REQUIRED: 'Vereist',
                 BUTTON_BOOK_NOW: 'Nu boeken',
+                BUTTON_BUY_NOW: 'Nu kopen',
                 DATE: 'Datum',
                 DATE_INVALID: 'Ongeldige datum',
                 DISCOUNT_CHECK: 'Controleren',
@@ -108,7 +110,7 @@ class RecrasLanguageHelper {
             this.error(err);
         };
 
-        RecrasHttpHelper.fetchJson(options.getApiBase() + 'instellingen/currency', errorHandler)
+        return RecrasHttpHelper.fetchJson(options.getApiBase() + 'instellingen/currency', errorHandler)
             .then(setting => {
                 this.currency = setting.waarde;
             });

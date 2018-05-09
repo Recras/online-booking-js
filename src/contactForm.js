@@ -38,6 +38,10 @@ class RecrasContactForm {
         return this.getContactFormFields(pack.onlineboeking_contactformulier_id);
     }
 
+    fromVoucherTemplate(template) {
+        return this.getContactFormFields(template.contactform_id);
+    }
+
     generateJson() {
         let elements = this.options.getElement().querySelectorAll('[id^="contactformulier-"]');
         let contactForm = {};

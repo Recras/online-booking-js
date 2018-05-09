@@ -26,13 +26,16 @@
     </style>
 </head>
 <body>
-    <h1>Online booking</h1>
+    <h1>Online Booking</h1>
     <div id="onlinebooking"></div>
+
+    <h2>Buy Voucher</h2>
+    <div id="recrasvouchers"></div>
 </body>
 <script src="../dist/onlinebooking.js"></script>
 <script>
     const recrasOptions = {
-        recras_hostname: 'demo.recras.nl', // Required
+        recras_hostname: '172.16.0.2', // Required
         element: document.getElementById('onlinebooking'), // Required
         locale: 'nl_NL', // Optional, default is nl_NL. Valid values are de_DE, en_GB, and nl_NL
         //package_id: 5, // Optional, this will skip the first package selection step
@@ -41,5 +44,11 @@
 
     let bookingOptions = new RecrasOptions(recrasOptions);
     new RecrasBooking(bookingOptions);
+
+
+    let optionsCopy = JSON.parse(JSON.stringify(recrasOptions));
+    optionsCopy.element = document.getElementById('recrasvouchers');
+    let voucherOptions = new RecrasOptions(optionsCopy);
+    new RecrasVoucher(voucherOptions);
 </script>
 </html>

@@ -1300,6 +1300,7 @@ var RecrasBooking = function () {
 
         this.getPackages().then(function (packages) {
             if (_this.options.getPackageId()) {
+                //TODO: wait for setCurrency
                 _this.changePackage(_this.options.getPackageId());
             } else {
                 _this.showPackages(packages);
@@ -2214,7 +2215,8 @@ var RecrasContactForm = function () {
                 case 'contact.landcode':
                     html = '<select ' + fixedAttributes + '>';
                     Object.keys(this.countries).forEach(function (code) {
-                        html += '<option value="' + code + '">' + _this4.countries[code];
+                        var selectedText = code.toUpperCase() === _this4.languageHelper.getCountry() ? ' selected' : '';
+                        html += '<option value="' + code + '"' + selectedText + '>' + _this4.countries[code];
                     });
                     html += '</select>';
                     return label + html;
@@ -2420,6 +2422,11 @@ var RecrasLanguageHelper = function () {
             });
         }
     }, {
+        key: 'getCountry',
+        value: function getCountry() {
+            return this.locale.substr(3, 2); // nl_NL -> NL
+        }
+    }, {
         key: 'setCurrency',
         value: function setCurrency(options) {
             var _this = this;
@@ -2429,7 +2436,7 @@ var RecrasLanguageHelper = function () {
                 _this.error(err);
             };
 
-            RecrasHttpHelper.fetchJson(options.getApiBase() + 'instellingen/currency', errorHandler).then(function (setting) {
+            return RecrasHttpHelper.fetchJson(options.getApiBase() + 'instellingen/currency', errorHandler).then(function (setting) {
                 _this.currency = setting.waarde;
             });
         }
@@ -2575,7 +2582,6 @@ var RecrasVoucher = function () {
             throw new Error(this.languageHelper.translate('ERR_OPTIONS_INVALID'));
         }
         this.options = options;
-        this.languageHelper.setCurrency(options);
 
         this.element = this.options.getElement();
         this.element.classList.add('recras-buy-voucher');
@@ -2597,7 +2603,9 @@ var RecrasVoucher = function () {
             }
         }
 
-        this.getVoucherTemplates().then(function (templates) {
+        this.languageHelper.setCurrency(options).then(function () {
+            return _this.getVoucherTemplates();
+        }).then(function (templates) {
             return _this.showTemplates(templates);
         });
     }

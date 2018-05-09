@@ -11,12 +11,12 @@ class RecrasVoucher {
             throw new Error(this.languageHelper.translate('ERR_OPTIONS_INVALID'));
         }
         this.options = options;
-        this.languageHelper.setCurrency(options);
 
         this.element = this.options.getElement();
         this.element.classList.add('recras-buy-voucher');
 
         this.fetchJson = url => RecrasHttpHelper.fetchJson(url, this.error);
+        this.postJson = (url, data) => RecrasHttpHelper.postJson(this.options.getApiBase() + url, data, this.error);
 
         if (this.options.getLocale()) {
             if (!RecrasLanguageHelper.isValid(this.options.getLocale())) {
@@ -28,26 +28,67 @@ class RecrasVoucher {
             }
         }
 
-        this.getVoucherTemplates().then(templates => this.showTemplates(templates));
+        this.languageHelper.setCurrency(options)
+            .then(() => this.getVoucherTemplates())
+            .then(templates => this.showTemplates(templates));
     }
 
     appendHtml(msg) {
         this.element.insertAdjacentHTML('beforeend', msg);
     }
 
+    buyTemplate() {
+        this.findElement('.buyTemplate').setAttribute('disabled', 'disabled');
+
+        let payload = {
+            voucher_template_id: this.selectedTemplate.id,
+            number_of_vouchers: 1, //TODO: add field to change this
+            contact_form: this.contactForm.generateJson(),
+        };
+        if (this.options.getRedirectUrl()) {
+            payload.redirect_url = this.options.getRedirectUrl();
+        }
+        this.postJson('vouchers/buy', payload)
+            .then(json => {
+                this.findElement('.buyTemplate').removeAttribute('disabled');
+
+                if (json.payment_url) {
+                    window.location.href = json.payment_url;
+                } else {
+                    console.log(result);
+                }
+            })
+    }
+
     clearAll() {
         [...this.element.children].forEach(el => {
             el.parentNode.removeChild(el);
         });
-        this.appendHtml(`<div id="latestError"></div>`); //TODO: this goes wrong when online booking script is also loaded
+        this.appendHtml(`<div class="latestError"></div>`);
     }
 
     error(msg) {
-        console.log('Error', msg); //TODO
+        this.findElement('.latestError').innerHTML = `<strong>{ this.languageHelper.translate('ERR_GENERAL') }</strong><p>${ msg }</p>`;
+    }
+
+    findElement(querystring) {
+        return this.element.querySelector(querystring);
+    }
+
+    findElements(querystring) {
+        return this.element.querySelectorAll(querystring);
     }
 
     formatPrice(price) {
         return this.languageHelper.formatPrice(price);
+    }
+
+    getContactFormFields(template) {
+        let contactForm = new RecrasContactForm(this.options);
+        return contactForm.fromVoucherTemplate(template).then(formFields => {
+            this.contactForm = contactForm;
+            return formFields;
+        });
     }
 
     getVoucherTemplates() {
@@ -58,16 +99,71 @@ class RecrasVoucher {
             });
     }
 
-    showTemplates(templates) {
-        let vouchers = `<ol class="recrasVoucherTemplates">`;
-        templates.forEach(template => {
-            vouchers += `
-<li data-template-id="${ template.id }">
-    <span class="voucherTemplateName">${ template.name }</span>
-    <span class="voucherTemplatePrice">${ this.formatPrice(template.price) }</span>
-</li>`;
+    maybeDisableBuyButton() {
+        let button = this.findElement('.buyTemplate');
+        if (!button) {
+            return false;
+        }
+
+        let shouldDisable = false;
+        if (!this.findElement('.recras-contactform').checkValidity()) {
+            shouldDisable = true;
+        }
+
+        if (shouldDisable) {
+            button.setAttribute('disabled', 'disabled');
+        } else {
+            button.removeAttribute('disabled');
+        }
+    }
+
+    showBuyButton() {
+        let html = `<div><button type="submit" class="buyTemplate" disabled>${ this.languageHelper.translate('BUTTON_BUY_NOW') }</button></div>`;
+        this.appendHtml(html);
+        this.findElement('.buyTemplate').addEventListener('click', this.buyTemplate.bind(this));
+    }
+
+    showContactForm(templateId) {
+        this.selectedTemplate = this.templates.filter(t => {
+            return t.id === templateId;
+        })[0];
+
+        this.getContactFormFields(this.selectedTemplate).then(fields => {
+            let waitFor = [];
+
+            let hasCountryField = fields.filter(field => {
+                return field.field_identifier === 'contact.landcode';
+            }).length > 0;
+
+            if (hasCountryField) {
+                waitFor.push(this.contactForm.getCountryList());
+            }
+            Promise.all(waitFor).then(() => {
+                let html = '<form class="recras-contactform">';
+                fields.forEach((field, idx) => {
+                    html += '<div>' + this.contactForm.showField(field, idx) + '</div>';
+                });
+                html += '</form>';
+                this.appendHtml(html);
+                this.showBuyButton();
+
+                [...this.findElements('[id^="contactformulier-"]')].forEach(el => {
+                    el.addEventListener('change', this.maybeDisableBuyButton.bind(this));
+                });
+            });
+
         });
-        vouchers += `</ol>`;
-        this.appendHtml(`<div id="recras-voucher-templates">${ vouchers }</div>`);
+    }
+
+    showTemplates(templates) {
+        let templateOptions = templates.map(template => `<option value="${ template.id }">${ template.name } (${ this.formatPrice(template.price) })`);
+        let html = `<select class="recrasVoucherTemplates"><option>${ templateOptions.join('') }</select>`;
+        this.appendHtml(`<div id="recras-voucher-templates">${ html }</div>`);
+
+        let voucherSelectEl = this.findElement('.recrasVoucherTemplates');
+        voucherSelectEl.addEventListener('change', () => {
+            let selectedTemplateId = parseInt(voucherSelectEl.value, 10);
+            this.showContactForm(selectedTemplateId);
+        });
     }
 }

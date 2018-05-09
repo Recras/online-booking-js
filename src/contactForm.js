@@ -46,8 +46,12 @@ class RecrasContactForm {
 
     getContactFormFields(formId) {
         return this.fetchJson(this.options.getApiBase() + 'contactformulieren/' + formId + '/velden')
-            .then(json => {
-                this.contactFormFields = json;
+            .then(fields => {
+                fields = fields.sort((a, b) => {
+                    return a.sort_order - b.sort_order;
+                });
+
+                this.contactFormFields = fields;
                 return this.contactFormFields;
             });
     }

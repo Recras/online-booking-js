@@ -557,10 +557,6 @@ class RecrasBooking {
 
     showContactForm(pack) {
         this.getContactFormFields(pack).then(fields => {
-            fields = fields.sort((a, b) => {
-                return a.sort_order - b.sort_order;
-            });
-
             let waitFor = [];
 
             let hasCountryField = fields.filter(field => {
@@ -637,11 +633,9 @@ class RecrasBooking {
             return p.mag_online;
         });
         let packagesSorted = this.sortPackages(packages);
-        let packageOptions = packagesSorted.map(pack => {
-            return `<option value="${ pack.id }">${ pack.weergavenaam || pack.arrangement }`;
-        });
+        let packageOptions = packagesSorted.map(pack => `<option value="${ pack.id }">${ pack.weergavenaam || pack.arrangement }`);
 
-        let html = '<select class="recras-package-selection"><option>' + packageOptions.join('') + '</select>';
+            let html = '<select class="recras-package-selection"><option>' + packageOptions.join('') + '</select>';
         this.appendHtml(`<div class="recras-package-select"><p>TODO: tekst pre</p>${ html }<p>TODO: tekst post</p></div>`);
 
         let packageSelectEl = this.findElement('.recras-package-selection');

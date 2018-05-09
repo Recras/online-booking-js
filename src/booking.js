@@ -316,14 +316,6 @@ class RecrasBooking {
         });
     }
 
-    getCountryList(locale) {
-        return this.fetchJson('https://cdn.rawgit.com/umpirsky/country-list/ddabf3a8/data/' + locale + '/country.json')
-            .then(json => {
-                this.countries = json;
-                return this.countries;
-            });
-    }
-
     getDiscountPrice(discount) {
         if (!discount) {
             return 0;
@@ -564,7 +556,7 @@ class RecrasBooking {
             }).length > 0;
 
             if (hasCountryField) {
-                waitFor.push(this.getCountryList(this.languageHelper.locale));
+                waitFor.push(this.contactForm.getCountryList());
             }
             Promise.all(waitFor).then(() => {
                 let html = '<form class="recras-contactform">';

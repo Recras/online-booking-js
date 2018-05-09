@@ -7,6 +7,9 @@ class RecrasContactForm {
         }
         this.options = options;
         this.languageHelper.setCurrency(options);
+        if (RecrasLanguageHelper.isValid(this.options.getLocale())) {
+            this.languageHelper.setLocale(this.options.getLocale());
+        }
 
         this.fetchJson = url => RecrasHttpHelper.fetchJson(url, this.error);
 
@@ -53,6 +56,14 @@ class RecrasContactForm {
 
                 this.contactFormFields = fields;
                 return this.contactFormFields;
+            });
+    }
+
+    getCountryList() {
+        return this.fetchJson('https://cdn.rawgit.com/umpirsky/country-list/ddabf3a8/data/' + this.languageHelper.locale + '/country.json')
+            .then(json => {
+                this.countries = json;
+                return this.countries;
             });
     }
 

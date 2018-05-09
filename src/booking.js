@@ -41,6 +41,7 @@ class RecrasBooking {
         this.element.classList.add('recras-onlinebooking');
 
         this.fetchJson = url => RecrasHttpHelper.fetchJson(url, this.error);
+        this.postJson = (url, data) => RecrasHttpHelper.postJson(this.options.getApiBase() + url, data, this.error);
 
         if (this.options.getLocale()) {
             if (!RecrasLanguageHelper.isValid(this.options.getLocale())) {
@@ -412,23 +413,6 @@ class RecrasBooking {
         } else {
             button.removeAttribute('disabled');
         }
-    }
-
-    postJson(url, data) {
-        return fetch(this.options.getApiBase() + url, {
-            body: JSON.stringify(data),
-            method: 'post',
-        }).then(response => {
-            if (response.status < 200 || response.status >= 400) {
-                this.error(response.status + ' ' + response.statusText);
-                return false;
-            }
-            return response.json();
-        }).then(json => {
-            return json;
-        }).catch(err => {
-            this.error(err);
-        });
     }
 
     normaliseDate(date, packageStart, bookingStart) {

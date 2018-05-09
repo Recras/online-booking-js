@@ -58,6 +58,7 @@ class RecrasBooking {
 
         this.getPackages().then(packages => {
             if (this.options.getPackageId()) {
+                //TODO: wait for setCurrency
                 this.changePackage(this.options.getPackageId());
             } else {
                 this.showPackages(packages);
@@ -710,15 +711,12 @@ class RecrasBooking {
         }
 
         return this.postJson('onlineboeking/reserveer', bookingParams).then(json => {
-            //console.log('reserveer', json);
             this.findElement('.bookPackage').removeAttribute('disabled');
 
-            if (typeof json.boeking_id !== 'undefined') {
-                //TODO
+            if (json.payment_url) {
+                window.location.href = json.payment_url;
             } else {
-                if (json.payment_url) {
-                    window.location.href = json.payment_url;
-                }
+                console.log(json);
             }
         });
     }

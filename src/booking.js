@@ -28,7 +28,7 @@ class RecrasBooking {
         const CSS = `
 @import url('https://cdn.rawgit.com/dbushell/Pikaday/eddaaa3b/css/pikaday.css');
 
-.recras-onlinebooking > *:not(#latestError) {
+.recras-onlinebooking > *:not(.latestError) {
     padding: 1em 0;
 }
 .recras-onlinebooking > *:not(:first-child) + * {
@@ -121,7 +121,7 @@ class RecrasBooking {
             statusEl.innerHTML = this.languageHelper.translate('VOUCHER_ALREADY_APPLIED');
             return false;
         }
-        let date = this.findElement('#recras-onlinebooking-date').value;
+        let date = this.findElement('.recras-onlinebooking-date').value;
         if (isNaN(Date.parse(date))) {
             statusEl.innerHTML = this.languageHelper.translate('DATE_INVALID');
             return false;
@@ -147,7 +147,7 @@ class RecrasBooking {
     }
 
     bookingSize() {
-        let bookingSizeEl = this.findElement('#bookingsize');
+        let bookingSizeEl = this.findElement('.bookingsize');
         if (!bookingSizeEl) {
             return 0;
         }
@@ -209,14 +209,14 @@ class RecrasBooking {
     }
 
     checkDiscountcode(packageID, date, code) {
-        let statusEl = this.findElement('#discount-status');
+        let statusEl = this.findElement('.discount-status');
         if (statusEl) {
             statusEl.parentNode.removeChild(statusEl);
         }
         return this.fetchJson(this.options.getApiBase() + 'onlineboeking/controleerkortingscode?datum=' + date + '&arrangement=' + packageID + '&kortingscode=' + code)
             .then(discount => {
                 if (discount === false) {
-                    this.findElement('.recras-discountcode').insertAdjacentHTML('beforeend', `<span id="discount-status">${ this.languageHelper.translate('DISCOUNT_INVALID') }</span>`);
+                    this.findElement('.recras-discountcode').insertAdjacentHTML('beforeend', `<span class="discount-status">${ this.languageHelper.translate('DISCOUNT_INVALID') }</span>`);
                     return;
                 }
                 discount.code = code;
@@ -259,7 +259,7 @@ class RecrasBooking {
         [...this.element.children].forEach(el => {
             el.parentNode.removeChild(el);
         });
-        this.appendHtml(`<div id="latestError"></div>`);
+        this.appendHtml(`<div class="latestError"></div>`);
     }
 
     dependencySatisfied(hasNow, requiredProduct) {
@@ -283,7 +283,7 @@ class RecrasBooking {
     }
 
     error(msg) {
-        this.findElement('#latestError').innerHTML = `<strong>{ this.languageHelper.translate('ERR_GENERAL') }</strong><p>${ msg }</p>`;
+        this.findElement('.latestError').innerHTML = `<strong>{ this.languageHelper.translate('ERR_GENERAL') }</strong><p>${ msg }</p>`;
     }
 
     findElement(querystring) {
@@ -411,7 +411,7 @@ class RecrasBooking {
     }
 
     maybeDisableBookButton() {
-        let button = this.findElement('#bookPackage');
+        let button = this.findElement('.bookPackage');
         if (!button) {
             return false;
         }
@@ -423,10 +423,10 @@ class RecrasBooking {
         if (!this.amountsValid(this.selectedPackage)) {
             shouldDisable = true;
         }
-        if (!this.findElement('#recras-onlinebooking-date').value) {
+        if (!this.findElement('.recras-onlinebooking-date').value) {
             shouldDisable = true;
         }
-        if (!this.findElement('#recras-onlinebooking-time').value) {
+        if (!this.findElement('.recras-onlinebooking-time').value) {
             shouldDisable = true;
         }
         if (!this.findElement('.recras-contactform').checkValidity()) {
@@ -533,7 +533,7 @@ class RecrasBooking {
         }
 
         this.findElement('.priceLine').parentElement.insertAdjacentHTML('beforeend', html);
-        this.findElement('#priceSubtotal').innerHTML = this.formatPrice(this.getSubTotal());
+        this.findElement('.priceSubtotal').innerHTML = this.formatPrice(this.getSubTotal());
     }
 
     sortPackages(packages) {
@@ -559,9 +559,9 @@ class RecrasBooking {
     }
 
     showBookButton() {
-        let html = `<div><button type="submit" id="bookPackage" disabled>${ this.languageHelper.translate('BUTTON_BOOK_NOW') }</button></div>`;
+        let html = `<div><button type="submit" class="bookPackage" disabled>${ this.languageHelper.translate('BUTTON_BOOK_NOW') }</button></div>`;
         this.appendHtml(html);
-        this.findElement('#bookPackage').addEventListener('click', this.submitBooking.bind(this));
+        this.findElement('.bookPackage').addEventListener('click', this.submitBooking.bind(this));
     }
 
     showDiscountFields() {
@@ -572,7 +572,7 @@ class RecrasBooking {
         let html = `
             <div class="recras-discountcode">
                 <label for="discountcode">${ this.languageHelper.translate('DISCOUNT_CODE') }</label>
-                <input type="text" id="discountcode" maxlength="50">
+                <input type="text" id="discountcode" class="discountcode" maxlength="50">
                 <button>${ this.languageHelper.translate('DISCOUNT_CHECK') }</button>
             </div>
             <div class="recras-vouchers">
@@ -588,8 +588,8 @@ class RecrasBooking {
         this.findElement('.recras-discountcode > button').addEventListener('click', () => {
             this.checkDiscountcode(
                 this.selectedPackage.id,
-                this.findElement('#recras-onlinebooking-date').value,
-                this.findElement('#discountcode').value
+                this.findElement('.recras-onlinebooking-date').value,
+                this.findElement('.discountcode').value
             );
         });
         this.findElement('.recras-vouchers button').addEventListener('click', e => {
@@ -695,8 +695,8 @@ class RecrasBooking {
             .then(() => {
                 let today = RecrasDateHelper.datePartOnly(new Date());
                 let html = `<div class="recras-datetime">`;
-                html += `<label for="recras-onlinebooking-date">${ this.languageHelper.translate('DATE') }</label><input type="text" id="recras-onlinebooking-date" min="${ today }" disabled>`;
-                html += `<label for="recras-onlinebooking-time">${ this.languageHelper.translate('TIME') }</label><select id="recras-onlinebooking-time" disabled></select>`;
+                html += `<label for="recras-onlinebooking-date">${ this.languageHelper.translate('DATE') }</label><input type="text" id="recras-onlinebooking-date" class="recras-onlinebooking-date" min="${ today }" disabled>`;
+                html += `<label for="recras-onlinebooking-time">${ this.languageHelper.translate('TIME') }</label><select id="recras-onlinebooking-time" class="recras-onlinebooking-time" disabled></select>`;
                 html += '</div>';
                 this.appendHtml(html);
 
@@ -705,7 +705,7 @@ class RecrasBooking {
                         let dateFmt = RecrasDateHelper.datePartOnly(day);
                         return this.availableDays.indexOf(dateFmt) === -1;
                     },
-                    field: this.findElement('#recras-onlinebooking-date'),
+                    field: this.findElement('.recras-onlinebooking-date'),
                     firstDay: 1, // Monday
                     format: 'yyyy-MM-dd', //Only used when Moment is loaded?
                     /*i18n: {}*/ //TODO: i18n
@@ -725,8 +725,8 @@ class RecrasBooking {
                     toString: (date) => RecrasDateHelper.datePartOnly(date),
                 });
 
-                this.findElement('#recras-onlinebooking-time').addEventListener('change', () => {
-                    this.selectedTime = this.findElement('#recras-onlinebooking-time').value;
+                this.findElement('.recras-onlinebooking-time').addEventListener('change', () => {
+                    this.selectedTime = this.findElement('.recras-onlinebooking-time').value;
                     this.previewTimes();
                 });
             });
@@ -741,10 +741,10 @@ class RecrasBooking {
             return `<option value="${ pack.id }">${ pack.weergavenaam || pack.arrangement }`;
         });
 
-        let html = '<select id="recras-package-selection"><option>' + packageOptions.join('') + '</select>';
+        let html = '<select class="recras-package-selection"><option>' + packageOptions.join('') + '</select>';
         this.appendHtml(`<div class="recras-package-select"><p>TODO: tekst pre</p>${ html }<p>TODO: tekst post</p></div>`);
 
-        let packageSelectEl = this.findElement('#recras-package-selection');
+        let packageSelectEl = this.findElement('.recras-package-selection');
         packageSelectEl.addEventListener('change', () => {
             let selectedPackageId = parseInt(packageSelectEl.value, 10);
             this.changePackage(selectedPackageId);
@@ -755,7 +755,7 @@ class RecrasBooking {
         let html = '<div class="recras-amountsform">';
 
         if (this.shouldShowBookingSize(pack)) {
-            html += `<div><div><label for="bookingsize">${ (pack.weergavenaam || pack.arrangement) }</label></div><input type="number" id="bookingsize" min="0"></div>`;
+            html += `<div><div><label for="bookingsize">${ (pack.weergavenaam || pack.arrangement) }</label></div><input type="number" id="bookingsize" class="bookingsize" min="0"></div>`;
         }
 
         let linesNoBookingSize = this.getLinesNoBookingSize(pack);
@@ -767,11 +767,11 @@ class RecrasBooking {
             html += `<div class="recras-price">${ this.formatPrice(line.product.verkoop) }</div>`;
             html += '</div>';
         });
-        html += `<div class="priceLine"><div>${ this.languageHelper.translate('PRICE_TOTAL') }</div><div id="priceSubtotal"></div>`;
+        html += `<div class="priceLine"><div>${ this.languageHelper.translate('PRICE_TOTAL') }</div><div class="priceSubtotal"></div>`;
         html += '</div>';
         this.appendHtml(html);
 
-        [...this.findElements('[id^="packageline"], #bookingsize')].forEach(el => {
+        [...this.findElements('[id^="packageline"], .bookingsize')].forEach(el => {
             el.addEventListener('input', this.updateProductAmounts.bind(this));
         });
     }
@@ -781,13 +781,13 @@ class RecrasBooking {
         times.forEach(time => {
             html += `<option value="${ time }">${ time }`;
         });
-        this.findElement('#recras-onlinebooking-time').innerHTML = html;
-        this.findElement('#recras-onlinebooking-time').removeAttribute('disabled');
+        this.findElement('.recras-onlinebooking-time').innerHTML = html;
+        this.findElement('.recras-onlinebooking-time').removeAttribute('disabled');
     }
 
     clearTimes() {
-        this.findElement('#recras-onlinebooking-time').innerHTML = '';
-        this.findElement('#recras-onlinebooking-time').setAttribute('disabled', 'disabled');
+        this.findElement('.recras-onlinebooking-time').innerHTML = '';
+        this.findElement('.recras-onlinebooking-time').setAttribute('disabled', 'disabled');
     }
 
     submitBooking() {
@@ -801,8 +801,8 @@ class RecrasBooking {
             return false;
         }
 
-        this.findElement('#bookPackage').setAttribute('disabled', 'disabled');
-        //console.log(this.selectedDate, this.selectedTime, this.findElement('#recras-onlinebooking-date').value);
+        this.findElement('.bookPackage').setAttribute('disabled', 'disabled');
+        //console.log(this.selectedDate, this.selectedTime, this.findElement('.recras-onlinebooking-date').value);
 
         let vouchers = Object.keys(this.appliedVouchers).length > 0 ? Object.keys(this.appliedVouchers) : null;
         let bookingParams = {
@@ -812,6 +812,7 @@ class RecrasBooking {
             contactformulier: this.generateContactForm(),
             kortingscode: (this.discount && this.discount.code) || null,
             producten: this.productCounts(),
+            //redirect_url: '', //TODO
             status: null,
             stuur_bevestiging_email: true,
             vouchers: vouchers,
@@ -822,7 +823,7 @@ class RecrasBooking {
 
         return this.postJson('onlineboeking/reserveer', bookingParams).then(json => {
             //console.log('reserveer', json);
-            this.findElement('#bookPackage').removeAttribute('disabled');
+            this.findElement('.bookPackage').removeAttribute('disabled');
 
             if (typeof json.boeking_id !== 'undefined') {
                 //TODO
@@ -845,7 +846,7 @@ class RecrasBooking {
 
         this.getAvailableDays(this.selectedPackage.id, startDate, endDate)
             .then(availableDays => {
-                let datePickerEl = this.findElement('#recras-onlinebooking-date');
+                let datePickerEl = this.findElement('.recras-onlinebooking-date');
                 if (datePickerEl.value && availableDays.indexOf(datePickerEl.value) === -1) {
                     datePickerEl.value = '';
                     this.clearTimes();

@@ -16,7 +16,7 @@ class RecrasBooking {
 .recras-onlinebooking > *:not(:first-child) + * {
     border-top: 2px solid #dedede; /* Any love for Kirby out there? */
 }
-.recras-contactform div, .recras-amountsform div {
+.recras-contactform > div, .recras-amountsform > div {
     align-items: start;
     display: flex;
     justify-content: space-between;

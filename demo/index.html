@@ -6,12 +6,61 @@
     <style>
         html {
             box-sizing: border-box;
+            color: hsl(147, 25%, 25%);
+            height: 100%;
+            margin: 0;
         }
         *, *::before, *::after {
             box-sizing: inherit;
         }
         body {
+            background-image: url('https://www.onionbooking.com/static/images/header.jpg');
+            background-position: center;
+            background-size: cover;
             font-family: sans-serif;
+            height: 100%;
+            margin: 0;
+        }
+        main {
+            background: rgba(255, 255, 255, 0.8);
+            min-height: 100vh;
+            margin: 0 auto;
+            padding: 1em;
+            max-width: 1024px;
+        }
+
+        input, select, textarea {
+            background: #fff;
+            border: 1px solid hsl(147, 25%, 50%);
+        }
+        button {
+            background: hsl(147, 25%, 50%);
+            border: 0;
+            border-bottom: 2px solid hsl(147, 25%, 25%);
+            border-radius: 4px;
+            color: #fff;
+            font: inherit;
+            padding: 0.5em 2em;
+        }
+        button:hover, button:active {
+            background: hsl(147, 25%, 67%);
+            border-bottom-color: hsl(147, 25%, 50%);
+        }
+        button:disabled {
+            cursor: not-allowed;
+        }
+        .recras-amountsform > div {
+            justify-content: space-between;
+        }
+        .recras-amountsform > div > div:first-child {
+            flex-basis: 50%;
+        }
+        .recras-amountsform > div > div:nth-child(2) {
+            flex-basis: calc(50% - 8em);
+        }
+        .recras-price, .priceSubtotal {
+            flex-basis: 8em;
+            text-align: right;
         }
         input:not([type="checkbox"]):not([type="radio"]), select, textarea {
             font: inherit;
@@ -26,16 +75,20 @@
     </style>
 </head>
 <body>
-    <h1>Online Booking</h1>
-    <div id="onlinebooking"></div>
+    <main>
+        <h1>Online Booking</h1>
+        <div id="onlinebooking"></div>
 
-    <h2>Buy Voucher</h2>
-    <div id="recrasvouchers"></div>
+        <hr>
+
+        <h2>Buy Voucher</h2>
+        <div id="recrasvouchers"></div>
+    </main>
 </body>
 <script src="../dist/onlinebooking.js"></script>
 <script>
     const recrasOptions = {
-        recras_hostname: '172.16.0.2', // Required
+        recras_hostname: 'demo.recras.nl', // Required
         element: document.getElementById('onlinebooking'), // Required
         locale: 'nl_NL', // Optional, default is nl_NL. Valid values are de_DE, en_GB, and nl_NL
         //package_id: 5, // Optional, this will skip the first package selection step

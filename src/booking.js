@@ -243,7 +243,6 @@ class RecrasBooking {
 
     clearAllExceptPackageSelection() {
         let elements = document.querySelectorAll('#' + this.element.id + ' > *:not(.recras-package-select)');
-        console.log(elements);
         this.clearElements(elements);
     }
 
@@ -333,6 +332,10 @@ class RecrasBooking {
             return 0;
         }
         return (discount.percentage / 100) * this.getSubTotal() * -1;
+    }
+
+    getLinesBookingSize(pack) {
+        return pack.regels.filter(line => (line.onlineboeking_aantalbepalingsmethode === 'boekingsgrootte'));
     }
 
     getLinesNoBookingSize(pack) {
@@ -455,6 +458,12 @@ class RecrasBooking {
                 aantal: (isNaN(parseInt(line.value)) ? 0 : parseInt(line.value)),
                 arrangementsregel_id: parseInt(line.dataset.packageId, 10),
             });
+        });
+        this.getLinesBookingSize(this.selectedPackage).forEach(line => {
+            counts.push({
+                aantal: this.bookingSize(),
+                arrangementsregel_id: line.id,
+            })
         });
         return counts;
     }

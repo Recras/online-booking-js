@@ -146,13 +146,14 @@ class RecrasBooking {
         this.appliedVouchers = {};
         this.discount = null;
 
-        this.clearAll();
-
         if (selectedPackage.length === 0) {
             // Reset form
             this.selectedPackage = null;
+            this.clearAll();
             this.showPackages(this.packages);
             return false;
+        } else {
+            this.clearAllExceptPackageSelection();
         }
         this.selectedPackage = selectedPackage[0];
         this.showProducts(this.selectedPackage);
@@ -237,10 +238,20 @@ class RecrasBooking {
     }
 
     clearAll() {
+        this.clearElements(this.element.children);
+    }
+
+    clearAllExceptPackageSelection() {
+        let elements = document.querySelectorAll('#' + this.element.id + ' > *:not(.recras-package-select)');
+        console.log(elements);
+        this.clearElements(elements);
+    }
+
+    clearElements(elements) {
         if (this.datePicker) {
             this.datePicker.destroy();
         }
-        [...this.element.children].forEach(el => {
+        [...elements].forEach(el => {
             el.parentNode.removeChild(el);
         });
         this.appendHtml(`<div class="latestError"></div>`);
@@ -628,7 +639,7 @@ class RecrasBooking {
         let packagesSorted = this.sortPackages(packages);
         let packageOptions = packagesSorted.map(pack => `<option value="${ pack.id }">${ pack.weergavenaam || pack.arrangement }`);
 
-            let html = '<select class="recras-package-selection"><option>' + packageOptions.join('') + '</select>';
+        let html = '<select class="recras-package-selection"><option>' + packageOptions.join('') + '</select>';
         this.appendHtml(`<div class="recras-package-select"><p>TODO: tekst pre</p>${ html }<p>TODO: tekst post</p></div>`);
 
         let packageSelectEl = this.findElement('.recras-package-selection');

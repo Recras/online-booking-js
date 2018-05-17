@@ -1266,7 +1266,7 @@ var RecrasBooking = function () {
 
         this.datePicker = null;
 
-        var CSS = '\n@import url(\'https://cdn.rawgit.com/dbushell/Pikaday/eddaaa3b/css/pikaday.css\');\n\n.recras-onlinebooking > *:not(.latestError) {\n    padding: 1em 0;\n}\n.recras-onlinebooking > *:not(:first-child) + * {\n    border-top: 2px solid #dedede; /* Any love for Kirby out there? */\n}\n.recras-contactform div, .recras-amountsform div {\n    align-items: start;\n    display: flex;\n    justify-content: space-between;\n    padding: 0.25em 0;\n}\n.time-preview, .minimum-amount {\n    padding-left: 0.5em;\n} \n.minimum-amount {\n    color: hsl(0, 50%, 50%);\n}\n';
+        var CSS = '\n@import url(\'https://cdn.rawgit.com/dbushell/Pikaday/eddaaa3b/css/pikaday.css\');\n\n.recras-onlinebooking > *:not(.latestError) {\n    padding: 1em 0;\n}\n.recras-onlinebooking > *:not(:first-child) + * {\n    border-top: 2px solid #dedede; /* Any love for Kirby out there? */\n}\n.recras-contactform > div, .recras-amountsform > div {\n    align-items: start;\n    display: flex;\n    justify-content: space-between;\n    padding: 0.25em 0;\n}\n.time-preview, .minimum-amount {\n    padding-left: 0.5em;\n} \n.minimum-amount {\n    color: hsl(0, 50%, 50%);\n}\n';
         this.languageHelper = new RecrasLanguageHelper();
 
         if (options instanceof RecrasOptions === false) {
@@ -1400,13 +1400,14 @@ var RecrasBooking = function () {
             this.appliedVouchers = {};
             this.discount = null;
 
-            this.clearAll();
-
             if (selectedPackage.length === 0) {
                 // Reset form
                 this.selectedPackage = null;
+                this.clearAll();
                 this.showPackages(this.packages);
                 return false;
+            } else {
+                this.clearAllExceptPackageSelection();
             }
             this.selectedPackage = selectedPackage[0];
             this.showProducts(this.selectedPackage);
@@ -1500,10 +1501,22 @@ var RecrasBooking = function () {
     }, {
         key: 'clearAll',
         value: function clearAll() {
+            this.clearElements(this.element.children);
+        }
+    }, {
+        key: 'clearAllExceptPackageSelection',
+        value: function clearAllExceptPackageSelection() {
+            var elements = document.querySelectorAll('#' + this.element.id + ' > *:not(.recras-package-select)');
+            console.log(elements);
+            this.clearElements(elements);
+        }
+    }, {
+        key: 'clearElements',
+        value: function clearElements(elements) {
             if (this.datePicker) {
                 this.datePicker.destroy();
             }
-            [].concat(_toConsumableArray(this.element.children)).forEach(function (el) {
+            [].concat(_toConsumableArray(elements)).forEach(function (el) {
                 el.parentNode.removeChild(el);
             });
             this.appendHtml('<div class="latestError"></div>');

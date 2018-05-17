@@ -2006,6 +2006,7 @@ var RecrasBooking = function () {
     }, {
         key: 'showTimes',
         value: function showTimes(times) {
+            console.log('showTimes', times);
             var html = '<option>';
             times.forEach(function (time) {
                 html += '<option value="' + time + '">' + time;

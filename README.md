@@ -41,7 +41,7 @@ See `/demo/index.html` for a demo integration
 * `element` - **required** - a single HTML element, using `getElementById` or `querySelector`
 * `locale` - optional, defaults to nl_NL - a valid locale (de_DE, en_GB, and nl_NL). This is used for country names, error messages, etc. Package names from Recras are not affected.
 * `package_id` - optional - the ID of a package. This will hide the package selection dropdown and skip this step. **Only used for online booking**
-* `redirect_url` - optional - the URL to redirect to after a successful payment
+* `redirect_url` - optional - the URL to redirect to after a successful payment. The URL will receive the created booking ID as `boeking_id` GET parameter (i.e. `?booking_id=42`). For more information on our booking API, we refer to our [booking API documentation](https://recras.github.io/docs/endpoints/boekingen.html).
 * `start_date` - to be added later
 * `start_time` - to be added later
 * `group_size` - to be added later

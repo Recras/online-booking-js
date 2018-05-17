@@ -709,7 +709,6 @@ class RecrasBooking {
         }
 
         this.findElement('.bookPackage').setAttribute('disabled', 'disabled');
-        //console.log(this.selectedDate, this.selectedTime, this.findElement('.recras-onlinebooking-date').value);
 
         let vouchers = Object.keys(this.appliedVouchers).length > 0 ? Object.keys(this.appliedVouchers) : null;
         let bookingParams = {
@@ -740,10 +739,6 @@ class RecrasBooking {
             }
         });
     }
-
-    /*translate(string, vars = {}) {
-        return this.languageHelper.translate(string, vars);
-    }*/
 
     updateProductAmounts() {
         let startDate = new Date();

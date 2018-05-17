@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Recras Online Booking integration demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         html {
             box-sizing: border-box;
@@ -49,9 +50,6 @@
         button:disabled {
             cursor: not-allowed;
         }
-        .recras-amountsform > div {
-            justify-content: space-between;
-        }
         .recras-amountsform > div > div:first-child {
             flex-basis: 50%;
         }
@@ -71,6 +69,15 @@
         }
         .recras-contactform-required::after {
             content: '*';
+        }
+
+        @media (max-width: 640px) {
+            .recras-contactform > div, .recras-amountsform > div {
+                flex-direction: column;
+            }
+            .recras-price, .priceSubtotal {
+                flex-basis: 1em;
+            }
         }
     </style>
 </head>

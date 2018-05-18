@@ -239,6 +239,26 @@ class RecrasBooking {
             });
     }
 
+    checkMaximumAmounts() {
+        [...this.findElements('.maximum-amount')].forEach(el => {
+            el.parentNode.removeChild(el);
+        });
+
+        const maxPerLine = 1000; //DEBUG
+        // const maxPerLine = this.selectedPackage.maximum_aantal_personen_online; //TODO: issue #5500
+        if (maxPerLine === null) {
+            return;
+        }
+
+        let showWarning = false;
+        let selectedProducts = this.productCounts();
+        selectedProducts.forEach(p => {
+            if (p.aantal > maxPerLine && !showWarning) {
+                this.findElement('.recras-amountsform').insertAdjacentHTML('beforeend', `<span class="maximum-amount">${ this.languageHelper.filterTags(this.texts.maximum_aantal_online_boeking_overschreden) }</span>`);
+                showWarning = true;
+            }
+        });
+    }
     checkMinimumAmounts() {
         [...this.findElements('.minimum-amount')].forEach(el => {
             el.parentNode.removeChild(el);
@@ -806,6 +826,7 @@ class RecrasBooking {
 
         this.checkDependencies();
         this.checkMinimumAmounts();
+        this.checkMaximumAmounts();
         this.showTotalPrice();
     }
 }

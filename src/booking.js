@@ -1,6 +1,6 @@
 /**********************************
 *  Recras Online Booking library  *
-*  v 0.3.0                        *
+*  v 0.4.0                        *
 **********************************/
 
 class RecrasBooking {
@@ -27,6 +27,32 @@ class RecrasBooking {
 } 
 .minimum-amount {
     color: hsl(0, 50%, 50%);
+}
+
+.recrasLoadingIndicator {
+    animation: recrasSpinner 1.1s infinite linear;
+    border: 0.2em solid rgba(0, 0, 0, 0.2);
+    border-left-color: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    display: inline-block;
+    height: 2em;
+    overflow: hidden;
+    text-indent: -100vw;
+    width: 2em;
+}
+@keyframes recrasSpinner {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+.bookPackage .recrasLoadingIndicator {
+    height: 1em;
+    margin-left: 0.5em;
+    vertical-align: middle;
+    width: 1em;
 }
 `;
         this.languageHelper = new RecrasLanguageHelper();
@@ -158,7 +184,9 @@ class RecrasBooking {
         this.selectedPackage = selectedPackage[0];
         this.showProducts(this.selectedPackage);
         this.checkDependencies();
+        this.loadingIndicatorShow(this.findElement('.recras-amountsform'));
         this.showDateTimeSelection(this.selectedPackage).then(() => {
+            this.loadingIndicatorHide();
             this.showContactForm(this.selectedPackage);
         });
     }
@@ -277,6 +305,7 @@ class RecrasBooking {
     }
 
     error(msg) {
+        this.loadingIndicatorHide().bind(this);
         this.findElement('.latestError').innerHTML = `<strong>{ this.languageHelper.translate('ERR_GENERAL') }</strong><p>${ msg }</p>`;
     }
 
@@ -390,6 +419,16 @@ class RecrasBooking {
 
         let refNode = document.head;
         refNode.parentNode.insertBefore(styleEl, refNode);
+    }
+
+    loadingIndicatorHide() {
+        [...document.querySelectorAll('.recrasLoadingIndicator')].forEach(el => {
+            el.parentNode.removeChild(el);
+        })
+    }
+
+    loadingIndicatorShow(afterEl) {
+        afterEl.insertAdjacentHTML('beforeend', `<span class="recrasLoadingIndicator">${ this.languageHelper.translate('LOADING') }</span>`);
     }
 
     maybeDisableBookButton() {
@@ -569,6 +608,7 @@ class RecrasBooking {
     }
 
     showContactForm(pack) {
+        this.loadingIndicatorShow(this.findElement('.recras-datetime'));
         this.getContactFormFields(pack).then(fields => {
             let waitFor = [];
 
@@ -586,6 +626,7 @@ class RecrasBooking {
                 });
                 html += '</form>';
                 this.appendHtml(html);
+                this.loadingIndicatorHide();
                 this.showBookButton();
 
                 [...this.findElements('[id^="contactformulier-"]')].forEach(el => {
@@ -708,6 +749,8 @@ class RecrasBooking {
             return false;
         }
 
+        this.loadingIndicatorHide();
+        this.loadingIndicatorShow(this.findElement('.bookPackage'));
         this.findElement('.bookPackage').setAttribute('disabled', 'disabled');
 
         let vouchers = Object.keys(this.appliedVouchers).length > 0 ? Object.keys(this.appliedVouchers) : null;
@@ -730,6 +773,7 @@ class RecrasBooking {
         }
 
         return this.postJson('onlineboeking/reserveer', bookingParams).then(json => {
+            this.loadingIndicatorHide();
             this.findElement('.bookPackage').removeAttribute('disabled');
 
             if (json.payment_url) {
@@ -741,12 +785,16 @@ class RecrasBooking {
     }
 
     updateProductAmounts() {
+        this.loadingIndicatorHide();
+        this.loadingIndicatorShow(this.findElement('label[for="recras-onlinebooking-date"]'));
         let startDate = new Date();
         let endDate = new Date();
         endDate.setMonth(endDate.getMonth() + 3);
 
         this.getAvailableDays(this.selectedPackage.id, startDate, endDate)
             .then(availableDays => {
+                this.loadingIndicatorHide();
+
                 let datePickerEl = this.findElement('.recras-onlinebooking-date');
                 if (datePickerEl.value && availableDays.indexOf(datePickerEl.value) === -1) {
                     datePickerEl.value = '';

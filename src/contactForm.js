@@ -6,7 +6,7 @@ class RecrasContactForm {
             throw new Error(this.languageHelper.translate('ERR_OPTIONS_INVALID'));
         }
         this.options = options;
-        this.languageHelper.setCurrency(options);
+        this.languageHelper.setOptions(options);
         if (RecrasLanguageHelper.isValid(this.options.getLocale())) {
             this.languageHelper.setLocale(this.options.getLocale());
         }

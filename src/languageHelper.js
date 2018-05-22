@@ -4,6 +4,7 @@ class RecrasLanguageHelper {
 
     constructor() {
         this.locale = this.defaultLocale;
+        this.options = null;
 
         //TODO: what is the best way to handle multiple locales?
         this.i18n = {
@@ -82,8 +83,37 @@ class RecrasLanguageHelper {
         console.log('Error', msg); //TODO
     }
 
-    filterTags(msg) {
-        return msg; //TODO
+    extractTags(msg) {
+        let tags = msg.match(/{(.+?)}/g);
+        if (!Array.isArray(tags)) {
+            return [];
+        }
+        return tags.map(tag => tag.substring(1, tag.length - 1)); // Strip { and }
+    }
+
+    filterTags(msg, packageID) {
+        let tags = this.extractTags(msg);
+        if (tags.length === 0) {
+            return Promise.resolve(msg);
+        }
+
+        return RecrasHttpHelper.postJson(
+            this.options.getApiBase() + 'tagfilter',
+            {
+                tags: tags,
+                context: {
+                    packageID: packageID,
+                },
+            },
+            this.error
+        )
+            .then(filtered => {
+                Object.keys(filtered).forEach(tag => {
+                    let regex = new RegExp('{' + tag + '}', 'g');
+                    msg = msg.replace(regex, filtered[tag]);
+                });
+                return msg;
+            });
     }
 
     formatLocale(what) {
@@ -110,13 +140,13 @@ class RecrasLanguageHelper {
         return (this.validLocales.indexOf(locale) > -1);
     }
 
-    setCurrency(options) {
+    setCurrency() {
         const errorHandler = err => {
             this.currency = 'eur';
             this.error(err);
         };
 
-        return RecrasHttpHelper.fetchJson(options.getApiBase() + 'instellingen/currency', errorHandler)
+        return RecrasHttpHelper.fetchJson(this.options.getApiBase() + 'instellingen/currency', errorHandler)
             .then(setting => {
                 this.currency = setting.waarde;
             });
@@ -124,6 +154,11 @@ class RecrasLanguageHelper {
 
     setLocale(locale) {
         this.locale = locale;
+    }
+
+    setOptions(options) {
+        this.options = options;
+        return this.setCurrency();
     }
 
     translate(string, vars = {}) {

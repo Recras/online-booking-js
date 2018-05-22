@@ -28,7 +28,7 @@ class RecrasVoucher {
             }
         }
 
-        this.languageHelper.setCurrency(options)
+        this.languageHelper.setOptions(options)
             .then(() => this.getVoucherTemplates())
             .then(templates => this.showTemplates(templates));
     }

@@ -64,7 +64,7 @@ class RecrasBooking {
             throw new Error(this.languageHelper.translate('ERR_OPTIONS_INVALID'));
         }
         this.options = options;
-        this.languageHelper.setCurrency(options);
+        this.languageHelper.setOptions(options);
 
         this.element = this.options.getElement();
         this.element.classList.add('recras-onlinebooking');
@@ -259,12 +259,15 @@ class RecrasBooking {
 
         let showWarning = false;
         let selectedProducts = this.productCounts();
-        selectedProducts.forEach(p => {
-            if (p.aantal > maxPerLine && !showWarning) {
-                this.findElement('.recras-amountsform').insertAdjacentHTML('beforeend', `<span class="maximum-amount">${ this.languageHelper.filterTags(this.texts.maximum_aantal_online_boeking_overschreden) }</span>`);
-                showWarning = true;
-            }
+        this.languageHelper.filterTags(this.texts.maximum_aantal_online_boeking_overschreden, this.selectedPackage ? this.selectedPackage.id : null).then(msg => {
+            selectedProducts.forEach(p => {
+                if (p.aantal > maxPerLine && !showWarning) {
+                    this.findElement('.recras-amountsform').insertAdjacentHTML('beforeend', `<span class="maximum-amount">${ msg }</span>`);
+                    showWarning = true;
+                }
+            });
         });
+
     }
     checkMinimumAmounts() {
         [...this.findElements('.minimum-amount')].forEach(el => {
@@ -655,27 +658,41 @@ class RecrasBooking {
           - Jouw gegevens / Vul hieronder jouw persoonlijke gegevens in. (MN)
         */
 
+        let promises = [];
         let paymentMethods = this.paymentMethods(this.selectedPackage);
         let paymentText = '';
+        let textPostBooking = '';
         if (paymentMethods.indexOf(this.PAYMENT_DIRECT) > -1 && paymentMethods.indexOf(this.PAYMENT_AFTERWARDS) > -1) {
             // Let user decide how to pay
-            paymentText = `<p>${ this.languageHelper.filterTags(this.texts.online_boeking_betaalkeuze) }</p>`;
-            paymentText += `<ul>
-                <li><label><input type="radio" name="paymentMethod" checked value="${ this.PAYMENT_DIRECT }"> ${ this.languageHelper.filterTags(this.texts.online_boeking_betaalkeuze_ideal_titel) }</label>
-                <li><label><input type="radio" name="paymentMethod" value="${ this.PAYMENT_AFTERWARDS }"> ${ this.languageHelper.filterTags(this.texts.online_boeking_betaalkeuze_achteraf_titel) }</label>
+            promises.push(this.languageHelper.filterTags(this.texts.online_boeking_betaalkeuze, this.selectedPackage ? this.selectedPackage.id : null));
+            promises.push(this.languageHelper.filterTags(this.texts.online_boeking_betaalkeuze_ideal_titel, this.selectedPackage ? this.selectedPackage.id : null));
+            promises.push(this.languageHelper.filterTags(this.texts.online_boeking_betaalkeuze_achteraf_titel, this.selectedPackage ? this.selectedPackage.id : null));
+
+            Promise.all(promises).then(msgs => {
+                paymentText = `<p>${ msgs[0] }</p>`;
+                paymentText += `<ul>
+                <li><label><input type="radio" name="paymentMethod" checked value="${ this.PAYMENT_DIRECT }"> ${ msgs[1] }</label>
+                <li><label><input type="radio" name="paymentMethod" value="${ this.PAYMENT_AFTERWARDS }"> ${ msgs[2] }</label>
             </ul>`;
+            });
         } else {
             // One fixed choice
+            promises.push(Promise.resolve(''));
         }
+        promises.push(this.languageHelper.filterTags(this.texts.online_boeking_step3_text_post, this.selectedPackage ? this.selectedPackage.id : null).then(msg => {
+            textPostBooking = msg;
+        }));
 
-        let html = `<div>
-            <p>${ this.languageHelper.filterTags(this.texts.online_boeking_step3_text_post) }</p>
+        Promise.all(promises).then(() => {
+            let html = `<div>
+            <p>${ textPostBooking }</p>
             <div class="standard-attachments"></div>
             ${ paymentText }
             <button type="submit" class="bookPackage" disabled>${ this.languageHelper.translate('BUTTON_BOOK_NOW') }</button>
         </div>`;
-        this.appendHtml(html);
-        this.findElement('.bookPackage').addEventListener('click', this.submitBooking.bind(this));
+            this.appendHtml(html);
+            this.findElement('.bookPackage').addEventListener('click', this.submitBooking.bind(this));
+        });
     }
 
     showDiscountFields() {
@@ -794,40 +811,51 @@ class RecrasBooking {
         let packageOptions = packagesSorted.map(pack => `<option value="${ pack.id }">${ pack.weergavenaam || pack.arrangement }`);
 
         let html = '<select class="recras-package-selection"><option>' + packageOptions.join('') + '</select>';
-        this.appendHtml(`<div class="recras-package-select"><p>${ this.languageHelper.filterTags(this.texts.online_boeking_step0_text_pre) }</p>${ html }<p>${ this.languageHelper.filterTags(this.texts.online_boeking_step0_text_post) }</p></div>`);
+        let promises = [];
+        promises.push(this.languageHelper.filterTags(this.texts.online_boeking_step0_text_pre, this.selectedPackage ? this.selectedPackage.id : null));
+        promises.push(this.languageHelper.filterTags(this.texts.online_boeking_step0_text_post, this.selectedPackage ? this.selectedPackage.id : null));
+        Promise.all(promises).then(msgs => {
+            this.appendHtml(`<div class="recras-package-select"><p>${ msgs[0] }</p>${ html }<p>${ msgs[1] }</p></div>`);
 
-        let packageSelectEl = this.findElement('.recras-package-selection');
-        packageSelectEl.addEventListener('change', () => {
-            let selectedPackageId = parseInt(packageSelectEl.value, 10);
-            this.changePackage(selectedPackageId);
+            let packageSelectEl = this.findElement('.recras-package-selection');
+            packageSelectEl.addEventListener('change', () => {
+                let selectedPackageId = parseInt(packageSelectEl.value, 10);
+                this.changePackage(selectedPackageId);
+            });
         });
     }
 
     showProducts(pack) {
-        let html = '<div class="recras-amountsform">';
-        html += `<p>${ this.languageHelper.filterTags(this.texts.online_boeking_step1_text_pre) }</p>`;
+        let promises = [];
+        promises.push(this.languageHelper.filterTags(this.texts.online_boeking_step1_text_pre, this.selectedPackage ? this.selectedPackage.id : null));
+        promises.push(this.languageHelper.filterTags(this.texts.online_boeking_step1_text_post, this.selectedPackage ? this.selectedPackage.id : null));
 
-        if (this.shouldShowBookingSize(pack)) {
-            html += `<div><div><label for="bookingsize">${ (pack.weergavenaam || pack.arrangement) }</label></div><input type="number" id="bookingsize" class="bookingsize" min="0"></div>`;
-        }
+        Promise.all(promises).then(msgs => {
+            let html = '<div class="recras-amountsform">';
+            html += `<p>${ msgs[0] }</p>`;
 
-        let linesNoBookingSize = this.getLinesNoBookingSize(pack);
-        linesNoBookingSize.forEach((line, idx) => {
-            html += '<div><div>';
-            html += `<label for="packageline${ idx }">${ line.beschrijving_templated }</label>`;
-            let maxAttr = line.max ? `max="${ line.max }"` : '';
-            html += `</div><input id="packageline${ idx }" type="number" min="0" ${ maxAttr } data-package-id="${ line.id }">`;
-            html += `<div class="recras-price">${ this.formatPrice(line.product.verkoop) }</div>`;
+            if (this.shouldShowBookingSize(pack)) {
+                html += `<div><div><label for="bookingsize">${ (pack.weergavenaam || pack.arrangement) }</label></div><input type="number" id="bookingsize" class="bookingsize" min="0"></div>`;
+            }
+
+            let linesNoBookingSize = this.getLinesNoBookingSize(pack);
+            linesNoBookingSize.forEach((line, idx) => {
+                html += '<div><div>';
+                html += `<label for="packageline${ idx }">${ line.beschrijving_templated }</label>`;
+                let maxAttr = line.max ? `max="${ line.max }"` : '';
+                html += `</div><input id="packageline${ idx }" type="number" min="0" ${ maxAttr } data-package-id="${ line.id }">`;
+                html += `<div class="recras-price">${ this.formatPrice(line.product.verkoop) }</div>`;
+                html += '</div>';
+            });
+            html += `<div class="priceLine"><div>${ this.languageHelper.translate('PRICE_TOTAL') }</div><div class="priceSubtotal"></div></div>`;
+
+            html += `<p>${ msgs[1] }</p>`;
             html += '</div>';
-        });
-        html += `<div class="priceLine"><div>${ this.languageHelper.translate('PRICE_TOTAL') }</div><div class="priceSubtotal"></div></div>`;
+            this.appendHtml(html);
 
-        html += `<p>${ this.languageHelper.filterTags(this.texts.online_boeking_step1_text_post) }</p>`;
-        html += '</div>';
-        this.appendHtml(html);
-
-        [...this.findElements('[id^="packageline"], .bookingsize')].forEach(el => {
-            el.addEventListener('input', this.updateProductAmounts.bind(this));
+            [...this.findElements('[id^="packageline"], .bookingsize')].forEach(el => {
+                el.addEventListener('input', this.updateProductAmounts.bind(this));
+            });
         });
     }
 

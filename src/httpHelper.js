@@ -4,7 +4,7 @@ class RecrasHttpHelper {
             throw new Error('ERR_FETCH_WITHOUT_URL'); //TODO: translate
         }
         return fetch(url, data).then(response => {
-            if (response.status < 200 || response.status >= 400) {
+            if (!response.ok) {
                 errorHandler(response.status + ' ' + response.statusText);
                 return false;
             }

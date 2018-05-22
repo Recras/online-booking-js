@@ -55,6 +55,9 @@ class RecrasBooking {
     width: 1em;
 }
 `;
+        this.PAYMENT_DIRECT = 'mollie';
+        this.PAYMENT_AFTERWARDS = 'factuur';
+
         this.languageHelper = new RecrasLanguageHelper();
 
         if ((options instanceof RecrasOptions) === false) {
@@ -249,8 +252,7 @@ class RecrasBooking {
             el.parentNode.removeChild(el);
         });
 
-        const maxPerLine = 1000; //DEBUG
-        // const maxPerLine = this.selectedPackage.maximum_aantal_personen_online; //TODO: issue #5500
+        const maxPerLine = this.selectedPackage.maximum_aantal_personen_online;
         if (maxPerLine === null) {
             return;
         }
@@ -517,6 +519,17 @@ class RecrasBooking {
         return new Date(bookingStart.setSeconds(bookingStart.getSeconds() + diffSeconds));
     }
 
+    paymentMethods(pack) {
+        let methods = [];
+        if (pack.mag_online_geboekt_worden_direct_betalen) {
+            methods.push(this.PAYMENT_DIRECT);
+        }
+        if (pack.mag_online_geboekt_worden_achteraf_betalen) {
+            methods.push(this.PAYMENT_AFTERWARDS);
+        }
+        return methods;
+    }
+
     previewTimes() {
         [...this.findElements('.time-preview')].forEach(el => {
             el.parentNode.removeChild(el);
@@ -582,7 +595,7 @@ class RecrasBooking {
         if (Object.keys(attachments).length) {
             attachmentHtml += `<ul>`;
             Object.values(attachments).forEach(attachment => {
-                attachmentHtml += `<li><a href="${ this.options.getHostname() + attachment.filename }" download target="_blank">${ attachment.naam }</a></li>`;
+                attachmentHtml += `<li><a href="${ attachment.filename }" download target="_blank">${ attachment.naam }</a></li>`;
             });
             attachmentHtml += `</ul>`;
         }
@@ -634,11 +647,6 @@ class RecrasBooking {
 
     showBookButton() {
         /*
-        'online_boeking_betaalkeuze',
-        'online_boeking_betaalkeuze_achteraf_titel',
-        'online_boeking_betaalkeuze_ideal_titel',
-        */
-        /*
         'online_boeking_step3_text_pre', // Staat nu boven boeken-pagina
         voorbeelden:
           - Vul hieronder uw naam, adres en andere gegevens in. (demo)
@@ -646,10 +654,24 @@ class RecrasBooking {
           - leeg (Joytime, Taribush)
           - Jouw gegevens / Vul hieronder jouw persoonlijke gegevens in. (MN)
         */
+
+        let paymentMethods = this.paymentMethods(this.selectedPackage);
+        let paymentText = '';
+        if (paymentMethods.indexOf(this.PAYMENT_DIRECT) > -1 && paymentMethods.indexOf(this.PAYMENT_AFTERWARDS) > -1) {
+            // Let user decide how to pay
+            paymentText = `<p>${ this.languageHelper.filterTags(this.texts.online_boeking_betaalkeuze) }</p>`;
+            paymentText += `<ul>
+                <li><label><input type="radio" name="paymentMethod" checked value="${ this.PAYMENT_DIRECT }"> ${ this.languageHelper.filterTags(this.texts.online_boeking_betaalkeuze_ideal_titel) }</label>
+                <li><label><input type="radio" name="paymentMethod" value="${ this.PAYMENT_AFTERWARDS }"> ${ this.languageHelper.filterTags(this.texts.online_boeking_betaalkeuze_achteraf_titel) }</label>
+            </ul>`;
+        } else {
+            // One fixed choice
+        }
+
         let html = `<div>
             <p>${ this.languageHelper.filterTags(this.texts.online_boeking_step3_text_post) }</p>
             <div class="standard-attachments"></div>
-            TODO: betalen op factuur
+            ${ paymentText }
             <button type="submit" class="bookPackage" disabled>${ this.languageHelper.translate('BUTTON_BOOK_NOW') }</button>
         </div>`;
         this.appendHtml(html);
@@ -824,7 +846,6 @@ class RecrasBooking {
     }
 
     standardAttachments() {
-        return []; //TODO: issue #5500
         let attachments = {};
         this.productCounts().forEach(line => {
             if (line.aantal > 0) {
@@ -849,6 +870,12 @@ class RecrasBooking {
             return false;
         }
 
+        let paymentMethod = this.PAYMENT_DIRECT;
+        let paymentMethodEl = this.findElement('[name="paymentMethod"]:checked');
+        if (paymentMethodEl && this.validPaymentMethod(this.selectedPackage, paymentMethodEl.value)) {
+            paymentMethod = paymentMethodEl.value;
+        }
+
         this.loadingIndicatorHide();
         this.loadingIndicatorShow(this.findElement('.bookPackage'));
         this.findElement('.bookPackage').setAttribute('disabled', 'disabled');
@@ -857,7 +884,7 @@ class RecrasBooking {
         let bookingParams = {
             arrangement_id: this.selectedPackage.id,
             begin: bookingStart,
-            betaalmethode: 'mollie',
+            betaalmethode: paymentMethod,
             contactformulier: this.contactForm.generateJson(),
             kortingscode: (this.discount && this.discount.code) || null,
             producten: this.productCounts(),
@@ -878,6 +905,12 @@ class RecrasBooking {
 
             if (json.payment_url) {
                 window.location.href = json.payment_url;
+            } else if (json.message && json.status) {
+                if (bookingParams.redirect_url) {
+                    window.location.href = bookingParams.redirect_url;
+                } else {
+                    alert(json.message);
+                }
             } else {
                 console.log(json);
             }
@@ -909,5 +942,9 @@ class RecrasBooking {
         this.checkMaximumAmounts();
         this.showTotalPrice();
         this.showStandardAttachments();
+    }
+
+    validPaymentMethod(pack, method) {
+        return this.paymentMethods(pack).indexOf(method) > -1;
     }
 }

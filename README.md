@@ -47,4 +47,4 @@ See `/demo/index.html` for a demo integration
 * `group_size` - to be added later
 
 ## Styling
-The library provides a bit of styling to make it look okay straight from the box. If you wish to customise the layout, you can. Just style the appropriate elements from your website's CSS.  
+The library provides a bit of styling to make it look okay straight from the box. If you wish to customise the layout, you can. Just style the appropriate elements from your website's CSS.

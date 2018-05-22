@@ -10,7 +10,7 @@ class RecrasBooking {
         const CSS = `
 @import url('https://cdn.rawgit.com/dbushell/Pikaday/eddaaa3b/css/pikaday.css');
 
-.recras-onlinebooking > *:not(.latestError) {
+.recras-onlinebooking > *:not(.latestError):not(.recrasLoadingIndicator) {
     padding: 1em 0;
 }
 .recras-onlinebooking > *:not(:first-child) + * {
@@ -82,7 +82,12 @@ class RecrasBooking {
         this.loadCSS(CSS);
         this.clearAll();
 
-        this.getPackages().then(packages => {
+        this.loadingIndicatorShow(this.element);
+        this.getTexts().then(texts => {
+            this.texts = texts;
+            return this.getPackages();
+        }).then(packages => {
+            this.loadingIndicatorHide();
             if (this.options.getPackageId()) {
                 //TODO: wait for setCurrency
                 this.changePackage(this.options.getPackageId());
@@ -413,6 +418,32 @@ class RecrasBooking {
         return total;
     }
 
+    getTexts() {
+        const settings = [
+            'maximum_aantal_online_boeking_overschreden',
+            'online_boeking_betaalkeuze',
+            'online_boeking_betaalkeuze_achteraf_titel',
+            'online_boeking_betaalkeuze_ideal_titel',
+            'online_boeking_step0_text_pre',
+            'online_boeking_step0_text_post',
+            'online_boeking_step1_text_pre',
+            'online_boeking_step1_text_post',
+            'online_boeking_step3_text_pre',
+            'online_boeking_step3_text_post',
+        ];
+        let promises = [];
+        settings.forEach(setting => {
+            promises.push(this.fetchJson(this.options.getApiBase() + 'instellingen/' + setting));
+        });
+        return Promise.all(promises).then(settings => {
+            let texts = {};
+            settings.forEach(setting => {
+                texts[setting.slug] = setting.waarde;
+            });
+            return texts;
+        });
+    }
+
     getTotalPrice() {
         let total = this.getSubTotal();
 
@@ -545,6 +576,19 @@ class RecrasBooking {
         this.element.innerHTML = msg;
     }
 
+    showStandardAttachments() {
+        let attachments = this.standardAttachments(this.selectedPackage);
+        let attachmentHtml = ``;
+        if (Object.keys(attachments).length) {
+            attachmentHtml += `<ul>`;
+            Object.values(attachments).forEach(attachment => {
+                attachmentHtml += `<li><a href="${ this.options.getHostname() + attachment.filename }" download target="_blank">${ attachment.naam }</a></li>`;
+            });
+            attachmentHtml += `</ul>`;
+        }
+        this.findElement('.standard-attachments').innerHTML = attachmentHtml;
+    }
+
     showTotalPrice() {
         [...this.findElements('.discountLine, .voucherLine, .priceTotal')].forEach(el => {
             el.parentNode.removeChild(el);
@@ -589,7 +633,25 @@ class RecrasBooking {
     }
 
     showBookButton() {
-        let html = `<div><button type="submit" class="bookPackage" disabled>${ this.languageHelper.translate('BUTTON_BOOK_NOW') }</button></div>`;
+        /*
+        'online_boeking_betaalkeuze',
+        'online_boeking_betaalkeuze_achteraf_titel',
+        'online_boeking_betaalkeuze_ideal_titel',
+        */
+        /*
+        'online_boeking_step3_text_pre', // Staat nu boven boeken-pagina
+        voorbeelden:
+          - Vul hieronder uw naam, adres en andere gegevens in. (demo)
+          - Stap 4/4. Controleer de gekozen aantallen, datum en tijd. Vul vervolgens de onderstaande gegevens in om de reservering af te ronden. (Vlietland)
+          - leeg (Joytime, Taribush)
+          - Jouw gegevens / Vul hieronder jouw persoonlijke gegevens in. (MN)
+        */
+        let html = `<div>
+            <p>${ this.languageHelper.filterTags(this.texts.online_boeking_step3_text_post) }</p>
+            <div class="standard-attachments"></div>
+            TODO: betalen op factuur
+            <button type="submit" class="bookPackage" disabled>${ this.languageHelper.translate('BUTTON_BOOK_NOW') }</button>
+        </div>`;
         this.appendHtml(html);
         this.findElement('.bookPackage').addEventListener('click', this.submitBooking.bind(this));
     }
@@ -710,7 +772,7 @@ class RecrasBooking {
         let packageOptions = packagesSorted.map(pack => `<option value="${ pack.id }">${ pack.weergavenaam || pack.arrangement }`);
 
         let html = '<select class="recras-package-selection"><option>' + packageOptions.join('') + '</select>';
-        this.appendHtml(`<div class="recras-package-select"><p>TODO: tekst pre</p>${ html }<p>TODO: tekst post</p></div>`);
+        this.appendHtml(`<div class="recras-package-select"><p>${ this.languageHelper.filterTags(this.texts.online_boeking_step0_text_pre) }</p>${ html }<p>${ this.languageHelper.filterTags(this.texts.online_boeking_step0_text_post) }</p></div>`);
 
         let packageSelectEl = this.findElement('.recras-package-selection');
         packageSelectEl.addEventListener('change', () => {
@@ -721,6 +783,7 @@ class RecrasBooking {
 
     showProducts(pack) {
         let html = '<div class="recras-amountsform">';
+        html += `<p>${ this.languageHelper.filterTags(this.texts.online_boeking_step1_text_pre) }</p>`;
 
         if (this.shouldShowBookingSize(pack)) {
             html += `<div><div><label for="bookingsize">${ (pack.weergavenaam || pack.arrangement) }</label></div><input type="number" id="bookingsize" class="bookingsize" min="0"></div>`;
@@ -735,7 +798,9 @@ class RecrasBooking {
             html += `<div class="recras-price">${ this.formatPrice(line.product.verkoop) }</div>`;
             html += '</div>';
         });
-        html += `<div class="priceLine"><div>${ this.languageHelper.translate('PRICE_TOTAL') }</div><div class="priceSubtotal"></div>`;
+        html += `<div class="priceLine"><div>${ this.languageHelper.translate('PRICE_TOTAL') }</div><div class="priceSubtotal"></div></div>`;
+
+        html += `<p>${ this.languageHelper.filterTags(this.texts.online_boeking_step1_text_post) }</p>`;
         html += '</div>';
         this.appendHtml(html);
 
@@ -756,6 +821,21 @@ class RecrasBooking {
     clearTimes() {
         this.findElement('.recras-onlinebooking-time').innerHTML = '';
         this.findElement('.recras-onlinebooking-time').setAttribute('disabled', 'disabled');
+    }
+
+    standardAttachments() {
+        return []; //TODO: issue #5500
+        let attachments = {};
+        this.productCounts().forEach(line => {
+            if (line.aantal > 0) {
+                let product = this.findProduct(line.arrangementsregel_id).product;
+                product.standaardbijlagen.forEach(attachment => {
+                    attachments[attachment.id] = attachment;
+                });
+            }
+        });
+
+        return attachments;
     }
 
     submitBooking() {
@@ -828,5 +908,6 @@ class RecrasBooking {
         this.checkMinimumAmounts();
         this.checkMaximumAmounts();
         this.showTotalPrice();
+        this.showStandardAttachments();
     }
 }

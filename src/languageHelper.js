@@ -82,6 +82,10 @@ class RecrasLanguageHelper {
         console.log('Error', msg); //TODO
     }
 
+    filterTags(msg) {
+        return msg; //TODO
+    }
+
     formatLocale(what) {
         switch (what) {
             case 'currency':

@@ -8,10 +8,13 @@ class RecrasOptions {
     }
 
     getApiBase() {
-        return this.options.apiBase;
+        return this.getHostname() + '/api2/';
     }
     getElement() {
         return this.options.element;
+    }
+    getHostname() {
+        return this.options.hostname;
     }
     getLocale() {
         return this.options.locale;
@@ -24,10 +27,9 @@ class RecrasOptions {
     }
 
     setOptions(options) {
-        options.apiBase = 'https://' + options.recras_hostname + '/api2/';
-        if (options.recras_hostname === '172.16.0.2') {
-            options.apiBase = options.apiBase.replace('https://', 'http://');
-        }
+        let protocol = (options.recras_hostname === RecrasOptions.hostnameDebug) ? 'http' : 'https';
+        options.hostname = protocol + '://' + options.recras_hostname;
+
         return options;
     }
 

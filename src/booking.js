@@ -605,6 +605,7 @@ class RecrasBooking {
         let attachments = this.standardAttachments(this.selectedPackage);
         let attachmentHtml = ``;
         if (Object.keys(attachments).length) {
+            attachmentHtml += `<p><label><input type="checkbox" required>${ this.languageHelper.translate('AGREE_ATTACHMENTS') }</label></p>`;
             attachmentHtml += `<ul>`;
             Object.values(attachments).forEach(attachment => {
                 attachmentHtml += `<li><a href="${ attachment.filename }" download target="_blank">${ attachment.naam }</a></li>`;

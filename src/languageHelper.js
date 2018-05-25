@@ -9,6 +9,7 @@ class RecrasLanguageHelper {
         //TODO: what is the best way to handle multiple locales?
         this.i18n = {
             en_GB: {
+                AGREE_ATTACHMENTS: 'I agree with the following documents:',
                 ATTR_REQUIRED: 'Required',
                 BUTTON_BOOK_NOW: 'Book now',
                 BUTTON_BUY_NOW: 'Buy now',
@@ -43,6 +44,7 @@ class RecrasLanguageHelper {
                 VOUCHER_INVALID: 'Invalid voucher code',
             },
             nl_NL: {
+                AGREE_ATTACHMENTS: 'Ik ga akkoord met de volgende gegevens:',
                 ATTR_REQUIRED: 'Vereist',
                 BUTTON_BOOK_NOW: 'Nu boeken',
                 BUTTON_BUY_NOW: 'Nu kopen',

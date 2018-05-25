@@ -1419,6 +1419,14 @@ var RecrasBooking = function () {
             }
             this.selectedPackage = selectedPackage[0];
             this.showProducts(this.selectedPackage).then(function () {
+                var scrollOptions = {
+                    behavior: 'smooth'
+                };
+                if (!('scrollBehavior' in document.documentElement.style)) {
+                    scrollOptions = true;
+                }
+                _this4.findElement('.recras-amountsform').scrollIntoView(scrollOptions);
+
                 _this4.checkDependencies();
                 _this4.loadingIndicatorShow(_this4.findElement('.recras-amountsform'));
                 return _this4.showDateTimeSelection(_this4.selectedPackage);
@@ -1758,7 +1766,6 @@ var RecrasBooking = function () {
     }, {
         key: 'loadingIndicatorShow',
         value: function loadingIndicatorShow(afterEl) {
-            console.log('lis', afterEl);
             afterEl.insertAdjacentHTML('beforeend', '<span class="recrasLoadingIndicator">' + this.languageHelper.translate('LOADING') + '</span>');
         }
     }, {
@@ -1796,7 +1803,8 @@ var RecrasBooking = function () {
         key: 'normaliseDate',
         value: function normaliseDate(date, packageStart, bookingStart) {
             var diffSeconds = (date - packageStart) / 1000;
-            return new Date(bookingStart.setSeconds(bookingStart.getSeconds() + diffSeconds));
+            var tempDate = new Date(bookingStart.getTime());
+            return new Date(tempDate.setSeconds(tempDate.getSeconds() + diffSeconds));
         }
     }, {
         key: 'paymentMethods',
@@ -1827,13 +1835,12 @@ var RecrasBooking = function () {
                 });
                 var packageStart = new Date(Math.min.apply(Math, _toConsumableArray(linesBegin))); // Math.min transforms dates to timestamps
 
-                var bookingStart = this.selectedDate;
-                bookingStart = RecrasDateHelper.setTimeForDate(bookingStart, this.selectedTime);
+                this.selectedDate = RecrasDateHelper.setTimeForDate(this.selectedDate, this.selectedTime);
 
                 var linesNoBookingSize = this.getLinesNoBookingSize(this.selectedPackage);
                 linesNoBookingSize.forEach(function (line, idx) {
-                    var normalisedStart = _this15.normaliseDate(new Date(line.begin), packageStart, bookingStart);
-                    var normalisedEnd = _this15.normaliseDate(new Date(line.eind), packageStart, bookingStart);
+                    var normalisedStart = _this15.normaliseDate(new Date(line.begin), packageStart, _this15.selectedDate);
+                    var normalisedEnd = _this15.normaliseDate(new Date(line.eind), packageStart, _this15.selectedDate);
                     _this15.findElement('label[for="packageline' + idx + '"]').insertAdjacentHTML('beforeend', '<span class="time-preview">(' + RecrasDateHelper.timePartOnly(normalisedStart) + ' \u2013 ' + RecrasDateHelper.timePartOnly(normalisedEnd) + ')</span>');
                 });
             }
@@ -1885,6 +1892,7 @@ var RecrasBooking = function () {
             var attachments = this.standardAttachments(this.selectedPackage);
             var attachmentHtml = '';
             if (Object.keys(attachments).length) {
+                attachmentHtml += '<p><label><input type="checkbox" required>' + this.languageHelper.translate('AGREE_ATTACHMENTS') + '</label></p>';
                 attachmentHtml += '<ul>';
                 Object.values(attachments).forEach(function (attachment) {
                     attachmentHtml += '<li><a href="' + attachment.filename + '" download target="_blank">' + attachment.naam + '</a></li>';
@@ -2186,10 +2194,6 @@ var RecrasBooking = function () {
         value: function submitBooking() {
             var _this24 = this;
 
-            var bookingStart = this.selectedDate;
-            bookingStart = RecrasDateHelper.setTimeForDate(bookingStart, this.selectedTime);
-            //console.log(this.selectedDate, this.selectedTime, bookingStart);
-
             var productCounts = this.productCounts().map(function (line) {
                 return line.aantal;
             });
@@ -2214,7 +2218,7 @@ var RecrasBooking = function () {
             var vouchers = Object.keys(this.appliedVouchers).length > 0 ? Object.keys(this.appliedVouchers) : null;
             var bookingParams = {
                 arrangement_id: this.selectedPackage.id,
-                begin: bookingStart,
+                begin: this.selectedDate,
                 betaalmethode: paymentMethod,
                 contactformulier: this.contactForm.generateJson(),
                 kortingscode: this.discount && this.discount.code || null,
@@ -2541,6 +2545,7 @@ var RecrasLanguageHelper = function () {
         //TODO: what is the best way to handle multiple locales?
         this.i18n = {
             en_GB: {
+                AGREE_ATTACHMENTS: 'I agree with the following documents:',
                 ATTR_REQUIRED: 'Required',
                 BUTTON_BOOK_NOW: 'Book now',
                 BUTTON_BUY_NOW: 'Buy now',
@@ -2575,6 +2580,7 @@ var RecrasLanguageHelper = function () {
                 VOUCHER_INVALID: 'Invalid voucher code'
             },
             nl_NL: {
+                AGREE_ATTACHMENTS: 'Ik ga akkoord met de volgende gegevens:',
                 ATTR_REQUIRED: 'Vereist',
                 BUTTON_BOOK_NOW: 'Nu boeken',
                 BUTTON_BUY_NOW: 'Nu kopen',

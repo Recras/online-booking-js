@@ -528,7 +528,8 @@ class RecrasBooking {
 
     normaliseDate(date, packageStart, bookingStart) {
         let diffSeconds = (date - packageStart) / 1000;
-        return new Date(bookingStart.setSeconds(bookingStart.getSeconds() + diffSeconds));
+        let tempDate = new Date(bookingStart.getTime());
+        return new Date(tempDate.setSeconds(tempDate.getSeconds() + diffSeconds));
     }
 
     paymentMethods(pack) {
@@ -551,13 +552,12 @@ class RecrasBooking {
             let linesBegin = linesWithTime.map(line => new Date(line.begin));
             let packageStart = new Date(Math.min(...linesBegin)); // Math.min transforms dates to timestamps
 
-            let bookingStart = this.selectedDate;
-            bookingStart = RecrasDateHelper.setTimeForDate(bookingStart, this.selectedTime);
+            this.selectedDate = RecrasDateHelper.setTimeForDate(this.selectedDate, this.selectedTime);
 
             let linesNoBookingSize = this.getLinesNoBookingSize(this.selectedPackage);
             linesNoBookingSize.forEach((line, idx) => {
-                let normalisedStart = this.normaliseDate(new Date(line.begin), packageStart, bookingStart);
-                let normalisedEnd = this.normaliseDate(new Date(line.eind), packageStart, bookingStart);
+                let normalisedStart = this.normaliseDate(new Date(line.begin), packageStart, this.selectedDate);
+                let normalisedEnd = this.normaliseDate(new Date(line.eind), packageStart, this.selectedDate);
                 this.findElement(`label[for="packageline${ idx }"]`).insertAdjacentHTML(
                     'beforeend',
                     `<span class="time-preview">(${ RecrasDateHelper.timePartOnly(normalisedStart) } – ${ RecrasDateHelper.timePartOnly(normalisedEnd) })</span>`
@@ -898,9 +898,6 @@ class RecrasBooking {
     }
 
     submitBooking() {
-        let bookingStart = this.selectedDate;
-        bookingStart = RecrasDateHelper.setTimeForDate(bookingStart, this.selectedTime);
-
         let productCounts = this.productCounts().map(line => line.aantal);
         let productSum = productCounts.reduce((a, b) => a + b, 0);
         if (this.bookingSize() === 0 && productSum === 0) {
@@ -921,7 +918,7 @@ class RecrasBooking {
         let vouchers = Object.keys(this.appliedVouchers).length > 0 ? Object.keys(this.appliedVouchers) : null;
         let bookingParams = {
             arrangement_id: this.selectedPackage.id,
-            begin: bookingStart,
+            begin: this.selectedDate,
             betaalmethode: paymentMethod,
             contactformulier: this.contactForm.generateJson(),
             kortingscode: (this.discount && this.discount.code) || null,

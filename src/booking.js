@@ -190,10 +190,11 @@ class RecrasBooking {
             this.clearAllExceptPackageSelection();
         }
         this.selectedPackage = selectedPackage[0];
-        this.showProducts(this.selectedPackage);
-        this.checkDependencies();
-        this.loadingIndicatorShow(this.findElement('.recras-amountsform'));
-        this.showDateTimeSelection(this.selectedPackage).then(() => {
+        this.showProducts(this.selectedPackage).then(() => {
+            this.checkDependencies();
+            this.loadingIndicatorShow(this.findElement('.recras-amountsform'));
+            return this.showDateTimeSelection(this.selectedPackage);
+        }).then(() => {
             this.loadingIndicatorHide();
             this.showContactForm(this.selectedPackage);
         });
@@ -830,7 +831,7 @@ class RecrasBooking {
         promises.push(this.languageHelper.filterTags(this.texts.online_boeking_step1_text_pre, this.selectedPackage ? this.selectedPackage.id : null));
         promises.push(this.languageHelper.filterTags(this.texts.online_boeking_step1_text_post, this.selectedPackage ? this.selectedPackage.id : null));
 
-        Promise.all(promises).then(msgs => {
+        return Promise.all(promises).then(msgs => {
             let html = '<div class="recras-amountsform">';
             html += `<p>${ msgs[0] }</p>`;
 

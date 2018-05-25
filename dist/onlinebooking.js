@@ -1418,10 +1418,11 @@ var RecrasBooking = function () {
                 this.clearAllExceptPackageSelection();
             }
             this.selectedPackage = selectedPackage[0];
-            this.showProducts(this.selectedPackage);
-            this.checkDependencies();
-            this.loadingIndicatorShow(this.findElement('.recras-amountsform'));
-            this.showDateTimeSelection(this.selectedPackage).then(function () {
+            this.showProducts(this.selectedPackage).then(function () {
+                _this4.checkDependencies();
+                _this4.loadingIndicatorShow(_this4.findElement('.recras-amountsform'));
+                return _this4.showDateTimeSelection(_this4.selectedPackage);
+            }).then(function () {
                 _this4.loadingIndicatorHide();
                 _this4.showContactForm(_this4.selectedPackage);
             });
@@ -1757,6 +1758,7 @@ var RecrasBooking = function () {
     }, {
         key: 'loadingIndicatorShow',
         value: function loadingIndicatorShow(afterEl) {
+            console.log('lis', afterEl);
             afterEl.insertAdjacentHTML('beforeend', '<span class="recrasLoadingIndicator">' + this.languageHelper.translate('LOADING') + '</span>');
         }
     }, {
@@ -2118,7 +2120,7 @@ var RecrasBooking = function () {
             promises.push(this.languageHelper.filterTags(this.texts.online_boeking_step1_text_pre, this.selectedPackage ? this.selectedPackage.id : null));
             promises.push(this.languageHelper.filterTags(this.texts.online_boeking_step1_text_post, this.selectedPackage ? this.selectedPackage.id : null));
 
-            Promise.all(promises).then(function (msgs) {
+            return Promise.all(promises).then(function (msgs) {
                 var html = '<div class="recras-amountsform">';
                 html += '<p>' + msgs[0] + '</p>';
 

@@ -8,6 +8,41 @@ class RecrasLanguageHelper {
 
         //TODO: what is the best way to handle multiple locales?
         this.i18n = {
+            de_DE: {
+                AGREE_ATTACHMENTS: '„Ich stimme mit den folgenden Unterlagen:',
+                ATTR_REQUIRED: 'Erforderlich',
+                BUTTON_BOOK_NOW: 'Jetzt buchen',
+                BUTTON_BUY_NOW: 'Jetzt kaufen',
+                DATE: 'Datum',
+                DATE_INVALID: 'Ungültiges datum',
+                DISCOUNT_CHECK: 'Überprüfen',
+                DISCOUNT_CODE: 'Rabattcode',
+                DISCOUNT_INVALID: 'Ungültiger Rabattcode',
+                ERR_GENERAL: 'Etwas ist schief gelaufen:',
+                ERR_INVALID_ELEMENT: 'Option "Element" ist kein gültiges Element',
+                ERR_INVALID_HOSTNAME: 'Option "recras_hostname" ist ungültig.',
+                ERR_INVALID_LOCALE: 'Ungültiges Gebietsschema. Gültige Optionen sind: {LOCALES}',
+                ERR_INVALID_REDIRECT_URL: 'Ungültige redirect URL. Stellen Sie sicher, dass es mit http:// or https:// beginnt',
+                ERR_NO_ELEMENT: 'Option "element" nicht eingestellt.',
+                ERR_NO_HOSTNAME: 'Option "recras_hostname" nicht eingestellt.',
+                GENDER_UNKNOWN: 'Unbekannte',
+                GENDER_MALE: 'Mann',
+                GENDER_FEMALE: 'Frau',
+                LOADING: 'Wird geladen...',
+                NO_PRODUCTS: 'Kein Produkt ausgewählt',
+                PRICE_TOTAL: 'Insgesamt',
+                PRICE_TOTAL_WITH_DISCOUNT: 'Insgesamt inklusive Rabatt',
+                PRODUCT_MINIMUM: '(muss mindestens {MINIMUM} sein)',
+                PRODUCT_REQUIRED: '{NUM} {PRODUCT} benötigt {REQUIRED_AMOUNT} {REQUIRED_PRODUCT} um auch gebucht zu werden.',
+                TIME: 'Zeit',
+                VOUCHER: 'Gutschein',
+                VOUCHER_ALREADY_APPLIED: 'Gutschein bereits eingelöst',
+                VOUCHER_APPLIED: 'Gutschein bereits eingelöst',
+                VOUCHER_APPLY: 'Einlösen',
+                VOUCHERS_DISCOUNT: 'Rabatt von Gutschein(en)',
+                VOUCHER_EMPTY: 'Leerer Gutscheincode',
+                VOUCHER_INVALID: 'Ungültiger Gutscheincode',
+            },
             en_GB: {
                 AGREE_ATTACHMENTS: 'I agree with the following documents:',
                 ATTR_REQUIRED: 'Required',
@@ -94,7 +129,8 @@ class RecrasLanguageHelper {
     }
 
     filterTags(msg, packageID) {
-        let tags = this.extractTags(msg);
+        return Promise.resolve(msg);
+        /*let tags = this.extractTags(msg);
         if (tags.length === 0) {
             return Promise.resolve(msg);
         }
@@ -115,7 +151,7 @@ class RecrasLanguageHelper {
                     msg = msg.replace(regex, filtered[tag]);
                 });
                 return msg;
-            });
+            });*/
     }
 
     formatLocale(what) {

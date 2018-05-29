@@ -1,6 +1,6 @@
 /****************************
  *  Recras voucher library  *
- *  v 0.0.1                 *
+ *  v 0.1.0                 *
  ***************************/
 
 class RecrasVoucher {
@@ -61,7 +61,16 @@ class RecrasVoucher {
     }
 
     clearAll() {
-        [...this.element.children].forEach(el => {
+        this.clearElements(this.element.children);
+    }
+
+    clearAllExceptTemplateSelection() {
+        let elements = document.querySelectorAll('#' + this.element.id + ' > *:not(.recras-voucher-templates)');
+        this.clearElements(elements);
+    }
+
+    clearElements(elements) {
+        [...elements].forEach(el => {
             el.parentNode.removeChild(el);
         });
         this.appendHtml(`<div class="latestError"></div>`);
@@ -124,6 +133,8 @@ class RecrasVoucher {
     }
 
     showContactForm(templateId) {
+        this.clearAllExceptTemplateSelection();
+
         this.selectedTemplate = this.templates.filter(t => {
             return t.id === templateId;
         })[0];
@@ -158,7 +169,7 @@ class RecrasVoucher {
     showTemplates(templates) {
         let templateOptions = templates.map(template => `<option value="${ template.id }">${ template.name } (${ this.formatPrice(template.price) })`);
         let html = `<select class="recrasVoucherTemplates"><option>${ templateOptions.join('') }</select>`;
-        this.appendHtml(`<div id="recras-voucher-templates">${ html }</div>`);
+        this.appendHtml(`<div class="recras-voucher-templates">${ html }</div>`);
 
         let voucherSelectEl = this.findElement('.recrasVoucherTemplates');
         voucherSelectEl.addEventListener('change', () => {

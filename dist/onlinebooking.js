@@ -2866,7 +2866,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /****************************
  *  Recras voucher library  *
- *  v 0.0.1                 *
+ *  v 0.1.0                 *
  ***************************/
 
 var RecrasVoucher = function () {
@@ -2944,7 +2944,18 @@ var RecrasVoucher = function () {
     }, {
         key: 'clearAll',
         value: function clearAll() {
-            [].concat(_toConsumableArray(this.element.children)).forEach(function (el) {
+            this.clearElements(this.element.children);
+        }
+    }, {
+        key: 'clearAllExceptTemplateSelection',
+        value: function clearAllExceptTemplateSelection() {
+            var elements = document.querySelectorAll('#' + this.element.id + ' > *:not(.recras-voucher-templates)');
+            this.clearElements(elements);
+        }
+    }, {
+        key: 'clearElements',
+        value: function clearElements(elements) {
+            [].concat(_toConsumableArray(elements)).forEach(function (el) {
                 el.parentNode.removeChild(el);
             });
             this.appendHtml('<div class="latestError"></div>');
@@ -3021,6 +3032,8 @@ var RecrasVoucher = function () {
         value: function showContactForm(templateId) {
             var _this5 = this;
 
+            this.clearAllExceptTemplateSelection();
+
             this.selectedTemplate = this.templates.filter(function (t) {
                 return t.id === templateId;
             })[0];
@@ -3059,7 +3072,7 @@ var RecrasVoucher = function () {
                 return '<option value="' + template.id + '">' + template.name + ' (' + _this6.formatPrice(template.price) + ')';
             });
             var html = '<select class="recrasVoucherTemplates"><option>' + templateOptions.join('') + '</select>';
-            this.appendHtml('<div id="recras-voucher-templates">' + html + '</div>');
+            this.appendHtml('<div class="recras-voucher-templates">' + html + '</div>');
 
             var voucherSelectEl = this.findElement('.recrasVoucherTemplates');
             voucherSelectEl.addEventListener('change', function () {

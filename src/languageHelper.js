@@ -39,9 +39,10 @@ class RecrasLanguageHelper {
                 VOUCHER_ALREADY_APPLIED: 'Gutschein bereits eingelöst',
                 VOUCHER_APPLIED: 'Gutschein bereits eingelöst',
                 VOUCHER_APPLY: 'Einlösen',
-                VOUCHERS_DISCOUNT: 'Rabatt von Gutschein(en)',
                 VOUCHER_EMPTY: 'Leerer Gutscheincode',
                 VOUCHER_INVALID: 'Ungültiger Gutscheincode',
+                VOUCHER_QUANTITY: 'Anzahl der Gutscheine',
+                VOUCHERS_DISCOUNT: 'Rabatt von Gutschein(en)',
             },
             en_GB: {
                 AGREE_ATTACHMENTS: 'I agree with the following documents:',
@@ -74,9 +75,10 @@ class RecrasLanguageHelper {
                 VOUCHER_ALREADY_APPLIED: 'Voucher already applied',
                 VOUCHER_APPLIED: 'Voucher applied',
                 VOUCHER_APPLY: 'Apply',
-                VOUCHERS_DISCOUNT: 'Discount from voucher(s)',
                 VOUCHER_EMPTY: 'Empty voucher code',
                 VOUCHER_INVALID: 'Invalid voucher code',
+                VOUCHER_QUANTITY: 'Number of vouchers',
+                VOUCHERS_DISCOUNT: 'Discount from voucher(s)',
             },
             nl_NL: {
                 AGREE_ATTACHMENTS: 'Ik ga akkoord met de volgende gegevens:',
@@ -109,9 +111,10 @@ class RecrasLanguageHelper {
                 VOUCHER_ALREADY_APPLIED: 'Tegoedbon al toegepast',
                 VOUCHER_APPLIED: 'Tegoedbon toegepast',
                 VOUCHER_APPLY: 'Toepassen',
-                VOUCHERS_DISCOUNT: 'Korting uit tegoedbon(nen)',
                 VOUCHER_EMPTY: 'Lege tegoedbon',
                 VOUCHER_INVALID: 'Ongeldige tegoedbon',
+                VOUCHER_QUANTITY: 'Aantal tegoedbonnen',
+                VOUCHERS_DISCOUNT: 'Korting uit tegoedbon(nen)',
             }
         };
     }

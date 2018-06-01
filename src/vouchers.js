@@ -42,7 +42,7 @@ class RecrasVoucher {
 
         let payload = {
             voucher_template_id: this.selectedTemplate.id,
-            number_of_vouchers: 1, //TODO: add field to change this
+            number_of_vouchers: parseInt(this.findElement('.number-of-vouchers').value, 10),
             contact_form: this.contactForm.generateJson(),
         };
         if (this.options.getRedirectUrl()) {
@@ -119,11 +119,19 @@ class RecrasVoucher {
             shouldDisable = true;
         }
 
+        if (this.findElement('.number-of-vouchers').value < 1) {
+            shouldDisable = true;
+        }
+
         if (shouldDisable) {
             button.setAttribute('disabled', 'disabled');
         } else {
             button.removeAttribute('disabled');
         }
+    }
+
+    quantitySelector() {
+        return `<div><label for="number-of-vouchers">${ this.languageHelper.translate('VOUCHER_QUANTITY') }</label><input type="number" id="number-of-vouchers" class="number-of-vouchers" min="1" value="1" required></div>`;
     }
 
     showBuyButton() {
@@ -151,6 +159,7 @@ class RecrasVoucher {
             }
             Promise.all(waitFor).then(() => {
                 let html = '<form class="recras-contactform">';
+                html += this.quantitySelector();
                 fields.forEach((field, idx) => {
                     html += '<div>' + this.contactForm.showField(field, idx) + '</div>';
                 });

@@ -2575,9 +2575,10 @@ var RecrasLanguageHelper = function () {
                 VOUCHER_ALREADY_APPLIED: 'Gutschein bereits eingelöst',
                 VOUCHER_APPLIED: 'Gutschein bereits eingelöst',
                 VOUCHER_APPLY: 'Einlösen',
-                VOUCHERS_DISCOUNT: 'Rabatt von Gutschein(en)',
                 VOUCHER_EMPTY: 'Leerer Gutscheincode',
-                VOUCHER_INVALID: 'Ungültiger Gutscheincode'
+                VOUCHER_INVALID: 'Ungültiger Gutscheincode',
+                VOUCHER_QUANTITY: 'Anzahl der Gutscheine',
+                VOUCHERS_DISCOUNT: 'Rabatt von Gutschein(en)'
             },
             en_GB: {
                 AGREE_ATTACHMENTS: 'I agree with the following documents:',
@@ -2610,9 +2611,10 @@ var RecrasLanguageHelper = function () {
                 VOUCHER_ALREADY_APPLIED: 'Voucher already applied',
                 VOUCHER_APPLIED: 'Voucher applied',
                 VOUCHER_APPLY: 'Apply',
-                VOUCHERS_DISCOUNT: 'Discount from voucher(s)',
                 VOUCHER_EMPTY: 'Empty voucher code',
-                VOUCHER_INVALID: 'Invalid voucher code'
+                VOUCHER_INVALID: 'Invalid voucher code',
+                VOUCHER_QUANTITY: 'Number of vouchers',
+                VOUCHERS_DISCOUNT: 'Discount from voucher(s)'
             },
             nl_NL: {
                 AGREE_ATTACHMENTS: 'Ik ga akkoord met de volgende gegevens:',
@@ -2645,9 +2647,10 @@ var RecrasLanguageHelper = function () {
                 VOUCHER_ALREADY_APPLIED: 'Tegoedbon al toegepast',
                 VOUCHER_APPLIED: 'Tegoedbon toegepast',
                 VOUCHER_APPLY: 'Toepassen',
-                VOUCHERS_DISCOUNT: 'Korting uit tegoedbon(nen)',
                 VOUCHER_EMPTY: 'Lege tegoedbon',
-                VOUCHER_INVALID: 'Ongeldige tegoedbon'
+                VOUCHER_INVALID: 'Ongeldige tegoedbon',
+                VOUCHER_QUANTITY: 'Aantal tegoedbonnen',
+                VOUCHERS_DISCOUNT: 'Korting uit tegoedbon(nen)'
             }
         };
     }
@@ -2820,6 +2823,11 @@ var RecrasOptions = function () {
             return this.options.redirect_url;
         }
     }, {
+        key: 'getVoucherTemplateId',
+        value: function getVoucherTemplateId() {
+            return this.options.voucher_template_id;
+        }
+    }, {
         key: 'setOptions',
         value: function setOptions(options) {
             var protocol = options.recras_hostname === RecrasOptions.hostnameDebug ? 'http' : 'https';
@@ -2907,7 +2915,11 @@ var RecrasVoucher = function () {
         this.languageHelper.setOptions(options).then(function () {
             return _this.getVoucherTemplates();
         }).then(function (templates) {
-            return _this.showTemplates(templates);
+            if (_this.options.getVoucherTemplateId()) {
+                _this.changeTemplate(_this.options.getVoucherTemplateId());
+            } else {
+                _this.showTemplates(templates);
+            }
         });
     }
 
@@ -2925,7 +2937,7 @@ var RecrasVoucher = function () {
 
             var payload = {
                 voucher_template_id: this.selectedTemplate.id,
-                number_of_vouchers: 1, //TODO: add field to change this
+                number_of_vouchers: parseInt(this.findElement('.number-of-vouchers').value, 10),
                 contact_form: this.contactForm.generateJson()
             };
             if (this.options.getRedirectUrl()) {
@@ -2940,6 +2952,12 @@ var RecrasVoucher = function () {
                     console.log(result);
                 }
             });
+        }
+    }, {
+        key: 'changeTemplate',
+        value: function changeTemplate(templateID) {
+            this.clearAllExceptTemplateSelection();
+            this.showContactForm(templateID);
         }
     }, {
         key: 'clearAll',
@@ -3014,11 +3032,20 @@ var RecrasVoucher = function () {
                 shouldDisable = true;
             }
 
+            if (this.findElement('.number-of-vouchers').value < 1) {
+                shouldDisable = true;
+            }
+
             if (shouldDisable) {
                 button.setAttribute('disabled', 'disabled');
             } else {
                 button.removeAttribute('disabled');
             }
+        }
+    }, {
+        key: 'quantitySelector',
+        value: function quantitySelector() {
+            return '<div><label for="number-of-vouchers">' + this.languageHelper.translate('VOUCHER_QUANTITY') + '</label><input type="number" id="number-of-vouchers" class="number-of-vouchers" min="1" value="1" required></div>';
         }
     }, {
         key: 'showBuyButton',
@@ -3031,8 +3058,6 @@ var RecrasVoucher = function () {
         key: 'showContactForm',
         value: function showContactForm(templateId) {
             var _this5 = this;
-
-            this.clearAllExceptTemplateSelection();
 
             this.selectedTemplate = this.templates.filter(function (t) {
                 return t.id === templateId;
@@ -3050,6 +3075,7 @@ var RecrasVoucher = function () {
                 }
                 Promise.all(waitFor).then(function () {
                     var html = '<form class="recras-contactform">';
+                    html += _this5.quantitySelector();
                     fields.forEach(function (field, idx) {
                         html += '<div>' + _this5.contactForm.showField(field, idx) + '</div>';
                     });
@@ -3077,7 +3103,7 @@ var RecrasVoucher = function () {
             var voucherSelectEl = this.findElement('.recrasVoucherTemplates');
             voucherSelectEl.addEventListener('change', function () {
                 var selectedTemplateId = parseInt(voucherSelectEl.value, 10);
-                _this6.showContactForm(selectedTemplateId);
+                _this6.changeTemplate(selectedTemplateId);
             });
         }
     }]);

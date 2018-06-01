@@ -30,7 +30,13 @@ class RecrasVoucher {
 
         this.languageHelper.setOptions(options)
             .then(() => this.getVoucherTemplates())
-            .then(templates => this.showTemplates(templates));
+            .then(templates => {
+                if (this.options.getVoucherTemplateId()) {
+                    this.changeTemplate(this.options.getVoucherTemplateId());
+                } else {
+                    this.showTemplates(templates);
+                }
+            });
     }
 
     appendHtml(msg) {
@@ -58,6 +64,11 @@ class RecrasVoucher {
                     console.log(result);
                 }
             })
+    }
+
+    changeTemplate(templateID) {
+        this.clearAllExceptTemplateSelection();
+        this.showContactForm(templateID);
     }
 
     clearAll() {
@@ -141,8 +152,6 @@ class RecrasVoucher {
     }
 
     showContactForm(templateId) {
-        this.clearAllExceptTemplateSelection();
-
         this.selectedTemplate = this.templates.filter(t => {
             return t.id === templateId;
         })[0];
@@ -183,7 +192,7 @@ class RecrasVoucher {
         let voucherSelectEl = this.findElement('.recrasVoucherTemplates');
         voucherSelectEl.addEventListener('change', () => {
             let selectedTemplateId = parseInt(voucherSelectEl.value, 10);
-            this.showContactForm(selectedTemplateId);
+            this.changeTemplate(selectedTemplateId);
         });
     }
 }

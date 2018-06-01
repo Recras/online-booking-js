@@ -25,6 +25,9 @@ class RecrasOptions {
     getRedirectUrl() {
         return this.options.redirect_url;
     }
+    getVoucherTemplateId() {
+        return this.options.voucher_template_id;
+    }
 
     setOptions(options) {
         let protocol = (options.recras_hostname === RecrasOptions.hostnameDebug) ? 'http' : 'https';

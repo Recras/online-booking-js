@@ -17,6 +17,7 @@
         body {
             background-image: url('https://www.onionbooking.com/static/images/header.jpg');
             background-position: center;
+            background-attachment: fixed;
             background-size: cover;
             font-family: sans-serif;
             height: 100%;
@@ -75,8 +76,28 @@
             color: #a00;
         }
 
+        .recras-onlinebooking > *:not(:first-child) + * {
+            border-top: 2px solid hsla(147, 25%, 25%, 0.25);
+        }
+
+        hr {
+            background: hsl(147, 25%, 25%);
+            border: 0;
+            color: hsl(147, 25%, 25%);
+            height: 2px;
+        }
+
         @media (max-width: 640px) {
-            .recras-contactform > div, .recras-amountsform > div {
+            .recras-amountsform > div {
+                flex-wrap: wrap;
+            }
+            .recras-amountsform > div > div:first-child {
+                flex-basis: 100%;
+            }
+            .recras-amountsform input {
+                flex-basis: 75%;
+            }
+            .recras-contactform > div {
                 flex-direction: column;
             }
             .recras-price, .priceSubtotal {
@@ -99,7 +120,7 @@
 <script src="../dist/onlinebooking.js"></script>
 <script>
     const recrasOptions = {
-        recras_hostname: 'demo.recras.nl', // Required
+        recras_hostname: '172.16.0.2', // Required
         element: document.getElementById('onlinebooking'), // Required
         locale: 'nl_NL', // Optional, default is nl_NL. Valid values are de_DE, en_GB, and nl_NL
         //package_id: 5, // Optional, this will skip the package selection step for online booking

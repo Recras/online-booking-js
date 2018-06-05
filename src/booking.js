@@ -789,7 +789,42 @@ class RecrasBooking {
                     field: this.findElement('.recras-onlinebooking-date'),
                     firstDay: 1, // Monday
                     format: 'yyyy-MM-dd', //Only used when Moment is loaded?
-                    /*i18n: {}*/ //TODO: i18n
+                    i18n: {
+                        previousMonth: this.languageHelper.translate('DATE_PICKER_PREVIOUS_MONTH'),
+                        nextMonth: this.languageHelper.translate('DATE_PICKER_NEXT_MONTH'),
+                        months: [
+                            this.languageHelper.translate('DATE_PICKER_MONTH_JANUARY'),
+                            this.languageHelper.translate('DATE_PICKER_MONTH_FEBRUARY'),
+                            this.languageHelper.translate('DATE_PICKER_MONTH_MARCH'),
+                            this.languageHelper.translate('DATE_PICKER_MONTH_APRIL'),
+                            this.languageHelper.translate('DATE_PICKER_MONTH_MAY'),
+                            this.languageHelper.translate('DATE_PICKER_MONTH_JUNE'),
+                            this.languageHelper.translate('DATE_PICKER_MONTH_JULY'),
+                            this.languageHelper.translate('DATE_PICKER_MONTH_AUGUST'),
+                            this.languageHelper.translate('DATE_PICKER_MONTH_SEPTEMBER'),
+                            this.languageHelper.translate('DATE_PICKER_MONTH_OCTOBER'),
+                            this.languageHelper.translate('DATE_PICKER_MONTH_NOVEMBER'),
+                            this.languageHelper.translate('DATE_PICKER_MONTH_DECEMBER'),
+                        ],
+                        weekdays: [
+                            this.languageHelper.translate('DATE_PICKER_DAY_SUNDAY_LONG'),
+                            this.languageHelper.translate('DATE_PICKER_DAY_MONDAY_LONG'),
+                            this.languageHelper.translate('DATE_PICKER_DAY_TUESDAY_LONG'),
+                            this.languageHelper.translate('DATE_PICKER_DAY_WEDNESDAY_LONG'),
+                            this.languageHelper.translate('DATE_PICKER_DAY_THURSDAY_LONG'),
+                            this.languageHelper.translate('DATE_PICKER_DAY_FRIDAY_LONG'),
+                            this.languageHelper.translate('DATE_PICKER_DAY_SATURDAY_LONG'),
+                        ],
+                        weekdaysShort: [
+                            this.languageHelper.translate('DATE_PICKER_DAY_SUNDAY_SHORT'),
+                            this.languageHelper.translate('DATE_PICKER_DAY_MONDAY_SHORT'),
+                            this.languageHelper.translate('DATE_PICKER_DAY_TUESDAY_SHORT'),
+                            this.languageHelper.translate('DATE_PICKER_DAY_WEDNESDAY_SHORT'),
+                            this.languageHelper.translate('DATE_PICKER_DAY_THURSDAY_SHORT'),
+                            this.languageHelper.translate('DATE_PICKER_DAY_FRIDAY_SHORT'),
+                            this.languageHelper.translate('DATE_PICKER_DAY_SATURDAY_SHORT'),
+                        ],
+                    },
                     minDate: new Date(),
                     numberOfMonths: 2,
                     onDraw: () => {

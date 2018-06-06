@@ -234,8 +234,7 @@ class RecrasLanguageHelper {
         )
             .then(filtered => {
                 Object.keys(filtered).forEach(tag => {
-                    let regex = new RegExp('{' + tag + '}', 'g');
-                    msg = msg.replace(regex, filtered[tag]);
+                    msg = msg.split('{' + tag + '}').join(filtered[tag]);
                 });
                 return msg;
             });*/

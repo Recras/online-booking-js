@@ -2065,7 +2065,13 @@ var RecrasBooking = function () {
                     field: _this20.findElement('.recras-onlinebooking-date'),
                     firstDay: 1, // Monday
                     format: 'yyyy-MM-dd', //Only used when Moment is loaded?
-                    /*i18n: {}*/ //TODO: i18n
+                    i18n: {
+                        previousMonth: _this20.languageHelper.translate('DATE_PICKER_PREVIOUS_MONTH'),
+                        nextMonth: _this20.languageHelper.translate('DATE_PICKER_NEXT_MONTH'),
+                        months: [_this20.languageHelper.translate('DATE_PICKER_MONTH_JANUARY'), _this20.languageHelper.translate('DATE_PICKER_MONTH_FEBRUARY'), _this20.languageHelper.translate('DATE_PICKER_MONTH_MARCH'), _this20.languageHelper.translate('DATE_PICKER_MONTH_APRIL'), _this20.languageHelper.translate('DATE_PICKER_MONTH_MAY'), _this20.languageHelper.translate('DATE_PICKER_MONTH_JUNE'), _this20.languageHelper.translate('DATE_PICKER_MONTH_JULY'), _this20.languageHelper.translate('DATE_PICKER_MONTH_AUGUST'), _this20.languageHelper.translate('DATE_PICKER_MONTH_SEPTEMBER'), _this20.languageHelper.translate('DATE_PICKER_MONTH_OCTOBER'), _this20.languageHelper.translate('DATE_PICKER_MONTH_NOVEMBER'), _this20.languageHelper.translate('DATE_PICKER_MONTH_DECEMBER')],
+                        weekdays: [_this20.languageHelper.translate('DATE_PICKER_DAY_SUNDAY_LONG'), _this20.languageHelper.translate('DATE_PICKER_DAY_MONDAY_LONG'), _this20.languageHelper.translate('DATE_PICKER_DAY_TUESDAY_LONG'), _this20.languageHelper.translate('DATE_PICKER_DAY_WEDNESDAY_LONG'), _this20.languageHelper.translate('DATE_PICKER_DAY_THURSDAY_LONG'), _this20.languageHelper.translate('DATE_PICKER_DAY_FRIDAY_LONG'), _this20.languageHelper.translate('DATE_PICKER_DAY_SATURDAY_LONG')],
+                        weekdaysShort: [_this20.languageHelper.translate('DATE_PICKER_DAY_SUNDAY_SHORT'), _this20.languageHelper.translate('DATE_PICKER_DAY_MONDAY_SHORT'), _this20.languageHelper.translate('DATE_PICKER_DAY_TUESDAY_SHORT'), _this20.languageHelper.translate('DATE_PICKER_DAY_WEDNESDAY_SHORT'), _this20.languageHelper.translate('DATE_PICKER_DAY_THURSDAY_SHORT'), _this20.languageHelper.translate('DATE_PICKER_DAY_FRIDAY_SHORT'), _this20.languageHelper.translate('DATE_PICKER_DAY_SATURDAY_SHORT')]
+                    },
                     minDate: new Date(),
                     numberOfMonths: 2,
                     onDraw: function onDraw() {
@@ -2545,12 +2551,40 @@ var RecrasLanguageHelper = function () {
         //TODO: what is the best way to handle multiple locales?
         this.i18n = {
             de_DE: {
-                AGREE_ATTACHMENTS: '„Ich stimme mit den folgenden Unterlagen:',
+                AGREE_ATTACHMENTS: 'Ich stimme mit den folgenden Unterlagen:',
                 ATTR_REQUIRED: 'Erforderlich',
                 BUTTON_BOOK_NOW: 'Jetzt buchen',
                 BUTTON_BUY_NOW: 'Jetzt kaufen',
                 DATE: 'Datum',
                 DATE_INVALID: 'Ungültiges datum',
+                DATE_PICKER_NEXT_MONTH: 'Nächsten Monat',
+                DATE_PICKER_PREVIOUS_MONTH: 'Vorheriger Monat',
+                DATE_PICKER_MONTH_JANUARY: 'Januar',
+                DATE_PICKER_MONTH_FEBRUARY: 'Februar',
+                DATE_PICKER_MONTH_MARCH: 'März',
+                DATE_PICKER_MONTH_APRIL: 'April',
+                DATE_PICKER_MONTH_MAY: 'Mai',
+                DATE_PICKER_MONTH_JUNE: 'Juni',
+                DATE_PICKER_MONTH_JULY: 'Juli',
+                DATE_PICKER_MONTH_AUGUST: 'August',
+                DATE_PICKER_MONTH_SEPTEMBER: 'September',
+                DATE_PICKER_MONTH_OCTOBER: 'Oktober',
+                DATE_PICKER_MONTH_NOVEMBER: 'November',
+                DATE_PICKER_MONTH_DECEMBER: 'Dezember',
+                DATE_PICKER_DAY_MONDAY_LONG: 'Montag',
+                DATE_PICKER_DAY_MONDAY_SHORT: 'Mo',
+                DATE_PICKER_DAY_TUESDAY_LONG: 'Dienstag',
+                DATE_PICKER_DAY_TUESDAY_SHORT: 'Di',
+                DATE_PICKER_DAY_WEDNESDAY_LONG: 'Mittwoch',
+                DATE_PICKER_DAY_WEDNESDAY_SHORT: 'Mi',
+                DATE_PICKER_DAY_THURSDAY_LONG: 'Donnerstag',
+                DATE_PICKER_DAY_THURSDAY_SHORT: 'Do',
+                DATE_PICKER_DAY_FRIDAY_LONG: 'Freitag',
+                DATE_PICKER_DAY_FRIDAY_SHORT: 'Fr',
+                DATE_PICKER_DAY_SATURDAY_LONG: 'Samstag',
+                DATE_PICKER_DAY_SATURDAY_SHORT: 'Sa',
+                DATE_PICKER_DAY_SUNDAY_LONG: 'Sonntag',
+                DATE_PICKER_DAY_SUNDAY_SHORT: 'So',
                 DISCOUNT_CHECK: 'Überprüfen',
                 DISCOUNT_CODE: 'Rabattcode',
                 DISCOUNT_INVALID: 'Ungültiger Rabattcode',
@@ -2587,6 +2621,34 @@ var RecrasLanguageHelper = function () {
                 BUTTON_BUY_NOW: 'Buy now',
                 DATE: 'Date',
                 DATE_INVALID: 'Invalid date',
+                DATE_PICKER_NEXT_MONTH: 'Next month',
+                DATE_PICKER_PREVIOUS_MONTH: 'Previous month',
+                DATE_PICKER_MONTH_JANUARY: 'January',
+                DATE_PICKER_MONTH_FEBRUARY: 'February',
+                DATE_PICKER_MONTH_MARCH: 'March',
+                DATE_PICKER_MONTH_APRIL: 'April',
+                DATE_PICKER_MONTH_MAY: 'May',
+                DATE_PICKER_MONTH_JUNE: 'June',
+                DATE_PICKER_MONTH_JULY: 'July',
+                DATE_PICKER_MONTH_AUGUST: 'August',
+                DATE_PICKER_MONTH_SEPTEMBER: 'September',
+                DATE_PICKER_MONTH_OCTOBER: 'October',
+                DATE_PICKER_MONTH_NOVEMBER: 'November',
+                DATE_PICKER_MONTH_DECEMBER: 'December',
+                DATE_PICKER_DAY_MONDAY_LONG: 'Monday',
+                DATE_PICKER_DAY_MONDAY_SHORT: 'Mon',
+                DATE_PICKER_DAY_TUESDAY_LONG: 'Tuesday',
+                DATE_PICKER_DAY_TUESDAY_SHORT: 'Tue',
+                DATE_PICKER_DAY_WEDNESDAY_LONG: 'Wednesday',
+                DATE_PICKER_DAY_WEDNESDAY_SHORT: 'Wed',
+                DATE_PICKER_DAY_THURSDAY_LONG: 'Thursday',
+                DATE_PICKER_DAY_THURSDAY_SHORT: 'Thu',
+                DATE_PICKER_DAY_FRIDAY_LONG: 'Friday',
+                DATE_PICKER_DAY_FRIDAY_SHORT: 'Fri',
+                DATE_PICKER_DAY_SATURDAY_LONG: 'Saturday',
+                DATE_PICKER_DAY_SATURDAY_SHORT: 'Sat',
+                DATE_PICKER_DAY_SUNDAY_LONG: 'Sunday',
+                DATE_PICKER_DAY_SUNDAY_SHORT: 'Sun',
                 DISCOUNT_CHECK: 'Check',
                 DISCOUNT_CODE: 'Discount code',
                 DISCOUNT_INVALID: 'Invalid discount code',
@@ -2623,6 +2685,34 @@ var RecrasLanguageHelper = function () {
                 BUTTON_BUY_NOW: 'Nu kopen',
                 DATE: 'Datum',
                 DATE_INVALID: 'Ongeldige datum',
+                DATE_PICKER_NEXT_MONTH: 'Volgende maand',
+                DATE_PICKER_PREVIOUS_MONTH: 'Vorige maand',
+                DATE_PICKER_MONTH_JANUARY: 'Januari',
+                DATE_PICKER_MONTH_FEBRUARY: 'Februari',
+                DATE_PICKER_MONTH_MARCH: 'Maart',
+                DATE_PICKER_MONTH_APRIL: 'April',
+                DATE_PICKER_MONTH_MAY: 'Mei',
+                DATE_PICKER_MONTH_JUNE: 'Juni',
+                DATE_PICKER_MONTH_JULY: 'Juli',
+                DATE_PICKER_MONTH_AUGUST: 'Augustus',
+                DATE_PICKER_MONTH_SEPTEMBER: 'September',
+                DATE_PICKER_MONTH_OCTOBER: 'Oktober',
+                DATE_PICKER_MONTH_NOVEMBER: 'November',
+                DATE_PICKER_MONTH_DECEMBER: 'December',
+                DATE_PICKER_DAY_MONDAY_LONG: 'Maandag',
+                DATE_PICKER_DAY_MONDAY_SHORT: 'Ma',
+                DATE_PICKER_DAY_TUESDAY_LONG: 'Dinsdag',
+                DATE_PICKER_DAY_TUESDAY_SHORT: 'Di',
+                DATE_PICKER_DAY_WEDNESDAY_LONG: 'Woensdag',
+                DATE_PICKER_DAY_WEDNESDAY_SHORT: 'Wo',
+                DATE_PICKER_DAY_THURSDAY_LONG: 'Donderdag',
+                DATE_PICKER_DAY_THURSDAY_SHORT: 'Do',
+                DATE_PICKER_DAY_FRIDAY_LONG: 'Vrijdag',
+                DATE_PICKER_DAY_FRIDAY_SHORT: 'Vr',
+                DATE_PICKER_DAY_SATURDAY_LONG: 'Zaterdag',
+                DATE_PICKER_DAY_SATURDAY_SHORT: 'Za',
+                DATE_PICKER_DAY_SUNDAY_LONG: 'Zondag',
+                DATE_PICKER_DAY_SUNDAY_SHORT: 'Zo',
                 DISCOUNT_CHECK: 'Controleren',
                 DISCOUNT_CODE: 'Kortingscode',
                 DISCOUNT_INVALID: 'Ongeldige kortingscode',
@@ -2691,8 +2781,7 @@ var RecrasLanguageHelper = function () {
             )
                 .then(filtered => {
                     Object.keys(filtered).forEach(tag => {
-                        let regex = new RegExp('{' + tag + '}', 'g');
-                        msg = msg.replace(regex, filtered[tag]);
+                        msg = msg.split('{' + tag + '}').join(filtered[tag]);
                     });
                     return msg;
                 });*/
@@ -2838,7 +2927,7 @@ var RecrasOptions = function () {
     }, {
         key: 'validate',
         value: function validate(options) {
-            var hostnameRegex = new RegExp(/^[a-z0-9\-]+\.recras\.nl$/, 'i');
+            var hostnameRegex = new RegExp(/^[a-z0-9\-]+\.recras\.nl$/i);
 
             if (!options.element) {
                 throw new Error(this.languageHelper.translate('ERR_NO_ELEMENT'));

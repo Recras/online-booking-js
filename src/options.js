@@ -37,7 +37,7 @@ class RecrasOptions {
     }
 
     validate(options) {
-        const hostnameRegex = new RegExp(/^[a-z0-9\-]+\.recras\.nl$/, 'i');
+        const hostnameRegex = new RegExp(/^[a-z0-9\-]+\.recras\.nl$/i);
 
         if (!options.element) {
             throw new Error(this.languageHelper.translate('ERR_NO_ELEMENT'));

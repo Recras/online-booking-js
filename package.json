@@ -1,7 +1,7 @@
 {
   "name": "online-booking-js",
   "version": "0.1.0",
-  "description": "JS library for easy online booking integration",
+  "description": "JS library for easy online booking and voucher sales integration",
   "main": "dist/onlinebooking.js",
   "scripts": {
     "build": "npm run _babelSrc && npm run _catFiles",
@@ -18,7 +18,9 @@
     "Recras",
     "online",
     "booking",
-    "recreation"
+    "recreation",
+    "voucher",
+    "discount"
   ],
   "author": "Recras BV",
   "license": "MIT",

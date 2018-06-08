@@ -86,7 +86,8 @@ class RecrasBooking {
         this.clearAll();
 
         this.loadingIndicatorShow(this.element);
-        this.getTexts().then(texts => {
+        this.loadCalendar().then(() => this.getTexts())
+        .then(texts => {
             this.texts = texts;
             return this.getPackages();
         }).then(packages => {
@@ -476,6 +477,16 @@ class RecrasBooking {
         });
 
         return voucherPrice;
+    }
+
+    loadCalendar() {
+        return new Promise((resolve, reject) => {
+            let script = document.createElement('script');
+            script.src = 'https://cdn.rawgit.com/dbushell/Pikaday/eddaaa3b/pikaday.js';
+            script.addEventListener('load', () => resolve(script), false);
+            script.addEventListener('error', () => reject(script), false);
+            document.head.appendChild(script);
+        });
     }
 
     loadCSS(content) {

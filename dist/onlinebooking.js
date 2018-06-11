@@ -1536,27 +1536,22 @@ var RecrasLanguageHelper = function () {
     }, {
         key: 'filterTags',
         value: function filterTags(msg, packageID) {
-            return Promise.resolve(msg);
-            /*let tags = this.extractTags(msg);
+            var tags = this.extractTags(msg);
             if (tags.length === 0) {
                 return Promise.resolve(msg);
             }
-             return RecrasHttpHelper.postJson(
-                this.options.getApiBase() + 'tagfilter',
-                {
-                    tags: tags,
-                    context: {
-                        packageID: packageID,
-                    },
-                },
-                this.error
-            )
-                .then(filtered => {
-                    Object.keys(filtered).forEach(tag => {
-                        msg = msg.split('{' + tag + '}').join(filtered[tag]);
-                    });
-                    return msg;
-                });*/
+
+            return RecrasHttpHelper.postJson(this.options.getApiBase() + 'tagfilter', {
+                tags: tags,
+                context: {
+                    packageID: packageID
+                }
+            }, this.error).then(function (filtered) {
+                Object.keys(filtered).forEach(function (tag) {
+                    msg = msg.split('{' + tag + '}').join(filtered[tag]);
+                });
+                return msg;
+            });
         }
     }, {
         key: 'formatLocale',

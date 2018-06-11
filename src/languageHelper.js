@@ -216,8 +216,7 @@ class RecrasLanguageHelper {
     }
 
     filterTags(msg, packageID) {
-        return Promise.resolve(msg);
-        /*let tags = this.extractTags(msg);
+        let tags = this.extractTags(msg);
         if (tags.length === 0) {
             return Promise.resolve(msg);
         }
@@ -237,7 +236,7 @@ class RecrasLanguageHelper {
                     msg = msg.split('{' + tag + '}').join(filtered[tag]);
                 });
                 return msg;
-            });*/
+            });
     }
 
     formatLocale(what) {

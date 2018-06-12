@@ -57,7 +57,7 @@ var RecrasBooking = function () {
         this.clearAll();
 
         this.loadingIndicatorShow(this.element);
-        this.loadCalendar().then(function () {
+        RecrasCalendarHelper.loadScript().then(function () {
             return _this.getTexts();
         }).then(function (texts) {
             _this.texts = texts;
@@ -505,21 +505,6 @@ var RecrasBooking = function () {
             return voucherPrice;
         }
     }, {
-        key: 'loadCalendar',
-        value: function loadCalendar() {
-            return new Promise(function (resolve, reject) {
-                var script = document.createElement('script');
-                script.src = 'https://cdn.rawgit.com/dbushell/Pikaday/eddaaa3b/pikaday.js';
-                script.addEventListener('load', function () {
-                    return resolve(script);
-                }, false);
-                script.addEventListener('error', function () {
-                    return reject(script);
-                }, false);
-                document.head.appendChild(script);
-            });
-        }
-    }, {
         key: 'loadCSS',
         value: function loadCSS(content) {
             var styleEl = document.createElement('style');
@@ -829,23 +814,13 @@ var RecrasBooking = function () {
                 html += '</div>';
                 _this20.appendHtml(html);
 
-                _this20.datePicker = new Pikaday({
+                var pikadayOptions = Object.assign(RecrasCalendarHelper.defaultOptions(), {
                     disableDayFn: function disableDayFn(day) {
                         var dateFmt = RecrasDateHelper.datePartOnly(day);
                         return _this20.availableDays.indexOf(dateFmt) === -1;
                     },
                     field: _this20.findElement('.recras-onlinebooking-date'),
-                    firstDay: 1, // Monday
-                    format: 'yyyy-MM-dd', //Only used when Moment is loaded?
-                    i18n: {
-                        previousMonth: _this20.languageHelper.translate('DATE_PICKER_PREVIOUS_MONTH'),
-                        nextMonth: _this20.languageHelper.translate('DATE_PICKER_NEXT_MONTH'),
-                        months: [_this20.languageHelper.translate('DATE_PICKER_MONTH_JANUARY'), _this20.languageHelper.translate('DATE_PICKER_MONTH_FEBRUARY'), _this20.languageHelper.translate('DATE_PICKER_MONTH_MARCH'), _this20.languageHelper.translate('DATE_PICKER_MONTH_APRIL'), _this20.languageHelper.translate('DATE_PICKER_MONTH_MAY'), _this20.languageHelper.translate('DATE_PICKER_MONTH_JUNE'), _this20.languageHelper.translate('DATE_PICKER_MONTH_JULY'), _this20.languageHelper.translate('DATE_PICKER_MONTH_AUGUST'), _this20.languageHelper.translate('DATE_PICKER_MONTH_SEPTEMBER'), _this20.languageHelper.translate('DATE_PICKER_MONTH_OCTOBER'), _this20.languageHelper.translate('DATE_PICKER_MONTH_NOVEMBER'), _this20.languageHelper.translate('DATE_PICKER_MONTH_DECEMBER')],
-                        weekdays: [_this20.languageHelper.translate('DATE_PICKER_DAY_SUNDAY_LONG'), _this20.languageHelper.translate('DATE_PICKER_DAY_MONDAY_LONG'), _this20.languageHelper.translate('DATE_PICKER_DAY_TUESDAY_LONG'), _this20.languageHelper.translate('DATE_PICKER_DAY_WEDNESDAY_LONG'), _this20.languageHelper.translate('DATE_PICKER_DAY_THURSDAY_LONG'), _this20.languageHelper.translate('DATE_PICKER_DAY_FRIDAY_LONG'), _this20.languageHelper.translate('DATE_PICKER_DAY_SATURDAY_LONG')],
-                        weekdaysShort: [_this20.languageHelper.translate('DATE_PICKER_DAY_SUNDAY_SHORT'), _this20.languageHelper.translate('DATE_PICKER_DAY_MONDAY_SHORT'), _this20.languageHelper.translate('DATE_PICKER_DAY_TUESDAY_SHORT'), _this20.languageHelper.translate('DATE_PICKER_DAY_WEDNESDAY_SHORT'), _this20.languageHelper.translate('DATE_PICKER_DAY_THURSDAY_SHORT'), _this20.languageHelper.translate('DATE_PICKER_DAY_FRIDAY_SHORT'), _this20.languageHelper.translate('DATE_PICKER_DAY_SATURDAY_SHORT')]
-                    },
-                    minDate: new Date(),
-                    numberOfMonths: 2,
+                    i18n: RecrasCalendarHelper.i18n(_this20.languageHelper),
                     onDraw: function onDraw() {
                         //TODO: callback function for when the picker draws a new month
                     },
@@ -858,11 +833,10 @@ var RecrasBooking = function () {
                             _this20.showTimes(times);
                         });
                         _this20.showDiscountFields();
-                    },
-                    toString: function toString(date) {
-                        return RecrasDateHelper.datePartOnly(date);
                     }
                 });
+
+                _this20.datePicker = new Pikaday(pikadayOptions);
 
                 _this20.findElement('.recras-onlinebooking-time').addEventListener('change', function () {
                     _this20.selectedTime = _this20.findElement('.recras-onlinebooking-time').value;
@@ -1066,6 +1040,67 @@ var RecrasBooking = function () {
     }]);
 
     return RecrasBooking;
+}();'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var RecrasCalendarHelper = function () {
+    function RecrasCalendarHelper() {
+        _classCallCheck(this, RecrasCalendarHelper);
+    }
+
+    _createClass(RecrasCalendarHelper, null, [{
+        key: 'defaultOptions',
+        value: function defaultOptions() {
+            return {
+                firstDay: 1, // Monday
+                format: 'yyyy-MM-dd', //Only used when Moment is loaded?
+                minDate: new Date(),
+                numberOfMonths: 2,
+                toString: function toString(date) {
+                    return RecrasDateHelper.datePartOnly(date);
+                }
+            };
+        }
+    }, {
+        key: 'i18n',
+        value: function i18n(languageHelper) {
+            return {
+                previousMonth: languageHelper.translate('DATE_PICKER_PREVIOUS_MONTH'),
+                nextMonth: languageHelper.translate('DATE_PICKER_NEXT_MONTH'),
+                months: [languageHelper.translate('DATE_PICKER_MONTH_JANUARY'), languageHelper.translate('DATE_PICKER_MONTH_FEBRUARY'), languageHelper.translate('DATE_PICKER_MONTH_MARCH'), languageHelper.translate('DATE_PICKER_MONTH_APRIL'), languageHelper.translate('DATE_PICKER_MONTH_MAY'), languageHelper.translate('DATE_PICKER_MONTH_JUNE'), languageHelper.translate('DATE_PICKER_MONTH_JULY'), languageHelper.translate('DATE_PICKER_MONTH_AUGUST'), languageHelper.translate('DATE_PICKER_MONTH_SEPTEMBER'), languageHelper.translate('DATE_PICKER_MONTH_OCTOBER'), languageHelper.translate('DATE_PICKER_MONTH_NOVEMBER'), languageHelper.translate('DATE_PICKER_MONTH_DECEMBER')],
+                weekdays: [languageHelper.translate('DATE_PICKER_DAY_SUNDAY_LONG'), languageHelper.translate('DATE_PICKER_DAY_MONDAY_LONG'), languageHelper.translate('DATE_PICKER_DAY_TUESDAY_LONG'), languageHelper.translate('DATE_PICKER_DAY_WEDNESDAY_LONG'), languageHelper.translate('DATE_PICKER_DAY_THURSDAY_LONG'), languageHelper.translate('DATE_PICKER_DAY_FRIDAY_LONG'), languageHelper.translate('DATE_PICKER_DAY_SATURDAY_LONG')],
+                weekdaysShort: [languageHelper.translate('DATE_PICKER_DAY_SUNDAY_SHORT'), languageHelper.translate('DATE_PICKER_DAY_MONDAY_SHORT'), languageHelper.translate('DATE_PICKER_DAY_TUESDAY_SHORT'), languageHelper.translate('DATE_PICKER_DAY_WEDNESDAY_SHORT'), languageHelper.translate('DATE_PICKER_DAY_THURSDAY_SHORT'), languageHelper.translate('DATE_PICKER_DAY_FRIDAY_SHORT'), languageHelper.translate('DATE_PICKER_DAY_SATURDAY_SHORT')]
+            };
+        }
+    }, {
+        key: 'loadScript',
+        value: function loadScript() {
+            return new Promise(function (resolve, reject) {
+                var scriptID = 'recrasPikaday';
+
+                // Only load script once
+                if (document.getElementById(scriptID)) {
+                    resolve(true);
+                }
+
+                var script = document.createElement('script');
+                script.id = scriptID;
+                script.src = 'https://cdn.rawgit.com/dbushell/Pikaday/eddaaa3b/pikaday.js';
+                script.addEventListener('load', function () {
+                    return resolve(script);
+                }, false);
+                script.addEventListener('error', function () {
+                    return reject(script);
+                }, false);
+                document.head.appendChild(script);
+            });
+        }
+    }]);
+
+    return RecrasCalendarHelper;
 }();'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();

@@ -86,7 +86,7 @@ class RecrasBooking {
         this.clearAll();
 
         this.loadingIndicatorShow(this.element);
-        this.loadCalendar().then(() => this.getTexts())
+        RecrasCalendarHelper.loadScript().then(() => this.getTexts())
         .then(texts => {
             this.texts = texts;
             return this.getPackages();
@@ -479,16 +479,6 @@ class RecrasBooking {
         return voucherPrice;
     }
 
-    loadCalendar() {
-        return new Promise((resolve, reject) => {
-            let script = document.createElement('script');
-            script.src = 'https://cdn.rawgit.com/dbushell/Pikaday/eddaaa3b/pikaday.js';
-            script.addEventListener('load', () => resolve(script), false);
-            script.addEventListener('error', () => reject(script), false);
-            document.head.appendChild(script);
-        });
-    }
-
     loadCSS(content) {
         let styleEl = document.createElement('style');
         styleEl.innerHTML = content;
@@ -792,65 +782,30 @@ class RecrasBooking {
                 html += '</div>';
                 this.appendHtml(html);
 
-                this.datePicker = new Pikaday({
-                    disableDayFn: (day) => {
-                        let dateFmt = RecrasDateHelper.datePartOnly(day);
-                        return this.availableDays.indexOf(dateFmt) === -1;
-                    },
-                    field: this.findElement('.recras-onlinebooking-date'),
-                    firstDay: 1, // Monday
-                    format: 'yyyy-MM-dd', //Only used when Moment is loaded?
-                    i18n: {
-                        previousMonth: this.languageHelper.translate('DATE_PICKER_PREVIOUS_MONTH'),
-                        nextMonth: this.languageHelper.translate('DATE_PICKER_NEXT_MONTH'),
-                        months: [
-                            this.languageHelper.translate('DATE_PICKER_MONTH_JANUARY'),
-                            this.languageHelper.translate('DATE_PICKER_MONTH_FEBRUARY'),
-                            this.languageHelper.translate('DATE_PICKER_MONTH_MARCH'),
-                            this.languageHelper.translate('DATE_PICKER_MONTH_APRIL'),
-                            this.languageHelper.translate('DATE_PICKER_MONTH_MAY'),
-                            this.languageHelper.translate('DATE_PICKER_MONTH_JUNE'),
-                            this.languageHelper.translate('DATE_PICKER_MONTH_JULY'),
-                            this.languageHelper.translate('DATE_PICKER_MONTH_AUGUST'),
-                            this.languageHelper.translate('DATE_PICKER_MONTH_SEPTEMBER'),
-                            this.languageHelper.translate('DATE_PICKER_MONTH_OCTOBER'),
-                            this.languageHelper.translate('DATE_PICKER_MONTH_NOVEMBER'),
-                            this.languageHelper.translate('DATE_PICKER_MONTH_DECEMBER'),
-                        ],
-                        weekdays: [
-                            this.languageHelper.translate('DATE_PICKER_DAY_SUNDAY_LONG'),
-                            this.languageHelper.translate('DATE_PICKER_DAY_MONDAY_LONG'),
-                            this.languageHelper.translate('DATE_PICKER_DAY_TUESDAY_LONG'),
-                            this.languageHelper.translate('DATE_PICKER_DAY_WEDNESDAY_LONG'),
-                            this.languageHelper.translate('DATE_PICKER_DAY_THURSDAY_LONG'),
-                            this.languageHelper.translate('DATE_PICKER_DAY_FRIDAY_LONG'),
-                            this.languageHelper.translate('DATE_PICKER_DAY_SATURDAY_LONG'),
-                        ],
-                        weekdaysShort: [
-                            this.languageHelper.translate('DATE_PICKER_DAY_SUNDAY_SHORT'),
-                            this.languageHelper.translate('DATE_PICKER_DAY_MONDAY_SHORT'),
-                            this.languageHelper.translate('DATE_PICKER_DAY_TUESDAY_SHORT'),
-                            this.languageHelper.translate('DATE_PICKER_DAY_WEDNESDAY_SHORT'),
-                            this.languageHelper.translate('DATE_PICKER_DAY_THURSDAY_SHORT'),
-                            this.languageHelper.translate('DATE_PICKER_DAY_FRIDAY_SHORT'),
-                            this.languageHelper.translate('DATE_PICKER_DAY_SATURDAY_SHORT'),
-                        ],
-                    },
-                    minDate: new Date(),
-                    numberOfMonths: 2,
-                    onDraw: () => {
-                        //TODO: callback function for when the picker draws a new month
-                    },
-                    onSelect: (date) => {
-                        this.selectedDate = date;
-                        this.getAvailableTimes(pack.id, date).then(times => {
-                            times = times.map(time => RecrasDateHelper.timePartOnly(new Date(time)));
-                            this.showTimes(times);
-                        });
-                        this.showDiscountFields();
-                    },
-                    toString: (date) => RecrasDateHelper.datePartOnly(date),
-                });
+                let pikadayOptions = Object.assign(
+                    RecrasCalendarHelper.defaultOptions(),
+                    {
+                        disableDayFn: (day) => {
+                            let dateFmt = RecrasDateHelper.datePartOnly(day);
+                            return this.availableDays.indexOf(dateFmt) === -1;
+                        },
+                        field: this.findElement('.recras-onlinebooking-date'),
+                        i18n: RecrasCalendarHelper.i18n(this.languageHelper),
+                        onDraw: () => {
+                            //TODO: callback function for when the picker draws a new month
+                        },
+                        onSelect: (date) => {
+                            this.selectedDate = date;
+                            this.getAvailableTimes(pack.id, date).then(times => {
+                                times = times.map(time => RecrasDateHelper.timePartOnly(new Date(time)));
+                                this.showTimes(times);
+                            });
+                            this.showDiscountFields();
+                        },
+                    }
+                );
+
+                this.datePicker = new Pikaday(pikadayOptions);
 
                 this.findElement('.recras-onlinebooking-time').addEventListener('change', () => {
                     this.selectedTime = this.findElement('.recras-onlinebooking-time').value;

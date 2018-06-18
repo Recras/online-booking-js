@@ -12,4 +12,10 @@ class RecrasDateHelper {
     static timePartOnly(date) {
         return date.toTimeString().substr(0, 5); // Format at 09:00
     }
+
+    static toString(date) {
+        let x = new Date(date.getTime() - (date.getTimezoneOffset() * 60 * 1000)); // Fix off-by-1 errors
+        x = x.toISOString();
+        return x.substr(8, 2) + '-' + x.substr(5, 2) + '-' + x.substr(0, 4);
+    }
 }

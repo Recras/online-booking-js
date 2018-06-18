@@ -1056,11 +1056,10 @@ var RecrasCalendarHelper = function () {
         value: function defaultOptions() {
             return {
                 firstDay: 1, // Monday
-                format: 'yyyy-MM-dd', //Only used when Moment is loaded?
                 minDate: new Date(),
                 numberOfMonths: 2,
                 toString: function toString(date) {
-                    return RecrasDateHelper.datePartOnly(date);
+                    return RecrasDateHelper.toString(date);
                 }
             };
         }
@@ -1264,7 +1263,7 @@ var RecrasContactForm = function () {
     }]);
 
     return RecrasContactForm;
-}();"use strict";
+}();'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -1276,21 +1275,28 @@ var RecrasDateHelper = function () {
     }
 
     _createClass(RecrasDateHelper, null, [{
-        key: "datePartOnly",
+        key: 'datePartOnly',
         value: function datePartOnly(date) {
             var x = new Date(date.getTime() - date.getTimezoneOffset() * 60 * 1000); // Fix off-by-1 errors
             return x.toISOString().substr(0, 10); // Format as 2018-03-13
         }
     }, {
-        key: "setTimeForDate",
+        key: 'setTimeForDate',
         value: function setTimeForDate(date, timeStr) {
             date.setHours(timeStr.substr(0, 2), timeStr.substr(3, 2));
             return date;
         }
     }, {
-        key: "timePartOnly",
+        key: 'timePartOnly',
         value: function timePartOnly(date) {
             return date.toTimeString().substr(0, 5); // Format at 09:00
+        }
+    }, {
+        key: 'toString',
+        value: function toString(date) {
+            var x = new Date(date.getTime() - date.getTimezoneOffset() * 60 * 1000); // Fix off-by-1 errors
+            x = x.toISOString();
+            return x.substr(8, 2) + '-' + x.substr(5, 2) + '-' + x.substr(0, 4);
         }
     }]);
 

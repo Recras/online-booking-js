@@ -2,10 +2,9 @@ class RecrasCalendarHelper {
     static defaultOptions() {
         return {
             firstDay: 1, // Monday
-            format: 'yyyy-MM-dd', //Only used when Moment is loaded?
             minDate: new Date(),
             numberOfMonths: 2,
-            toString: (date) => RecrasDateHelper.datePartOnly(date),
+            toString: (date) => RecrasDateHelper.toString(date),
         }
     }
 

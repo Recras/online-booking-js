@@ -318,6 +318,7 @@ class RecrasBooking {
         if (this.datePicker) {
             this.datePicker.destroy();
         }
+        this.availableDays = [];
         [...elements].forEach(el => {
             el.parentNode.removeChild(el);
         });
@@ -372,7 +373,7 @@ class RecrasBooking {
             eind: RecrasDateHelper.datePartOnly(end),
             producten: this.productCounts(),
         }).then(json => {
-            this.availableDays = json;
+            this.availableDays = [...new Set([...this.availableDays, ...json])];
             return this.availableDays;
         });
     }
@@ -791,8 +792,27 @@ class RecrasBooking {
                         },
                         field: this.findElement('.recras-onlinebooking-date'),
                         i18n: RecrasCalendarHelper.i18n(this.languageHelper),
-                        onDraw: () => {
-                            //TODO: callback function for when the picker draws a new month
+                        onDraw: (pika) => {
+                            let lastMonthYear = pika.calendars[pika.calendars.length - 1];
+                            let lastDay = new Date(lastMonthYear.year, lastMonthYear.month, 31);
+
+                            let lastAvailableDay = this.availableDays.reduce((acc, curVal) => {
+                                return curVal > acc ? curVal : acc;
+                            }, '');
+                            if (!lastAvailableDay) {
+                                lastAvailableDay = new Date();
+                            } else {
+                                lastAvailableDay = new Date(lastAvailableDay);
+                            }
+                            if (lastAvailableDay > lastDay) {
+                                return;
+                            }
+
+                            let newEndDate = RecrasDateHelper.clone(lastAvailableDay);
+                            newEndDate.setFullYear(lastMonthYear.year);
+                            newEndDate.setMonth(lastMonthYear.month + 2);
+
+                            this.getAvailableDays(pack.id, lastAvailableDay, newEndDate);
                         },
                         onSelect: (date) => {
                             this.selectedDate = date;

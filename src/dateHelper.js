@@ -1,4 +1,8 @@
 class RecrasDateHelper {
+    static clone(date) {
+        return new Date(date.getTime());
+    }
+
     static datePartOnly(date) {
         let x = new Date(date.getTime() - (date.getTimezoneOffset() * 60 * 1000)); // Fix off-by-1 errors
         return x.toISOString().substr(0, 10); // Format as 2018-03-13

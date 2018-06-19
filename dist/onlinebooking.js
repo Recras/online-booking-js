@@ -316,6 +316,7 @@ var RecrasBooking = function () {
             if (this.datePicker) {
                 this.datePicker.destroy();
             }
+            this.availableDays = [];
             [].concat(_toConsumableArray(elements)).forEach(function (el) {
                 el.parentNode.removeChild(el);
             });
@@ -381,7 +382,7 @@ var RecrasBooking = function () {
                 eind: RecrasDateHelper.datePartOnly(end),
                 producten: this.productCounts()
             }).then(function (json) {
-                _this9.availableDays = json;
+                _this9.availableDays = [].concat(_toConsumableArray(new Set([].concat(_toConsumableArray(_this9.availableDays), _toConsumableArray(json)))));
                 return _this9.availableDays;
             });
         }
@@ -821,8 +822,27 @@ var RecrasBooking = function () {
                     },
                     field: _this20.findElement('.recras-onlinebooking-date'),
                     i18n: RecrasCalendarHelper.i18n(_this20.languageHelper),
-                    onDraw: function onDraw() {
-                        //TODO: callback function for when the picker draws a new month
+                    onDraw: function onDraw(pika) {
+                        var lastMonthYear = pika.calendars[pika.calendars.length - 1];
+                        var lastDay = new Date(lastMonthYear.year, lastMonthYear.month, 31);
+
+                        var lastAvailableDay = _this20.availableDays.reduce(function (acc, curVal) {
+                            return curVal > acc ? curVal : acc;
+                        }, '');
+                        if (!lastAvailableDay) {
+                            lastAvailableDay = new Date();
+                        } else {
+                            lastAvailableDay = new Date(lastAvailableDay);
+                        }
+                        if (lastAvailableDay > lastDay) {
+                            return;
+                        }
+
+                        var newEndDate = RecrasDateHelper.clone(lastAvailableDay);
+                        newEndDate.setFullYear(lastMonthYear.year);
+                        newEndDate.setMonth(lastMonthYear.month + 2);
+
+                        _this20.getAvailableDays(pack.id, lastAvailableDay, newEndDate);
                     },
                     onSelect: function onSelect(date) {
                         _this20.selectedDate = date;
@@ -1275,6 +1295,11 @@ var RecrasDateHelper = function () {
     }
 
     _createClass(RecrasDateHelper, null, [{
+        key: 'clone',
+        value: function clone(date) {
+            return new Date(date.getTime());
+        }
+    }, {
         key: 'datePartOnly',
         value: function datePartOnly(date) {
             var x = new Date(date.getTime() - date.getTimezoneOffset() * 60 * 1000); // Fix off-by-1 errors

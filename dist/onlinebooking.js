@@ -8,7 +8,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /**********************************
 *  Recras Online Booking library  *
-*  v 0.5.0                        *
+*  v 0.5.1                        *
 **********************************/
 
 var RecrasBooking = function () {
@@ -1813,7 +1813,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /****************************
  *  Recras voucher library  *
- *  v 0.5.0                 *
+ *  v 0.5.1                 *
  ***************************/
 
 var RecrasVoucher = function () {

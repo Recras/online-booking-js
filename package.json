@@ -1,6 +1,6 @@
 {
   "name": "online-booking-js",
-  "version": "0.1.0",
+  "version": "0.5.0",
   "description": "JS library for easy online booking and voucher sales integration",
   "main": "dist/onlinebooking.js",
   "scripts": {

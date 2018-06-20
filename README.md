@@ -1,4 +1,5 @@
 # Recras Online Booking JS library
+Version: 0.5.0
 
 JS library for easy online booking & voucher integration
 
@@ -49,3 +50,6 @@ See `/demo/index.html` for a demo integration
 
 ## Styling
 The library provides a bit of styling to make it look okay straight from the box. If you wish to customise the layout, you can. Just style the appropriate elements from your website's CSS.
+
+## Browser support
+This library uses fetch, which is [unsupported in Internet Explorer, old Edge versions (12 & 13), and old Safari (up to 10.2)](https://caniuse.com/#feat=fetch). If you care about supporting these old browsers, [a polyfill](https://github.com/github/fetch) should be loaded into your website.

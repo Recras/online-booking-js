@@ -14,7 +14,12 @@
   "globals": {
     "console": true,
     "Pikaday": true,
-    "RecrasDateHelper": true
+    "RecrasCalendarHelper": true,
+    "RecrasContactForm": true,
+    "RecrasDateHelper": true,
+    "RecrasHttpHelper": true,
+    "RecrasLanguageHelper": true,
+    "RecrasOptions": true
   },
 
   // Enforce tab width of 4 spaces.

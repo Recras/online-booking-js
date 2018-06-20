@@ -8,7 +8,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /**********************************
 *  Recras Online Booking library  *
-*  v 0.4.0                        *
+*  v 0.5.0                        *
 **********************************/
 
 var RecrasBooking = function () {
@@ -1016,7 +1016,7 @@ var RecrasBooking = function () {
                     if (bookingParams.redirect_url) {
                         window.location.href = bookingParams.redirect_url;
                     } else {
-                        alert(json.message);
+                        window.alert(json.message);
                     }
                 } else {
                     console.log(json);
@@ -1796,7 +1796,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /****************************
  *  Recras voucher library  *
- *  v 0.1.0                 *
+ *  v 0.5.0                 *
  ***************************/
 
 var RecrasVoucher = function () {
@@ -1871,7 +1871,7 @@ var RecrasVoucher = function () {
                 if (json.payment_url) {
                     window.location.href = json.payment_url;
                 } else {
-                    console.log(result);
+                    console.log(json);
                 }
             });
         }

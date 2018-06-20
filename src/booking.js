@@ -1,6 +1,6 @@
 /**********************************
 *  Recras Online Booking library  *
-*  v 0.4.0                        *
+*  v 0.5.0                        *
 **********************************/
 
 class RecrasBooking {
@@ -491,7 +491,7 @@ class RecrasBooking {
     loadingIndicatorHide() {
         [...document.querySelectorAll('.recrasLoadingIndicator')].forEach(el => {
             el.parentNode.removeChild(el);
-        })
+        });
     }
 
     loadingIndicatorShow(afterEl) {
@@ -580,7 +580,7 @@ class RecrasBooking {
             counts.push({
                 aantal: this.bookingSize(),
                 arrangementsregel_id: line.id,
-            })
+            });
         });
         return counts;
     }
@@ -965,7 +965,7 @@ class RecrasBooking {
                 if (bookingParams.redirect_url) {
                     window.location.href = bookingParams.redirect_url;
                 } else {
-                    alert(json.message);
+                    window.alert(json.message);
                 }
             } else {
                 console.log(json);

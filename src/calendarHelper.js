@@ -5,7 +5,7 @@ class RecrasCalendarHelper {
             minDate: new Date(),
             numberOfMonths: 2,
             toString: (date) => RecrasDateHelper.toString(date),
-        }
+        };
     }
 
     static i18n(languageHelper) {
@@ -44,7 +44,7 @@ class RecrasCalendarHelper {
                 languageHelper.translate('DATE_PICKER_DAY_FRIDAY_SHORT'),
                 languageHelper.translate('DATE_PICKER_DAY_SATURDAY_SHORT'),
             ],
-        }
+        };
     }
 
     static loadScript() {

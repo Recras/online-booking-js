@@ -154,6 +154,21 @@ var RecrasBooking = function () {
             return bookingSizeEl.value;
         }
     }, {
+        key: 'bookingSizeLines',
+        value: function bookingSizeLines(pack) {
+            return pack.regels.filter(function (line) {
+                return line.onlineboeking_aantalbepalingsmethode === 'boekingsgrootte';
+            });
+        }
+    }, {
+        key: 'bookingSizePrice',
+        value: function bookingSizePrice(pack) {
+            var lines = this.bookingSizeLines(pack);
+            return lines.reduce(function (acc, line) {
+                return line.product.verkoop + acc;
+            }, 0);
+        }
+    }, {
         key: 'changePackage',
         value: function changePackage(packageID) {
             var _this4 = this;
@@ -701,9 +716,7 @@ var RecrasBooking = function () {
     }, {
         key: 'shouldShowBookingSize',
         value: function shouldShowBookingSize(pack) {
-            return pack.regels.filter(function (line) {
-                return line.onlineboeking_aantalbepalingsmethode === 'boekingsgrootte';
-            }).length > 0;
+            return this.bookingSizeLines(pack).length > 0;
         }
     }, {
         key: 'showBookButton',
@@ -905,7 +918,11 @@ var RecrasBooking = function () {
                 html += '<p>' + msgs[0] + '</p>';
 
                 if (_this22.shouldShowBookingSize(pack)) {
-                    html += '<div><div><label for="bookingsize">' + (pack.weergavenaam || pack.arrangement) + '</label></div><input type="number" id="bookingsize" class="bookingsize" min="0"></div>';
+                    html += '<div>';
+                    html += '<div><label for="bookingsize">' + (pack.weergavenaam || pack.arrangement) + '</label></div>';
+                    html += '<input type="number" id="bookingsize" class="bookingsize" min="0">';
+                    html += '<div class="recras-price">' + _this22.formatPrice(_this22.bookingSizePrice(pack)) + '</div>';
+                    html += '</div>';
                 }
 
                 var linesNoBookingSize = _this22.getLinesNoBookingSize(pack);

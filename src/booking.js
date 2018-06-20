@@ -173,6 +173,19 @@ class RecrasBooking {
         return bookingSizeEl.value;
     }
 
+    bookingSizeLines(pack) {
+        return pack.regels.filter(line => {
+            return line.onlineboeking_aantalbepalingsmethode === 'boekingsgrootte';
+        });
+    }
+
+    bookingSizePrice(pack) {
+        let lines = this.bookingSizeLines(pack);
+        return lines.reduce((acc, line) => {
+            return line.product.verkoop + acc;
+        }, 0);
+    }
+
     changePackage(packageID) {
         let selectedPackage = this.packages.filter(p => {
             return p.id === packageID;
@@ -655,9 +668,7 @@ class RecrasBooking {
     }
 
     shouldShowBookingSize(pack) {
-        return pack.regels.filter(line => {
-            return line.onlineboeking_aantalbepalingsmethode === 'boekingsgrootte';
-        }).length > 0;
+        return this.bookingSizeLines(pack).length > 0;
     }
 
     showBookButton() {
@@ -866,7 +877,11 @@ class RecrasBooking {
             html += `<p>${ msgs[0] }</p>`;
 
             if (this.shouldShowBookingSize(pack)) {
-                html += `<div><div><label for="bookingsize">${ (pack.weergavenaam || pack.arrangement) }</label></div><input type="number" id="bookingsize" class="bookingsize" min="0"></div>`;
+                html += `<div>`;
+                html += `<div><label for="bookingsize">${ (pack.weergavenaam || pack.arrangement) }</label></div>`;
+                html += `<input type="number" id="bookingsize" class="bookingsize" min="0">`;
+                html += `<div class="recras-price">${ this.formatPrice(this.bookingSizePrice(pack)) }</div>`;
+                html += `</div>`;
             }
 
             let linesNoBookingSize = this.getLinesNoBookingSize(pack);

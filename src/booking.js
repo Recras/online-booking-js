@@ -22,9 +22,12 @@ class RecrasBooking {
     justify-content: space-between;
     padding: 0.25em 0;
 }
-.time-preview, .minimum-amount {
+.minimum-amount {
     padding-left: 0.5em;
-} 
+}
+.time-preview {
+    padding-right: 0.5em;
+}
 .minimum-amount {
     color: hsl(0, 50%, 50%);
 }
@@ -574,7 +577,7 @@ class RecrasBooking {
                 let normalisedStart = this.normaliseDate(new Date(line.begin), packageStart, this.selectedDate);
                 let normalisedEnd = this.normaliseDate(new Date(line.eind), packageStart, this.selectedDate);
                 this.findElement(`label[for="packageline${ idx }"]`).insertAdjacentHTML(
-                    'beforeend',
+                    'afterbegin',
                     `<span class="time-preview">(${ RecrasDateHelper.timePartOnly(normalisedStart) } – ${ RecrasDateHelper.timePartOnly(normalisedEnd) })</span>`
                 );
             });

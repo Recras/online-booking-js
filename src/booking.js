@@ -1,6 +1,6 @@
 /**********************************
 *  Recras Online Booking library  *
-*  v 0.5.1                        *
+*  v 0.5.2                        *
 **********************************/
 
 class RecrasBooking {
@@ -85,7 +85,8 @@ class RecrasBooking {
             }
         }
 
-        this.loadCSS(CSS);
+        RecrasCSSHelper.loadCSS(RecrasCSSHelper.cssGlobal());
+        RecrasCSSHelper.loadCSS(RecrasCSSHelper.cssBooking());
         this.clearAll();
 
         this.loadingIndicatorShow(this.element);
@@ -494,14 +495,6 @@ class RecrasBooking {
         });
 
         return voucherPrice;
-    }
-
-    loadCSS(content) {
-        let styleEl = document.createElement('style');
-        styleEl.innerHTML = content;
-
-        let refNode = document.head;
-        refNode.parentNode.insertBefore(styleEl, refNode);
     }
 
     loadingIndicatorHide() {

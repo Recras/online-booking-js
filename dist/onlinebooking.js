@@ -8,7 +8,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /**********************************
 *  Recras Online Booking library  *
-*  v 0.5.2                        *
+*  v 0.5.3                        *
 **********************************/
 
 var RecrasBooking = function () {
@@ -715,15 +715,6 @@ var RecrasBooking = function () {
         value: function showBookButton() {
             var _this17 = this;
 
-            /*
-            'online_boeking_step3_text_pre', // Staat nu boven boeken-pagina
-            voorbeelden:
-              - Vul hieronder uw naam, adres en andere gegevens in. (demo)
-              - Stap 4/4. Controleer de gekozen aantallen, datum en tijd. Vul vervolgens de onderstaande gegevens in om de reservering af te ronden. (Vlietland)
-              - leeg (Joytime, Taribush)
-              - Jouw gegevens / Vul hieronder jouw persoonlijke gegevens in. (MN)
-            */
-
             var promises = [];
             var paymentMethods = this.paymentMethods(this.selectedPackage);
             var paymentText = '';
@@ -1020,10 +1011,10 @@ var RecrasBooking = function () {
                 _this24.findElement('.bookPackage').removeAttribute('disabled');
 
                 if (json.payment_url) {
-                    window.location.href = json.payment_url;
+                    window.top.location.href = json.payment_url;
                 } else if (json.message && json.status) {
                     if (bookingParams.redirect_url) {
-                        window.location.href = bookingParams.redirect_url;
+                        window.top.location.href = bookingParams.redirect_url;
                     } else {
                         window.alert(json.message);
                     }
@@ -1838,7 +1829,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /****************************
  *  Recras voucher library  *
- *  v 0.5.2                 *
+ *  v 0.5.3                 *
  ***************************/
 
 var RecrasVoucher = function () {
@@ -1913,7 +1904,7 @@ var RecrasVoucher = function () {
                 _this2.findElement('.buyTemplate').removeAttribute('disabled');
 
                 if (json.payment_url) {
-                    window.location.href = json.payment_url;
+                    window.top.location.href = json.payment_url;
                 } else {
                     console.log(json);
                 }

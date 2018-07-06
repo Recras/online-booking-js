@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.5.3 (2018-07-05)
+* Fixed: the redirect to Mollie's payment page didn't work if the library was loaded in an iframe
+
 ## 0.5.2 (2018-07-02)
 * Show programme times before the product description instead of after it. This better reflects what the programme usually looks like in the booking confirmation email/PDF.
 * Fixed default styling of voucher module

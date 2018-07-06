@@ -1,6 +1,6 @@
 /****************************
  *  Recras voucher library  *
- *  v 0.5.2                 *
+ *  v 0.5.3                 *
  ***************************/
 
 class RecrasVoucher {
@@ -61,7 +61,7 @@ class RecrasVoucher {
                 this.findElement('.buyTemplate').removeAttribute('disabled');
 
                 if (json.payment_url) {
-                    window.location.href = json.payment_url;
+                    window.top.location.href = json.payment_url;
                 } else {
                     console.log(json);
                 }

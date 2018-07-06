@@ -1,6 +1,6 @@
 /**********************************
 *  Recras Online Booking library  *
-*  v 0.5.2                        *
+*  v 0.5.3                        *
 **********************************/
 
 class RecrasBooking {
@@ -668,15 +668,6 @@ class RecrasBooking {
     }
 
     showBookButton() {
-        /*
-        'online_boeking_step3_text_pre', // Staat nu boven boeken-pagina
-        voorbeelden:
-          - Vul hieronder uw naam, adres en andere gegevens in. (demo)
-          - Stap 4/4. Controleer de gekozen aantallen, datum en tijd. Vul vervolgens de onderstaande gegevens in om de reservering af te ronden. (Vlietland)
-          - leeg (Joytime, Taribush)
-          - Jouw gegevens / Vul hieronder jouw persoonlijke gegevens in. (MN)
-        */
-
         let promises = [];
         let paymentMethods = this.paymentMethods(this.selectedPackage);
         let paymentText = '';
@@ -971,10 +962,10 @@ class RecrasBooking {
             this.findElement('.bookPackage').removeAttribute('disabled');
 
             if (json.payment_url) {
-                window.location.href = json.payment_url;
+                window.top.location.href = json.payment_url;
             } else if (json.message && json.status) {
                 if (bookingParams.redirect_url) {
-                    window.location.href = bookingParams.redirect_url;
+                    window.top.location.href = bookingParams.redirect_url;
                 } else {
                     window.alert(json.message);
                 }

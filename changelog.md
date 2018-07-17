@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.5.4 (2018-07-17)
+* Fixed: changing product amounts didn't reset available days
+
 ## 0.5.3 (2018-07-05)
 * Fixed: the redirect to Mollie's payment page didn't work if the library was loaded in an iframe
 

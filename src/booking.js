@@ -1,6 +1,6 @@
 /**********************************
 *  Recras Online Booking library  *
-*  v 0.5.3                        *
+*  v 0.5.4                        *
 **********************************/
 
 class RecrasBooking {
@@ -982,6 +982,7 @@ class RecrasBooking {
         let endDate = new Date();
         endDate.setMonth(endDate.getMonth() + 3);
 
+        this.availableDays = [];
         this.getAvailableDays(this.selectedPackage.id, startDate, endDate)
             .then(availableDays => {
                 this.loadingIndicatorHide();

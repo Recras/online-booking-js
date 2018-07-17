@@ -8,7 +8,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /**********************************
 *  Recras Online Booking library  *
-*  v 0.5.3                        *
+*  v 0.5.4                        *
 **********************************/
 
 var RecrasBooking = function () {
@@ -1034,6 +1034,7 @@ var RecrasBooking = function () {
             var endDate = new Date();
             endDate.setMonth(endDate.getMonth() + 3);
 
+            this.availableDays = [];
             this.getAvailableDays(this.selectedPackage.id, startDate, endDate).then(function (availableDays) {
                 _this25.loadingIndicatorHide();
 
@@ -1829,7 +1830,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /****************************
  *  Recras voucher library  *
- *  v 0.5.3                 *
+ *  v 0.5.4                 *
  ***************************/
 
 var RecrasVoucher = function () {

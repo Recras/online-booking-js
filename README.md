@@ -53,3 +53,4 @@ The library provides a bit of styling to make it look okay straight from the box
 
 ## Browser support
 This library uses fetch, which is [unsupported in Internet Explorer, old Edge versions (12 & 13), and old Safari (up to 10.2)](https://caniuse.com/#feat=fetch). If you care about supporting these old browsers, [a polyfill](https://github.com/github/fetch) should be loaded into your website.
+For Internet Explorer, a polyfill for promises is needed as well. Here are two options: [promise-polyfill by Taylor Hakes](https://github.com/taylorhakes/promise-polyfill), and [es6-promise by Stefan Penner](https://github.com/stefanpenner/es6-promise)

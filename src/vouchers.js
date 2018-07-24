@@ -1,6 +1,6 @@
 /****************************
  *  Recras voucher library  *
- *  v 0.5.4                 *
+ *  v 0.6.0                 *
  ***************************/
 
 class RecrasVoucher {
@@ -46,6 +46,7 @@ class RecrasVoucher {
     }
 
     buyTemplate() {
+        RecrasEventHelper.sendEvent('Recras:Voucher:BuyInProgress');
         this.findElement('.buyTemplate').setAttribute('disabled', 'disabled');
 
         let payload = {
@@ -61,6 +62,7 @@ class RecrasVoucher {
                 this.findElement('.buyTemplate').removeAttribute('disabled');
 
                 if (json.payment_url) {
+                    RecrasEventHelper.sendEvent('Recras:Voucher:RedirectToPayment');
                     window.top.location.href = json.payment_url;
                 } else {
                     console.log(json);
@@ -71,6 +73,7 @@ class RecrasVoucher {
     changeTemplate(templateID) {
         this.clearAllExceptTemplateSelection();
         this.showContactForm(templateID);
+        RecrasEventHelper.sendEvent('Recras:Voucher:TemplateChanged');
     }
 
     clearAll() {

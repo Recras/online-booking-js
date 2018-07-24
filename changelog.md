@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.0 (2018-07-24)
+* Added [custom events](README.md#Events)
+
 ## 0.5.4 (2018-07-17)
 * Fixed: changing product amounts didn't reset available days
 

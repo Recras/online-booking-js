@@ -1,5 +1,5 @@
 # Recras Online Booking JS library
-Version: 0.5.4
+Version: 0.6.0
 
 JS library for easy online booking & voucher integration
 
@@ -54,3 +54,18 @@ The library provides a bit of styling to make it look okay straight from the box
 ## Browser support
 This library uses fetch, which is [unsupported in Internet Explorer, old Edge versions (12 & 13), and old Safari (up to 10.2)](https://caniuse.com/#feat=fetch). If you care about supporting these old browsers, [a polyfill](https://github.com/github/fetch) should be loaded into your website.
 For Internet Explorer, a polyfill for promises is needed as well. Here are two options: [promise-polyfill by Taylor Hakes](https://github.com/taylorhakes/promise-polyfill), and [es6-promise by Stefan Penner](https://github.com/stefanpenner/es6-promise)
+
+## Events
+The library sends out a few custom events when certain things change:
+
+* `Recras:Booking:Reset` - when the entire form is reset
+* `Recras:Booking:PackageChanged` - when a new package is selected
+* `Recras:Booking:DateSelected` - when the date is changed
+* `Recras:Booking:TimeSelected` - when the time is changed
+* `Recras:Booking:BuyInProgress` - when the online booking form is submitted
+* `Recras:Booking:RedirectToPayment` - when the user is redirected to the payment provider
+* `Recras:Voucher:TemplateChanged` - when a new voucher template is selected
+* `Recras:Voucher:BuyInProgress` - when the voucher form is submitted
+* `Recras:Voucher:RedirectToPayment` - when the user is redirected to the payment provider
+
+You can use these events for custom actions, such as analytics.

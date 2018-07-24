@@ -8,7 +8,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /**********************************
 *  Recras Online Booking library  *
-*  v 0.5.4                        *
+*  v 0.6.0                        *
 **********************************/
 
 var RecrasBooking = function () {
@@ -186,9 +186,11 @@ var RecrasBooking = function () {
                 this.selectedPackage = null;
                 this.clearAll();
                 this.showPackages(this.packages);
+                RecrasEventHelper.sendEvent('Recras:Booking:Reset');
                 return false;
             } else {
                 this.clearAllExceptPackageSelection();
+                RecrasEventHelper.sendEvent('Recras:Booking:PackageChanged');
             }
             this.selectedPackage = selectedPackage[0];
             this.showProducts(this.selectedPackage).then(function () {
@@ -841,6 +843,7 @@ var RecrasBooking = function () {
                         _this20.getAvailableDays(pack.id, lastAvailableDay, newEndDate);
                     },
                     onSelect: function onSelect(date) {
+                        RecrasEventHelper.sendEvent('Recras:Booking:DateSelected');
                         _this20.selectedDate = date;
                         _this20.getAvailableTimes(pack.id, date).then(function (times) {
                             times = times.map(function (time) {
@@ -855,6 +858,7 @@ var RecrasBooking = function () {
                 _this20.datePicker = new Pikaday(pikadayOptions);
 
                 _this20.findElement('.recras-onlinebooking-time').addEventListener('change', function () {
+                    RecrasEventHelper.sendEvent('Recras:Booking:TimeSelected');
                     _this20.selectedTime = _this20.findElement('.recras-onlinebooking-time').value;
                     _this20.previewTimes();
                 });
@@ -966,6 +970,7 @@ var RecrasBooking = function () {
         value: function submitBooking() {
             var _this24 = this;
 
+            RecrasEventHelper.sendEvent('Recras:Booking:BuyInProgress');
             var productCounts = this.productCounts().map(function (line) {
                 return line.aantal;
             });
@@ -1014,6 +1019,7 @@ var RecrasBooking = function () {
                     window.top.location.href = json.payment_url;
                 } else if (json.message && json.status) {
                     if (bookingParams.redirect_url) {
+                        RecrasEventHelper.sendEvent('Recras:Booking:RedirectToPayment');
                         window.top.location.href = bookingParams.redirect_url;
                     } else {
                         window.alert(json.message);
@@ -1360,6 +1366,26 @@ var RecrasDateHelper = function () {
     }]);
 
     return RecrasDateHelper;
+}();"use strict";
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var RecrasEventHelper = function () {
+    function RecrasEventHelper() {
+        _classCallCheck(this, RecrasEventHelper);
+    }
+
+    _createClass(RecrasEventHelper, null, [{
+        key: "sendEvent",
+        value: function sendEvent(name) {
+            var event = new Event(name);
+            return document.dispatchEvent(event);
+        }
+    }]);
+
+    return RecrasEventHelper;
 }();'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1830,7 +1856,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /****************************
  *  Recras voucher library  *
- *  v 0.5.4                 *
+ *  v 0.6.0                 *
  ***************************/
 
 var RecrasVoucher = function () {
@@ -1891,6 +1917,7 @@ var RecrasVoucher = function () {
         value: function buyTemplate() {
             var _this2 = this;
 
+            RecrasEventHelper.sendEvent('Recras:Voucher:BuyInProgress');
             this.findElement('.buyTemplate').setAttribute('disabled', 'disabled');
 
             var payload = {
@@ -1905,6 +1932,7 @@ var RecrasVoucher = function () {
                 _this2.findElement('.buyTemplate').removeAttribute('disabled');
 
                 if (json.payment_url) {
+                    RecrasEventHelper.sendEvent('Recras:Voucher:RedirectToPayment');
                     window.top.location.href = json.payment_url;
                 } else {
                     console.log(json);
@@ -1916,6 +1944,7 @@ var RecrasVoucher = function () {
         value: function changeTemplate(templateID) {
             this.clearAllExceptTemplateSelection();
             this.showContactForm(templateID);
+            RecrasEventHelper.sendEvent('Recras:Voucher:TemplateChanged');
         }
     }, {
         key: 'clearAll',

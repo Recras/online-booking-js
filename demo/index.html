@@ -140,5 +140,9 @@
     optionsCopy.element = document.getElementById('recrasvouchers');
     let voucherOptions = new RecrasOptions(optionsCopy);
     new RecrasVoucher(voucherOptions);
+
+    document.addEventListener('Recras:Booking:PackageChanged', (e) => {
+        console.log('Custom event logged', e);
+    })
 </script>
 </html>

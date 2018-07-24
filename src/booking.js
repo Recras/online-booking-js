@@ -1,6 +1,6 @@
 /**********************************
 *  Recras Online Booking library  *
-*  v 0.5.4                        *
+*  v 0.6.0                        *
 **********************************/
 
 class RecrasBooking {
@@ -203,9 +203,11 @@ class RecrasBooking {
             this.selectedPackage = null;
             this.clearAll();
             this.showPackages(this.packages);
+            RecrasEventHelper.sendEvent('Recras:Booking:Reset');
             return false;
         } else {
             this.clearAllExceptPackageSelection();
+            RecrasEventHelper.sendEvent('Recras:Booking:PackageChanged');
         }
         this.selectedPackage = selectedPackage[0];
         this.showProducts(this.selectedPackage).then(() => {
@@ -813,6 +815,7 @@ class RecrasBooking {
                             this.getAvailableDays(pack.id, lastAvailableDay, newEndDate);
                         },
                         onSelect: (date) => {
+                            RecrasEventHelper.sendEvent('Recras:Booking:DateSelected');
                             this.selectedDate = date;
                             this.getAvailableTimes(pack.id, date).then(times => {
                                 times = times.map(time => RecrasDateHelper.timePartOnly(new Date(time)));
@@ -826,6 +829,7 @@ class RecrasBooking {
                 this.datePicker = new Pikaday(pikadayOptions);
 
                 this.findElement('.recras-onlinebooking-time').addEventListener('change', () => {
+                    RecrasEventHelper.sendEvent('Recras:Booking:TimeSelected');
                     this.selectedTime = this.findElement('.recras-onlinebooking-time').value;
                     this.previewTimes();
                 });
@@ -921,6 +925,7 @@ class RecrasBooking {
     }
 
     submitBooking() {
+        RecrasEventHelper.sendEvent('Recras:Booking:BuyInProgress');
         let productCounts = this.productCounts().map(line => line.aantal);
         let productSum = productCounts.reduce((a, b) => a + b, 0);
         if (this.bookingSize() === 0 && productSum === 0) {
@@ -965,6 +970,7 @@ class RecrasBooking {
                 window.top.location.href = json.payment_url;
             } else if (json.message && json.status) {
                 if (bookingParams.redirect_url) {
+                    RecrasEventHelper.sendEvent('Recras:Booking:RedirectToPayment');
                     window.top.location.href = bookingParams.redirect_url;
                 } else {
                     window.alert(json.message);

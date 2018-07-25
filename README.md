@@ -1,5 +1,5 @@
 # Recras Online Booking JS library
-Version: 0.6.1
+Version: 0.6.2
 
 JS library for easy online booking & voucher integration
 
@@ -59,7 +59,10 @@ For Internet Explorer, a polyfill for promises is needed as well. Here are two o
 The library sends out a few custom events when certain things change:
 
 * `Recras:Booking:Reset` - when the entire form is reset
+* `Recras:Booking:PackagesShown` - when the list of packages is shown
 * `Recras:Booking:PackageChanged` - when a new package is selected
+* `Recras:Booking:ProductsShown` - when the products are shown after a package is selected
+* `Recras:Booking:ContactFormShown` - when the contact form is shown after a package is selected
 * `Recras:Booking:DateSelected` - when the date is changed
 * `Recras:Booking:TimeSelected` - when the time is changed
 * `Recras:Booking:BuyInProgress` - when the online booking form is submitted

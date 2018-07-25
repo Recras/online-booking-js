@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.2 (2018-07-25)
+* Added 3 more custom events needed for internal use
+
 ## 0.6.1 (2018-07-25)
 * Fixed package sorting
 * Fixed custom events in Internet Explorer

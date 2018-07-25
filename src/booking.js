@@ -1,6 +1,6 @@
 /**********************************
 *  Recras Online Booking library  *
-*  v 0.6.1                        *
+*  v 0.6.2                        *
 **********************************/
 
 class RecrasBooking {
@@ -211,6 +211,7 @@ class RecrasBooking {
         }
         this.selectedPackage = selectedPackage[0];
         this.showProducts(this.selectedPackage).then(() => {
+            RecrasEventHelper.sendEvent('Recras:Booking:ProductsShown');
             let scrollOptions = {
                 behavior: 'smooth',
             };
@@ -765,6 +766,7 @@ class RecrasBooking {
                 this.appendHtml(html);
                 this.loadingIndicatorHide();
                 this.showBookButton();
+                RecrasEventHelper.sendEvent('Recras:Booking:ContactFormShown');
 
                 [...this.findElements('[id^="contactformulier-"]')].forEach(el => {
                     el.addEventListener('change', this.maybeDisableBookButton.bind(this));
@@ -852,6 +854,7 @@ class RecrasBooking {
         promises.push(this.languageHelper.filterTags(this.texts.online_boeking_step0_text_post, this.selectedPackage ? this.selectedPackage.id : null));
         Promise.all(promises).then(msgs => {
             this.appendHtml(`<div class="recras-package-select"><p>${ msgs[0] }</p>${ html }<p>${ msgs[1] }</p></div>`);
+            RecrasEventHelper.sendEvent('Recras:Booking:PackagesShown');
 
             let packageSelectEl = this.findElement('.recras-package-selection');
             packageSelectEl.addEventListener('change', () => {

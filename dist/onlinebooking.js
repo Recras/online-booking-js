@@ -166,7 +166,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /**********************************
 *  Recras Online Booking library  *
-*  v 0.6.1                        *
+*  v 0.6.2                        *
 **********************************/
 
 var RecrasBooking = function () {
@@ -352,6 +352,7 @@ var RecrasBooking = function () {
             }
             this.selectedPackage = selectedPackage[0];
             this.showProducts(this.selectedPackage).then(function () {
+                RecrasEventHelper.sendEvent('Recras:Booking:ProductsShown');
                 var scrollOptions = {
                     behavior: 'smooth'
                 };
@@ -951,6 +952,7 @@ var RecrasBooking = function () {
                     _this19.appendHtml(html);
                     _this19.loadingIndicatorHide();
                     _this19.showBookButton();
+                    RecrasEventHelper.sendEvent('Recras:Booking:ContactFormShown');
 
                     [].concat(_toConsumableArray(_this19.findElements('[id^="contactformulier-"]'))).forEach(function (el) {
                         el.addEventListener('change', _this19.maybeDisableBookButton.bind(_this19));
@@ -1044,6 +1046,7 @@ var RecrasBooking = function () {
             promises.push(this.languageHelper.filterTags(this.texts.online_boeking_step0_text_post, this.selectedPackage ? this.selectedPackage.id : null));
             Promise.all(promises).then(function (msgs) {
                 _this21.appendHtml('<div class="recras-package-select"><p>' + msgs[0] + '</p>' + html + '<p>' + msgs[1] + '</p></div>');
+                RecrasEventHelper.sendEvent('Recras:Booking:PackagesShown');
 
                 var packageSelectEl = _this21.findElement('.recras-package-selection');
                 packageSelectEl.addEventListener('change', function () {
@@ -1982,7 +1985,7 @@ var RecrasOptions = function () {
 }();
 /****************************
  *  Recras voucher library  *
- *  v 0.6.1                 *
+ *  v 0.6.2                 *
  ***************************/
 
 RecrasOptions.hostnameDebug = '172.16.0.2';

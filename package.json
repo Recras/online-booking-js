@@ -1,14 +1,14 @@
 {
   "name": "@recras/online-booking-js",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "JS library for easy integration of Recras online booking and voucher sales",
   "main": "dist/onlinebooking.js",
   "scripts": {
-    "build": "npm run _babelSrc && npm run _catFiles",
+    "build": "npm run _catFiles && npm run _babelSrc",
     "jshint": "jshint src",
     "karma": "karma start test/js-unit/karma.conf.js --verbose",
-    "_babelSrc": "babel src -d tmp",
-    "_catFiles": "cat tmp/*.js > dist/onlinebooking.js && rm tmp/*.js"
+    "_babelSrc": "babel tmp -d dist && rm tmp/*.js",
+    "_catFiles": "cat src/*.js > tmp/onlinebooking.js"
   },
   "repository": {
     "type": "git",
@@ -29,9 +29,11 @@
   },
   "homepage": "https://github.com/Recras/online-booking-js#readme",
   "devDependencies": {
+    "@59naga/babel-plugin-transform-array-from": "0.0.0",
     "babel-cli": "^6.26.0",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-es2015-arrow-functions": "^6.22.0",
+    "babel-plugin-transform-object-assign": "^6.22.0",
     "babel-preset-env": "^1.6.1",
     "jasmine-core": "^3.1.0",
     "jasmine-spec-reporter": "^4.2.1",

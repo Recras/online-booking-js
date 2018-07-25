@@ -1,6 +1,6 @@
 /**********************************
 *  Recras Online Booking library  *
-*  v 0.6.0                        *
+*  v 0.6.1                        *
 **********************************/
 
 class RecrasBooking {
@@ -392,7 +392,7 @@ class RecrasBooking {
             eind: RecrasDateHelper.datePartOnly(end),
             producten: this.productCounts(),
         }).then(json => {
-            this.availableDays = [...new Set([...this.availableDays, ...json])];
+            this.availableDays = this.availableDays.concat(json);
             return this.availableDays;
         });
     }
@@ -615,6 +615,10 @@ class RecrasBooking {
     }
 
     showStandardAttachments() {
+        if (!this.selectedPackage || !this.findElement('.standard-attachments')) {
+            return true;
+        }
+
         let attachments = this.standardAttachments(this.selectedPackage);
         let attachmentHtml = ``;
         if (Object.keys(attachments).length) {
@@ -659,7 +663,7 @@ class RecrasBooking {
                 return -1;
             }
             if (aName > bName) {
-                return -1;
+                return 1;
             }
             return 0;
         });
@@ -782,7 +786,6 @@ class RecrasBooking {
                 html += `<label for="recras-onlinebooking-time">${ this.languageHelper.translate('TIME') }</label><select id="recras-onlinebooking-time" class="recras-onlinebooking-time" disabled></select>`;
                 html += '</div>';
                 this.appendHtml(html);
-
                 let pikadayOptions = Object.assign(
                     RecrasCalendarHelper.defaultOptions(),
                     {

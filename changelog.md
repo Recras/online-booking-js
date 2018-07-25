@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.1 (2018-07-25)
+* Fixed package sorting
+* Fixed custom events in Internet Explorer
+* Various other fixes for IE
+
 ## 0.6.0 (2018-07-24)
 * Added [custom events](README.md#Events)
 

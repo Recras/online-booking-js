@@ -1,4 +1,10 @@
 {
-  "plugins": ["transform-class-properties", "transform-es2015-arrow-functions"],
+  "plugins": [
+    "transform-class-properties",
+    "transform-es2015-arrow-functions",
+    "@59naga/babel-plugin-transform-array-from",
+    "transform-object-assign",
+    "transform-es2017-object-entries"
+  ],
   "presets": ["env"]
 }

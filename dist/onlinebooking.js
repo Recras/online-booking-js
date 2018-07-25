@@ -1,14 +1,172 @@
 'use strict';
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+function _objectValues(obj) {
+    var values = [];
+    var keys = Object.keys(obj);
+
+    for (var k = 0; k < keys.length; ++k) values.push(obj[keys[k]]);
+
+    return values;
+}
+
+var _arrayFrom = Array.from || function () {
+    var isCallable = function isCallable(fn) {
+        return typeof fn === 'function';
+    };
+
+    var toInteger = function toInteger(value) {
+        var number = Number(value);
+
+        if (isNaN(number)) {
+            return 0;
+        }
+
+        if (number === 0 || !isFinite(number)) {
+            return number;
+        }
+
+        return (number > 0 ? 1 : -1) * Math.floor(Math.abs(number));
+    };
+
+    var maxSafeInteger = Math.pow(2, 53) - 1;
+
+    var toLength = function toLength(value) {
+        var len = toInteger(value);
+        return Math.min(Math.max(len, 0), maxSafeInteger);
+    };
+
+    var iteratorProp = function iteratorProp(value) {
+        if (value != null) {
+            if (['string', 'number', 'boolean', 'symbol'].indexOf(typeof value === 'undefined' ? 'undefined' : _typeof(value)) > -1) {
+                return Symbol.iterator;
+            } else if (typeof Symbol !== 'undefined' && 'iterator' in Symbol && Symbol.iterator in value) {
+                return Symbol.iterator;
+            } else if ('@@iterator' in value) {
+                return '@@iterator';
+            }
+        }
+    };
+
+    var getMethod = function getMethod(O, P) {
+        if (O != null && P != null) {
+            var func = O[P];
+
+            if (func == null) {
+                return void 0;
+            }
+
+            if (!isCallable(func)) {
+                throw new TypeError(func + " is not a function");
+            }
+
+            return func;
+        }
+    };
+
+    var iteratorStep = function iteratorStep(iterator) {
+        var result = iterator.next();
+        var done = Boolean(result.done);
+
+        if (done) {
+            return false;
+        }
+
+        return result;
+    };
+
+    return function from(items) {
+        "use strict";
+
+        var C = this;
+        var mapFn = arguments.length > 1 ? arguments[1] : void 0;
+        var T;
+
+        if (typeof mapFn !== 'undefined') {
+            if (!isCallable(mapFn)) {
+                throw new TypeError('Array.from: when provided, the second argument must be a function');
+            }
+
+            if (arguments.length > 2) {
+                T = arguments[2];
+            }
+        }
+
+        var A, k;
+        var usingIterator = getMethod(items, iteratorProp(items));
+
+        if (usingIterator !== void 0) {
+            A = isCallable(C) ? Object(new C()) : [];
+            var iterator = usingIterator.call(items);
+
+            if (iterator == null) {
+                throw new TypeError("Array.from requires an array-like or iterable object");
+            }
+
+            k = 0;
+            var next, nextValue;
+
+            while (true) {
+                next = iteratorStep(iterator);
+
+                if (!next) {
+                    A.length = k;
+                    return A;
+                }
+
+                nextValue = next.value;
+
+                if (mapFn) {
+                    A[k] = mapFn.call(T, nextValue, k);
+                } else {
+                    A[k] = nextValue;
+                }
+
+                k++;
+            }
+        } else {
+            var arrayLike = Object(items);
+
+            if (items == null) {
+                throw new TypeError("Array.from requires an array-like object - not null or undefined");
+            }
+
+            var len = toLength(arrayLike.length);
+            A = isCallable(C) ? Object(new C(len)) : new Array(len);
+            k = 0;
+            var kValue;
+
+            while (k < len) {
+                kValue = arrayLike[k];
+
+                if (mapFn) {
+                    A[k] = mapFn.call(T, kValue, k);
+                } else {
+                    A[k] = kValue;
+                }
+
+                k++;
+            }
+
+            A.length = len;
+        }
+
+        return A;
+    };
+}();
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return _arrayFrom(arr); } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**********************************
 *  Recras Online Booking library  *
-*  v 0.6.0                        *
+*  v 0.6.1                        *
 **********************************/
 
 var RecrasBooking = function () {
@@ -400,7 +558,7 @@ var RecrasBooking = function () {
                 eind: RecrasDateHelper.datePartOnly(end),
                 producten: this.productCounts()
             }).then(function (json) {
-                _this9.availableDays = [].concat(_toConsumableArray(new Set([].concat(_toConsumableArray(_this9.availableDays), _toConsumableArray(json)))));
+                _this9.availableDays = _this9.availableDays.concat(json);
                 return _this9.availableDays;
             });
         }
@@ -515,8 +673,8 @@ var RecrasBooking = function () {
         key: 'getVouchersPrice',
         value: function getVouchersPrice() {
             var voucherPrice = 0;
-            Object.values(this.appliedVouchers).forEach(function (voucher) {
-                Object.values(voucher).forEach(function (line) {
+            _objectValues(this.appliedVouchers).forEach(function (voucher) {
+                _objectValues(voucher).forEach(function (line) {
                     voucherPrice -= line.aantal * line.prijs_per_stuk;
                 });
             });
@@ -656,12 +814,16 @@ var RecrasBooking = function () {
     }, {
         key: 'showStandardAttachments',
         value: function showStandardAttachments() {
+            if (!this.selectedPackage || !this.findElement('.standard-attachments')) {
+                return true;
+            }
+
             var attachments = this.standardAttachments(this.selectedPackage);
             var attachmentHtml = '';
             if (Object.keys(attachments).length) {
                 attachmentHtml += '<p><label><input type="checkbox" required>' + this.languageHelper.translate('AGREE_ATTACHMENTS') + '</label></p>';
                 attachmentHtml += '<ul>';
-                Object.values(attachments).forEach(function (attachment) {
+                _objectValues(attachments).forEach(function (attachment) {
                     attachmentHtml += '<li><a href="' + attachment.filename + '" download target="_blank">' + attachment.naam + '</a></li>';
                 });
                 attachmentHtml += '</ul>';
@@ -702,7 +864,7 @@ var RecrasBooking = function () {
                     return -1;
                 }
                 if (aName > bName) {
-                    return -1;
+                    return 1;
                 }
                 return 0;
             });
@@ -812,8 +974,7 @@ var RecrasBooking = function () {
                 html += '<label for="recras-onlinebooking-time">' + _this20.languageHelper.translate('TIME') + '</label><select id="recras-onlinebooking-time" class="recras-onlinebooking-time" disabled></select>';
                 html += '</div>';
                 _this20.appendHtml(html);
-
-                var pikadayOptions = Object.assign(RecrasCalendarHelper.defaultOptions(), {
+                var pikadayOptions = _extends(RecrasCalendarHelper.defaultOptions(), {
                     disableDayFn: function disableDayFn(day) {
                         var dateFmt = RecrasDateHelper.datePartOnly(day);
                         return _this20.availableDays.indexOf(dateFmt) === -1;
@@ -1067,11 +1228,7 @@ var RecrasBooking = function () {
     }]);
 
     return RecrasBooking;
-}();'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+}();
 
 var RecrasCalendarHelper = function () {
     function RecrasCalendarHelper() {
@@ -1127,17 +1284,11 @@ var RecrasCalendarHelper = function () {
     }]);
 
     return RecrasCalendarHelper;
-}();'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+}();
 
 var RecrasContactForm = function () {
     function RecrasContactForm() {
-        var _this = this;
+        var _this26 = this;
 
         var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
@@ -1155,7 +1306,7 @@ var RecrasContactForm = function () {
         }
 
         this.fetchJson = function (url) {
-            return RecrasHttpHelper.fetchJson(url, _this.error);
+            return RecrasHttpHelper.fetchJson(url, _this26.error);
         };
 
         this.GENDERS = {
@@ -1203,31 +1354,31 @@ var RecrasContactForm = function () {
     }, {
         key: 'getContactFormFields',
         value: function getContactFormFields(formId) {
-            var _this2 = this;
+            var _this27 = this;
 
             return this.fetchJson(this.options.getApiBase() + 'contactformulieren/' + formId + '/velden').then(function (fields) {
                 fields = fields.sort(function (a, b) {
                     return a.sort_order - b.sort_order;
                 });
 
-                _this2.contactFormFields = fields;
-                return _this2.contactFormFields;
+                _this27.contactFormFields = fields;
+                return _this27.contactFormFields;
             });
         }
     }, {
         key: 'getCountryList',
         value: function getCountryList() {
-            var _this3 = this;
+            var _this28 = this;
 
             return this.fetchJson('https://cdn.rawgit.com/umpirsky/country-list/ddabf3a8/data/' + this.languageHelper.locale + '/country.json').then(function (json) {
-                _this3.countries = json;
-                return _this3.countries;
+                _this28.countries = json;
+                return _this28.countries;
             });
         }
     }, {
         key: 'showField',
         value: function showField(field, idx) {
-            var _this4 = this;
+            var _this29 = this;
 
             if (field.soort_invoer === 'header') {
                 return '<h3>' + field.naam + '</h3>';
@@ -1241,7 +1392,7 @@ var RecrasContactForm = function () {
                 case 'contactpersoon.geslacht':
                     html = '<select ' + fixedAttributes + ' autocomplete="sex">';
                     Object.keys(this.GENDERS).forEach(function (key) {
-                        html += '<option value="' + key + '">' + _this4.languageHelper.translate(_this4.GENDERS[key]);
+                        html += '<option value="' + key + '">' + _this29.languageHelper.translate(_this29.GENDERS[key]);
                     });
                     html += '</select>';
                     return label + html;
@@ -1268,8 +1419,8 @@ var RecrasContactForm = function () {
                 case 'contact.landcode':
                     html = '<select ' + fixedAttributes + '>';
                     Object.keys(this.countries).forEach(function (code) {
-                        var selectedText = code.toUpperCase() === _this4.languageHelper.getCountry() ? ' selected' : '';
-                        html += '<option value="' + code + '"' + selectedText + '>' + _this4.countries[code];
+                        var selectedText = code.toUpperCase() === _this29.languageHelper.getCountry() ? ' selected' : '';
+                        html += '<option value="' + code + '"' + selectedText + '>' + _this29.countries[code];
                     });
                     html += '</select>';
                     return label + html;
@@ -1290,11 +1441,7 @@ var RecrasContactForm = function () {
     }]);
 
     return RecrasContactForm;
-}();'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+}();
 
 var RecrasCSSHelper = function () {
     function RecrasCSSHelper() {
@@ -1323,11 +1470,7 @@ var RecrasCSSHelper = function () {
     }]);
 
     return RecrasCSSHelper;
-}();'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+}();
 
 var RecrasDateHelper = function () {
     function RecrasDateHelper() {
@@ -1366,11 +1509,7 @@ var RecrasDateHelper = function () {
     }]);
 
     return RecrasDateHelper;
-}();"use strict";
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+}();
 
 var RecrasEventHelper = function () {
     function RecrasEventHelper() {
@@ -1378,19 +1517,23 @@ var RecrasEventHelper = function () {
     }
 
     _createClass(RecrasEventHelper, null, [{
-        key: "sendEvent",
+        key: 'sendEvent',
         value: function sendEvent(name) {
-            var event = new Event(name);
+            var event = void 0;
+
+            try {
+                event = new Event(name);
+            } catch (e) {
+                // IE
+                event = document.createEvent('Event');
+                event.initEvent(name, true, true);
+            }
             return document.dispatchEvent(event);
         }
     }]);
 
     return RecrasEventHelper;
-}();'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+}();
 
 var RecrasHttpHelper = function () {
     function RecrasHttpHelper() {
@@ -1433,11 +1576,7 @@ var RecrasHttpHelper = function () {
     }]);
 
     return RecrasHttpHelper;
-}();'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+}();
 
 var RecrasLanguageHelper = function () {
     function RecrasLanguageHelper() {
@@ -1705,15 +1844,15 @@ var RecrasLanguageHelper = function () {
     }, {
         key: 'setCurrency',
         value: function setCurrency() {
-            var _this = this;
+            var _this30 = this;
 
             var errorHandler = function errorHandler(err) {
-                _this.currency = 'eur';
-                _this.error(err);
+                _this30.currency = 'eur';
+                _this30.error(err);
             };
 
             return RecrasHttpHelper.fetchJson(this.options.getApiBase() + 'instellingen/currency', errorHandler).then(function (setting) {
-                _this.currency = setting.waarde;
+                _this30.currency = setting.waarde;
             });
         }
     }, {
@@ -1759,11 +1898,7 @@ var RecrasLanguageHelper = function () {
 }();
 
 RecrasLanguageHelper.defaultLocale = 'nl_NL';
-RecrasLanguageHelper.validLocales = ['de_DE', 'en_GB', 'nl_NL'];'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+RecrasLanguageHelper.validLocales = ['de_DE', 'en_GB', 'nl_NL'];
 
 var RecrasOptions = function () {
     function RecrasOptions(options) {
@@ -1845,23 +1980,16 @@ var RecrasOptions = function () {
 
     return RecrasOptions;
 }();
-
-RecrasOptions.hostnameDebug = '172.16.0.2';'use strict';
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
 /****************************
  *  Recras voucher library  *
- *  v 0.6.0                 *
+ *  v 0.6.1                 *
  ***************************/
+
+RecrasOptions.hostnameDebug = '172.16.0.2';
 
 var RecrasVoucher = function () {
     function RecrasVoucher() {
-        var _this = this;
+        var _this31 = this;
 
         var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
@@ -1878,10 +2006,10 @@ var RecrasVoucher = function () {
         this.element.classList.add('recras-buy-voucher');
 
         this.fetchJson = function (url) {
-            return RecrasHttpHelper.fetchJson(url, _this.error);
+            return RecrasHttpHelper.fetchJson(url, _this31.error);
         };
         this.postJson = function (url, data) {
-            return RecrasHttpHelper.postJson(_this.options.getApiBase() + url, data, _this.error);
+            return RecrasHttpHelper.postJson(_this31.options.getApiBase() + url, data, _this31.error);
         };
 
         RecrasCSSHelper.loadCSS(RecrasCSSHelper.cssGlobal());
@@ -1897,12 +2025,12 @@ var RecrasVoucher = function () {
         }
 
         this.languageHelper.setOptions(options).then(function () {
-            return _this.getVoucherTemplates();
+            return _this31.getVoucherTemplates();
         }).then(function (templates) {
-            if (_this.options.getVoucherTemplateId()) {
-                _this.changeTemplate(_this.options.getVoucherTemplateId());
+            if (_this31.options.getVoucherTemplateId()) {
+                _this31.changeTemplate(_this31.options.getVoucherTemplateId());
             } else {
-                _this.showTemplates(templates);
+                _this31.showTemplates(templates);
             }
         });
     }
@@ -1915,7 +2043,7 @@ var RecrasVoucher = function () {
     }, {
         key: 'buyTemplate',
         value: function buyTemplate() {
-            var _this2 = this;
+            var _this32 = this;
 
             RecrasEventHelper.sendEvent('Recras:Voucher:BuyInProgress');
             this.findElement('.buyTemplate').setAttribute('disabled', 'disabled');
@@ -1929,7 +2057,7 @@ var RecrasVoucher = function () {
                 payload.redirect_url = this.options.getRedirectUrl();
             }
             this.postJson('vouchers/buy', payload).then(function (json) {
-                _this2.findElement('.buyTemplate').removeAttribute('disabled');
+                _this32.findElement('.buyTemplate').removeAttribute('disabled');
 
                 if (json.payment_url) {
                     RecrasEventHelper.sendEvent('Recras:Voucher:RedirectToPayment');
@@ -1988,21 +2116,21 @@ var RecrasVoucher = function () {
     }, {
         key: 'getContactFormFields',
         value: function getContactFormFields(template) {
-            var _this3 = this;
+            var _this33 = this;
 
             var contactForm = new RecrasContactForm(this.options);
             return contactForm.fromVoucherTemplate(template).then(function (formFields) {
-                _this3.contactForm = contactForm;
+                _this33.contactForm = contactForm;
                 return formFields;
             });
         }
     }, {
         key: 'getVoucherTemplates',
         value: function getVoucherTemplates() {
-            var _this4 = this;
+            var _this34 = this;
 
             return this.fetchJson(this.options.getApiBase() + 'voucher_templates').then(function (templates) {
-                _this4.templates = templates;
+                _this34.templates = templates;
                 return templates;
             });
         }
@@ -2044,7 +2172,7 @@ var RecrasVoucher = function () {
     }, {
         key: 'showContactForm',
         value: function showContactForm(templateId) {
-            var _this5 = this;
+            var _this35 = this;
 
             this.selectedTemplate = this.templates.filter(function (t) {
                 return t.id === templateId;
@@ -2058,20 +2186,20 @@ var RecrasVoucher = function () {
                 }).length > 0;
 
                 if (hasCountryField) {
-                    waitFor.push(_this5.contactForm.getCountryList());
+                    waitFor.push(_this35.contactForm.getCountryList());
                 }
                 Promise.all(waitFor).then(function () {
                     var html = '<form class="recras-contactform">';
-                    html += _this5.quantitySelector();
+                    html += _this35.quantitySelector();
                     fields.forEach(function (field, idx) {
-                        html += '<div>' + _this5.contactForm.showField(field, idx) + '</div>';
+                        html += '<div>' + _this35.contactForm.showField(field, idx) + '</div>';
                     });
                     html += '</form>';
-                    _this5.appendHtml(html);
-                    _this5.showBuyButton();
+                    _this35.appendHtml(html);
+                    _this35.showBuyButton();
 
-                    [].concat(_toConsumableArray(_this5.findElements('[id^="contactformulier-"]'))).forEach(function (el) {
-                        el.addEventListener('change', _this5.maybeDisableBuyButton.bind(_this5));
+                    [].concat(_toConsumableArray(_this35.findElements('[id^="contactformulier-"]'))).forEach(function (el) {
+                        el.addEventListener('change', _this35.maybeDisableBuyButton.bind(_this35));
                     });
                 });
             });
@@ -2079,10 +2207,10 @@ var RecrasVoucher = function () {
     }, {
         key: 'showTemplates',
         value: function showTemplates(templates) {
-            var _this6 = this;
+            var _this36 = this;
 
             var templateOptions = templates.map(function (template) {
-                return '<option value="' + template.id + '">' + template.name + ' (' + _this6.formatPrice(template.price) + ')';
+                return '<option value="' + template.id + '">' + template.name + ' (' + _this36.formatPrice(template.price) + ')';
             });
             var html = '<select class="recrasVoucherTemplates"><option>' + templateOptions.join('') + '</select>';
             this.appendHtml('<div class="recras-voucher-templates">' + html + '</div>');
@@ -2090,7 +2218,7 @@ var RecrasVoucher = function () {
             var voucherSelectEl = this.findElement('.recrasVoucherTemplates');
             voucherSelectEl.addEventListener('change', function () {
                 var selectedTemplateId = parseInt(voucherSelectEl.value, 10);
-                _this6.changeTemplate(selectedTemplateId);
+                _this36.changeTemplate(selectedTemplateId);
             });
         }
     }]);

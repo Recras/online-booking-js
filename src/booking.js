@@ -174,7 +174,7 @@ class RecrasBooking {
         if (!bookingSizeEl) {
             return 0;
         }
-        return bookingSizeEl.value;
+        return parseInt(bookingSizeEl.value, 10);
     }
 
     bookingSizeLines(pack) {
@@ -305,24 +305,33 @@ class RecrasBooking {
         });
 
         let selectedProducts = this.productCounts();
-        selectedProducts.forEach(p => {
-            if (p.aantal > 0) {
-                let packageLineID = p.arrangementsregel_id;
-
-                let packageLine = this.findProduct(packageLineID);
-                if (p.aantal < packageLine.aantal_personen) {
-                    let input = this.findElement(`[data-package-id="${ packageLineID }"]`);
-                    let label = this.findElement(`label[for="${ input.id }"]`);
-
-                    let warnEl = document.createElement('span');
-                    warnEl.classList.add('minimum-amount');
-                    warnEl.innerHTML = this.languageHelper.translate('PRODUCT_MINIMUM', {
-                        MINIMUM: packageLine.aantal_personen,
-                    });
-                    label.parentNode.appendChild(warnEl);
-                }
+        for (let i = 0; i < selectedProducts.length; i++) {
+            let product = selectedProducts[i];
+            if (product.aantal < 1) {
+                continue;
             }
-        });
+
+            let packageLineID = product.arrangementsregel_id;
+            let packageLine = this.findProduct(packageLineID);
+            if (product.aantal >= packageLine.aantal_personen) {
+                continue;
+            }
+
+            let input = this.findElement(`[data-package-id="${ packageLineID }"]`);
+            if (!input) {
+                // This is a "booking size" line - which has no minimum amount
+                continue;
+            }
+
+            let warnEl = document.createElement('span');
+            warnEl.classList.add('minimum-amount');
+            warnEl.innerHTML = this.languageHelper.translate('PRODUCT_MINIMUM', {
+                MINIMUM: packageLine.aantal_personen,
+            });
+
+            let label = this.findElement(`label[for="${ input.id }"]`);
+            label.parentNode.appendChild(warnEl);
+        }
     }
 
     clearAll() {

@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.3 (2018-09-03)
+* Don't crash on minimum amount of booking size row
+
 ## 0.6.2 (2018-07-25)
 * Added 3 more custom events needed for internal use
 

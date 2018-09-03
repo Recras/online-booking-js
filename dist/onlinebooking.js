@@ -166,7 +166,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /**********************************
 *  Recras Online Booking library  *
-*  v 0.6.2                        *
+*  v 0.6.3                        *
 **********************************/
 
 var RecrasBooking = function () {
@@ -1992,7 +1992,7 @@ var RecrasOptions = function () {
 }();
 /****************************
  *  Recras voucher library  *
- *  v 0.6.2                 *
+ *  v 0.6.3                 *
  ***************************/
 
 RecrasOptions.hostnameDebug = '172.16.0.2';

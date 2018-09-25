@@ -1,6 +1,6 @@
 /****************************
  *  Recras voucher library  *
- *  v 0.7.0                 *
+ *  v 0.7.1                 *
  ***************************/
 
 class RecrasVoucher {

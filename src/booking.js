@@ -1,6 +1,6 @@
 /**********************************
 *  Recras Online Booking library  *
-*  v 0.6.3                        *
+*  v 0.7.0                        *
 **********************************/
 
 class RecrasBooking {
@@ -474,26 +474,29 @@ class RecrasBooking {
             return false;
         }
 
-        let shouldDisable = false;
+        let bookingDisabledReasons = [];
         if (this.requiresProduct) {
-            shouldDisable = true;
+            bookingDisabledReasons.push('BOOKING_DISABLED_REQUIRED_PRODUCT');
         }
         if (!this.amountsValid(this.selectedPackage)) {
-            shouldDisable = true;
+            bookingDisabledReasons.push('BOOKING_DISABLED_AMOUNTS_INVALID');
         }
         if (!this.findElement('.recras-onlinebooking-date').value) {
-            shouldDisable = true;
+            bookingDisabledReasons.push('BOOKING_DISABLED_INVALID_DATE');
         }
         if (!this.findElement('.recras-onlinebooking-time').value) {
-            shouldDisable = true;
+            bookingDisabledReasons.push('BOOKING_DISABLED_INVALID_TIME');
         }
         if (!this.findElement('.recras-contactform').checkValidity()) {
-            shouldDisable = true;
+            bookingDisabledReasons.push('BOOKING_DISABLED_CONTACT_FORM_INVALID');
         }
 
-        if (shouldDisable) {
+        if (bookingDisabledReasons.length > 0) {
+            const reasonsList = bookingDisabledReasons.map(reason => this.languageHelper.translate(reason)).join('<li>');
+            this.findElement('#bookingErrors').innerHTML = `<ul><li>${ reasonsList }</ul>`;
             button.setAttribute('disabled', 'disabled');
         } else {
+            this.findElement('#bookingErrors').innerHTML = '';
             button.removeAttribute('disabled');
         }
     }
@@ -664,6 +667,7 @@ class RecrasBooking {
             <div class="standard-attachments"></div>
             ${ paymentText }
             <button type="submit" class="bookPackage" disabled>${ this.languageHelper.translate('BUTTON_BOOK_NOW') }</button>
+            <div class="booking-error" id="bookingErrors"></div>
         </div>`;
             this.appendHtml(html);
             this.findElement('.bookPackage').addEventListener('click', this.submitBooking.bind(this));
@@ -784,6 +788,7 @@ class RecrasBooking {
                                 times = times.map(time => RecrasDateHelper.timePartOnly(new Date(time)));
                                 this.showTimes(times);
                             });
+                            this.maybeDisableBookButton();
                             this.showDiscountFields();
                         },
                     }
@@ -795,6 +800,7 @@ class RecrasBooking {
                     RecrasEventHelper.sendEvent('Recras:Booking:TimeSelected');
                     this.selectedTime = this.findElement('.recras-onlinebooking-time').value;
                     this.previewTimes();
+                    this.maybeDisableBookButton();
                 });
             });
     }

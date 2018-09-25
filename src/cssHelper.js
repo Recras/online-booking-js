@@ -8,8 +8,10 @@ class RecrasCSSHelper {
     border-top: 2px solid #dedede; /* Any love for Kirby out there? */
 }
 
-.minimum-amount {
+.booking-error, .minimum-amount {
     color: hsl(0, 50%, 50%);
+}
+.minimum-amount {
     padding-left: 0.5em;
 }
 .time-preview {

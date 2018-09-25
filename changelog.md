@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.0 (2018-09-25)
+* Show reasons why 'Book now' button is disabled
+* Fix disabled 'Book now' button after changing date/time
+
 ## 0.6.3 (2018-09-03)
 * Don't crash on minimum amount of booking size row
 

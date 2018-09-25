@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.7.1 (2018-09-25)
+* Version 0.7.0 was missing the minified `dist/onlinebooking.js` file
+
 ## 0.7.0 (2018-09-25)
 * Show reasons why 'Book now' button is disabled
 * Fix disabled 'Book now' button after changing date/time

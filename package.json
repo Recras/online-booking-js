@@ -29,7 +29,6 @@
   },
   "homepage": "https://github.com/Recras/online-booking-js#readme",
   "devDependencies": {
-    "@59naga/babel-plugin-transform-array-from": "0.0.0",
     "babel-cli": "^6.26.0",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-es2015-arrow-functions": "^6.22.0",

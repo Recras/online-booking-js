@@ -19,7 +19,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /**********************************
 *  Recras Online Booking library  *
-*  v 0.7.1                        *
+*  v 0.7.2                        *
 **********************************/
 
 var RecrasBooking = function () {
@@ -41,7 +41,8 @@ var RecrasBooking = function () {
             throw new Error(this.languageHelper.translate('ERR_OPTIONS_INVALID'));
         }
         this.options = options;
-        this.languageHelper.setOptions(options);
+
+        var optionsPromise = this.languageHelper.setOptions(options);
 
         this.element = this.options.getElement();
         this.element.classList.add('recras-onlinebooking');
@@ -68,7 +69,9 @@ var RecrasBooking = function () {
         this.clearAll();
 
         this.loadingIndicatorShow(this.element);
-        RecrasCalendarHelper.loadScript().then(function () {
+        optionsPromise.then(function () {
+            return RecrasCalendarHelper.loadScript();
+        }).then(function () {
             return _this.getTexts();
         }).then(function (texts) {
             _this.texts = texts;
@@ -76,7 +79,6 @@ var RecrasBooking = function () {
         }).then(function (packages) {
             _this.loadingIndicatorHide();
             if (_this.options.getPackageId()) {
-                //TODO: wait for setCurrency
                 _this.changePackage(_this.options.getPackageId());
             } else {
                 _this.showPackages(packages);
@@ -1868,7 +1870,7 @@ var RecrasOptions = function () {
 }();
 /****************************
  *  Recras voucher library  *
- *  v 0.7.1                 *
+ *  v 0.7.2                 *
  ***************************/
 
 RecrasOptions.hostnameDebug = '172.16.0.2';

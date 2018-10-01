@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.7.2 (2018-10-01)
+* Fix potential race condition
+
 ## 0.7.1 (2018-09-25)
 * Version 0.7.0 was missing the minified `dist/onlinebooking.js` file
 

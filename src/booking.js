@@ -1,6 +1,6 @@
 /**********************************
 *  Recras Online Booking library  *
-*  v 0.7.1                        *
+*  v 0.7.2                        *
 **********************************/
 
 class RecrasBooking {
@@ -16,7 +16,8 @@ class RecrasBooking {
             throw new Error(this.languageHelper.translate('ERR_OPTIONS_INVALID'));
         }
         this.options = options;
-        this.languageHelper.setOptions(options);
+
+        let optionsPromise = this.languageHelper.setOptions(options);
 
         this.element = this.options.getElement();
         this.element.classList.add('recras-onlinebooking');
@@ -39,19 +40,20 @@ class RecrasBooking {
         this.clearAll();
 
         this.loadingIndicatorShow(this.element);
-        RecrasCalendarHelper.loadScript().then(() => this.getTexts())
-        .then(texts => {
-            this.texts = texts;
-            return this.getPackages();
-        }).then(packages => {
-            this.loadingIndicatorHide();
-            if (this.options.getPackageId()) {
-                //TODO: wait for setCurrency
-                this.changePackage(this.options.getPackageId());
-            } else {
-                this.showPackages(packages);
-            }
-        });
+        optionsPromise
+            .then(() => RecrasCalendarHelper.loadScript())
+            .then(() => this.getTexts())
+            .then(texts => {
+                this.texts = texts;
+                return this.getPackages();
+            }).then(packages => {
+                this.loadingIndicatorHide();
+                if (this.options.getPackageId()) {
+                    this.changePackage(this.options.getPackageId());
+                } else {
+                    this.showPackages(packages);
+                }
+            });
     }
 
     amountsValid(pack) {

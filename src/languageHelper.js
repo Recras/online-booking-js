@@ -1,8 +1,8 @@
 class RecrasLanguageHelper {
-    static defaultLocale = 'nl_NL';
     static validLocales = ['de_DE', 'en_GB', 'nl_NL'];
 
     constructor() {
+        this.defaultLocale = 'nl_NL';
         this.locale = this.defaultLocale;
         this.options = null;
 
@@ -58,6 +58,7 @@ class RecrasLanguageHelper {
                 ERR_INVALID_REDIRECT_URL: 'Ungültige redirect URL. Stellen Sie sicher, dass es mit http:// or https:// beginnt',
                 ERR_NO_ELEMENT: 'Option "element" nicht eingestellt.',
                 ERR_NO_HOSTNAME: 'Option "recras_hostname" nicht eingestellt.',
+                ERR_OPTIONS_INVALID: 'Options is not a "RecrasOptions" object',
                 GENDER_UNKNOWN: 'Unbekannte',
                 GENDER_MALE: 'Mann',
                 GENDER_FEMALE: 'Frau',
@@ -127,6 +128,7 @@ class RecrasLanguageHelper {
                 ERR_INVALID_REDIRECT_URL: 'Invalid redirect URL. Make sure you it starts with http:// or https://',
                 ERR_NO_ELEMENT: 'Option "element" not set.',
                 ERR_NO_HOSTNAME: 'Option "recras_hostname" not set.',
+                ERR_OPTIONS_INVALID: 'Options is not a "RecrasOptions" object',
                 GENDER_UNKNOWN: 'Unknown',
                 GENDER_MALE: 'Male',
                 GENDER_FEMALE: 'Female',
@@ -196,6 +198,7 @@ class RecrasLanguageHelper {
                 ERR_INVALID_REDIRECT_URL: 'Ongeldige redirect-URL. Zorg ervoor dat deze begint met http:// of https://',
                 ERR_NO_ELEMENT: 'Optie "element" niet ingesteld.',
                 ERR_NO_HOSTNAME: 'Optie "recras_hostname" niet ingesteld.',
+                ERR_OPTIONS_INVALID: 'Opties is geen "RecrasOptions"-object',
                 GENDER_UNKNOWN: 'Onbekend',
                 GENDER_MALE: 'Man',
                 GENDER_FEMALE: 'Vrouw',

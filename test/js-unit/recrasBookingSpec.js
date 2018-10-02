@@ -1,12 +1,4 @@
 describe('RecrasBooking', () => {
-    let app;
-    beforeEach(() => {
-        app = new RecrasBooking({
-            element: document.createElement('div'),
-            recras_hostname: 'demo.recras.nl',
-        });
-    });
-
     describe('constructor', () => {
         describe('options', () => {
             it('fails without options', () => {
@@ -17,57 +9,68 @@ describe('RecrasBooking', () => {
 
             it('fails without "element"', () => {
                 expect(() => {
-                    new RecrasBooking({});
-                }).toThrow(new Error('Option "element" not set.'));
+                    let options = new RecrasOptions({});
+                    new RecrasBooking(options);
+                }).toThrow(new Error('Optie "element" niet ingesteld.'));
             });
 
             it('fails with non-element "element"', () => {
                 expect(() => {
-                    new RecrasBooking({
+                    let options = new RecrasOptions({
                         element: 'just a string',
                     });
-                }).toThrow(new Error('Option "element" is not a valid Element'));
+                    new RecrasBooking(options);
+                }).toThrow(new Error('Optie "element" is geen geldig Element'));
             });
 
             it('fails without "recras_hostname"', () => {
                 expect(() => {
-                    new RecrasBooking({
+                    let options = new RecrasOptions({
                         element: document.createElement('div'),
                     });
-                }).toThrow(new Error('Option "recras_hostname" not set.'));
+                    new RecrasBooking(options);
+                }).toThrow(new Error('Optie "recras_hostname" niet ingesteld.'));
             });
 
             it('fails with invalid "recras_hostname"', () => {
                 expect(() => {
-                    new RecrasBooking({
+                    let options = new RecrasOptions({
                         element: document.createElement('div'),
                         recras_hostname: 'example.com',
                     });
-                }).toThrow(new Error('Option "recras_hostname" is invalid.'));
+                    new RecrasBooking(options);
+                }).toThrow(new Error('Optie "recras_hostname" is ongeldig.'));
             });
         });
 
         describe('locale', () => {
             it('has default locale', () => {
-                expect(app.locale).toEqual('nl_NL');
+                let options = new RecrasOptions({
+                    element: document.createElement('div'),
+                    recras_hostname: 'demo.recras.nl',
+                });
+                let rb = new RecrasBooking(options);
+                expect(rb.languageHelper.locale).toEqual('nl_NL');
             });
 
             it('can set locale', () => {
-                let rb = new RecrasBooking({
+                let options = new RecrasOptions({
                     element: document.createElement('div'),
                     locale: 'en_GB',
                     recras_hostname: 'demo.recras.nl'
                 });
-                expect(rb.locale).toEqual('en_GB');
+                let rb = new RecrasBooking(options);
+                expect(rb.languageHelper.locale).toEqual('en_GB');
             });
 
             it('invalid locale falls back to default', () => {
-                let rb = new RecrasBooking({
+                let options = new RecrasOptions({
                     element: document.createElement('div'),
                     locale: 'xx_zz',
                     recras_hostname: 'demo.recras.nl'
                 });
-                expect(rb.locale).toEqual('nl_NL');
+                let rb = new RecrasBooking(options);
+                expect(rb.languageHelper.locale).toEqual('nl_NL');
             });
         });
 

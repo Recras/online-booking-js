@@ -6,13 +6,7 @@ module.exports = function(config) {
             //'FirefoxHeadless',
         ],
         files: [
-            // Helpers first
-            'src/*Helper.js',
-            // Then the other classes
-            'src/booking.js',
-            'src/contactForm.js',
-            'src/options.js',
-            'src/vouchers.js',
+            'dist/onlinebooking.js',
             'test/js-unit/*Spec.js'
         ],
         frameworks: ['jasmine'],

@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.7.3 (2018-10-04)
+* Fix selection of disallowed payment method
+
 ## 0.7.2 (2018-10-01)
 * Fix potential race condition
 

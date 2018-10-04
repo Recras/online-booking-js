@@ -14,9 +14,12 @@
   "globals": {
     "console": true,
     "Pikaday": true,
+    "RecrasBooking": true,
     "RecrasCalendarHelper": true,
     "RecrasContactForm": true,
+    "RecrasCSSHelper": true,
     "RecrasDateHelper": true,
+    "RecrasEventHelper": true,
     "RecrasHttpHelper": true,
     "RecrasLanguageHelper": true,
     "RecrasOptions": true

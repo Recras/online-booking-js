@@ -19,7 +19,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /**********************************
 *  Recras Online Booking library  *
-*  v 0.7.2                        *
+*  v 0.7.3                        *
 **********************************/
 
 var RecrasBooking = function () {
@@ -553,6 +553,9 @@ var RecrasBooking = function () {
     }, {
         key: 'loadingIndicatorShow',
         value: function loadingIndicatorShow(afterEl) {
+            if (!afterEl) {
+                return;
+            }
             afterEl.insertAdjacentHTML('beforeend', '<span class="recrasLoadingIndicator">' + this.languageHelper.translate('LOADING') + '</span>');
         }
     }, {
@@ -1016,7 +1019,7 @@ var RecrasBooking = function () {
                 return false;
             }
 
-            var paymentMethod = this.PAYMENT_DIRECT;
+            var paymentMethod = this.paymentMethods(this.selectedPackage)[0];
             var paymentMethodEl = this.findElement('[name="paymentMethod"]:checked');
             if (paymentMethodEl && this.validPaymentMethod(this.selectedPackage, paymentMethodEl.value)) {
                 paymentMethod = paymentMethodEl.value;
@@ -1024,7 +1027,10 @@ var RecrasBooking = function () {
 
             this.loadingIndicatorHide();
             this.loadingIndicatorShow(this.findElement('.bookPackage'));
-            this.findElement('.bookPackage').setAttribute('disabled', 'disabled');
+            var elem = void 0;
+            if (null !== (elem = this.findElement('.bookPackage'))) {
+                elem.setAttribute('disabled', 'disabled');
+            }
 
             var vouchers = Object.keys(this.appliedVouchers).length > 0 ? Object.keys(this.appliedVouchers) : null;
             var bookingParams = {
@@ -1873,7 +1879,7 @@ var RecrasOptions = function () {
 }();
 /****************************
  *  Recras voucher library  *
- *  v 0.7.2                 *
+ *  v 0.7.3                 *
  ***************************/
 
 RecrasOptions.hostnameDebug = '172.16.0.2';

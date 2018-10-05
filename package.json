@@ -1,14 +1,15 @@
 {
   "name": "@recras/online-booking-js",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "description": "JS library for easy integration of Recras online booking and voucher sales",
   "main": "dist/onlinebooking.js",
   "scripts": {
     "build": "npm run _catFiles && npm run _babelSrc",
     "jshint": "jshint src",
-    "karma": "karma start test/js-unit/karma.conf.js --verbose",
+    "test": "karma start test/js-unit/karma.conf.js --verbose",
+    "karma": "npm test",
     "_babelSrc": "babel tmp -d dist && rm tmp/*.js",
-    "_catFiles": "cat src/*.js > tmp/onlinebooking.js"
+    "_catFiles": "mkdir -p tmp && cat src/*.js > tmp/onlinebooking.js"
   },
   "repository": {
     "type": "git",

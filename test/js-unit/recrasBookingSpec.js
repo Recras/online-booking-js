@@ -75,4 +75,36 @@ describe('RecrasBooking', () => {
         });
 
     });
+
+    describe('submitBooking', () => {
+        beforeEach(() => {
+            this.rb = new RecrasBooking(new RecrasOptions({
+                element: document.createElement('div'),
+                recras_hostname: 'demo.recras.nl',
+            }));
+            this.rb.selectedPackage = {
+                mag_online_geboekt_worden_direct_betalen: false,
+                mag_online_geboekt_worden_achteraf_betalen: true,
+                regels: [],
+            };
+            this.rb.appliedVouchers = {};
+            this.rb.contactForm = new RecrasContactForm(new RecrasOptions({
+                element: document.createElement('div'),
+                recras_hostname: 'demo.recras.nl',
+            }));
+        });
+
+        it('should select only possible payment method by default', () => {
+            this.rb.postJson = jasmine.createSpy('postJson').and.callFake(() => {
+                return new Promise(function(resolve) {
+                    resolve();
+                });
+            });
+            this.rb.bookingSize = () => 5;
+            this.rb.submitBooking();
+            expect(this.rb.postJson).toHaveBeenCalledWith('onlineboeking/reserveer', jasmine.objectContaining({
+                betaalmethode: 'factuur',
+            }));
+        });
+    });
 });

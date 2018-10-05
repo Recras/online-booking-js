@@ -1,6 +1,6 @@
 /**********************************
 *  Recras Online Booking library  *
-*  v 0.7.2                        *
+*  v 0.7.3                        *
 **********************************/
 
 class RecrasBooking {
@@ -467,6 +467,9 @@ class RecrasBooking {
     }
 
     loadingIndicatorShow(afterEl) {
+        if (!afterEl) {
+            return;
+        }
         afterEl.insertAdjacentHTML('beforeend', `<span class="recrasLoadingIndicator">${ this.languageHelper.translate('LOADING') }</span>`);
     }
 
@@ -905,7 +908,7 @@ class RecrasBooking {
             return false;
         }
 
-        let paymentMethod = this.PAYMENT_DIRECT;
+        let paymentMethod = this.paymentMethods(this.selectedPackage)[0];
         let paymentMethodEl = this.findElement('[name="paymentMethod"]:checked');
         if (paymentMethodEl && this.validPaymentMethod(this.selectedPackage, paymentMethodEl.value)) {
             paymentMethod = paymentMethodEl.value;
@@ -913,7 +916,10 @@ class RecrasBooking {
 
         this.loadingIndicatorHide();
         this.loadingIndicatorShow(this.findElement('.bookPackage'));
-        this.findElement('.bookPackage').setAttribute('disabled', 'disabled');
+        let elem;
+        if (null !== (elem = this.findElement('.bookPackage'))) {
+            elem.setAttribute('disabled', 'disabled');
+        }
 
         let vouchers = Object.keys(this.appliedVouchers).length > 0 ? Object.keys(this.appliedVouchers) : null;
         let bookingParams = {

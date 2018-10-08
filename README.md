@@ -33,6 +33,9 @@ new RecrasVoucher(options);
 ```
 See the section Options below for an overview of all options
 
+### Contact form
+TODO: add readme
+
 
 ### Demo
 See `/demo/index.html` for a demo integration
@@ -67,6 +70,7 @@ The library sends out a few custom events when certain things change:
 * `Recras:Booking:TimeSelected` - when the time is changed
 * `Recras:Booking:BuyInProgress` - when the online booking form is submitted
 * `Recras:Booking:RedirectToPayment` - when the user is redirected to the payment provider
+* `Recras:ContactForm:Submit` - when a standalone form is submitted
 * `Recras:Voucher:TemplateChanged` - when a new voucher template is selected
 * `Recras:Voucher:BuyInProgress` - when the voucher form is submitted
 * `Recras:Voucher:RedirectToPayment` - when the user is redirected to the payment provider

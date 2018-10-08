@@ -1,5 +1,8 @@
 # Changelog
 
+## branch contact-form (2018-xx-xx)
+* Add standalone contact form integration
+
 ## 0.9.0 (2018-11-12)
 * Clear forms after successful submit
 * Improve certain error messages

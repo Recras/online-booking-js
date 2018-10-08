@@ -6,12 +6,17 @@ class RecrasContactForm {
             throw new Error(this.languageHelper.translate('ERR_OPTIONS_INVALID'));
         }
         this.options = options;
+
+        this.element = this.options.getElement();
+        this.element.classList.add('recras-contactform-wrapper');
+
         this.languageHelper.setOptions(options);
         if (RecrasLanguageHelper.isValid(this.options.getLocale())) {
             this.languageHelper.setLocale(this.options.getLocale());
         }
 
         this.fetchJson = url => RecrasHttpHelper.fetchJson(url, this.error);
+        this.postJson = (url, data) => RecrasHttpHelper.postJson(this.options.getApiBase() + url, data, this.error);
 
         this.GENDERS = {
             onbekend: 'GENDER_UNKNOWN',
@@ -30,8 +35,16 @@ class RecrasContactForm {
         };
     }
 
+    appendHtml(msg) {
+        this.element.insertAdjacentHTML('beforeend', msg);
+    }
+
     error(msg) {
         console.log('Error', msg); //TODO
+    }
+
+    findElement(querystring) {
+        return this.element.querySelector(querystring);
     }
 
     fromPackage(pack) {
@@ -40,6 +53,23 @@ class RecrasContactForm {
 
     fromVoucherTemplate(template) {
         return this.getContactFormFields(template.contactform_id);
+    }
+
+    generateForm() {
+        let waitFor = [];
+
+        if (this.hasCountryField()) {
+            waitFor.push(this.getCountryList());
+        }
+        return Promise.all(waitFor).then(() => {
+            let html = '<form class="recras-contactform">';
+            this.contactFormFields.forEach((field, idx) => {
+                html += '<div>' + this.showField(field, idx) + '</div>';
+            });
+            html += '</form>';
+
+            return html;
+        });
     }
 
     generateJson() {
@@ -69,6 +99,25 @@ class RecrasContactForm {
                 this.countries = json;
                 return this.countries;
             });
+    }
+
+    hasCountryField() {
+        return this.contactFormFields.filter(field => {
+            return field.field_identifier === 'contact.landcode';
+        }).length > 0;
+    }
+
+    loadingIndicatorHide() {
+        [...document.querySelectorAll('.recrasLoadingIndicator')].forEach(el => {
+            el.parentNode.removeChild(el);
+        });
+    }
+
+    loadingIndicatorShow(afterEl) {
+        if (!afterEl) {
+            return;
+        }
+        afterEl.insertAdjacentHTML('beforeend', `<span class="recrasLoadingIndicator">${ this.languageHelper.translate('LOADING') }</span>`);
     }
 
     showField(field, idx) {
@@ -122,11 +171,49 @@ class RecrasContactForm {
         }
     }
 
+    showForm(id) {
+        this.id = id;
+
+        this.loadingIndicatorShow(this.element);
+        this.getContactFormFields(id)
+            .then(() => form.generateForm())
+            .then(html => {
+                this.appendHtml(html);
+                this.showSubmitButton();
+                this.loadingIndicatorHide();
+            });
+    }
+
     showLabel(field, idx) {
         let labelText = field.naam;
         if (field.verplicht) {
             labelText += `<span class="recras-contactform-required" title="${ this.languageHelper.translate('ATTR_REQUIRED') }"></span>`;
         }
         return `<label for="contactformulier-${ idx }">${ labelText }</label>`;
+    }
+
+    showSubmitButton() {
+        this.appendHtml(`<button type="submit" class="submitForm">${ this.languageHelper.translate('BUTTON_SUBMIT_CONTACT_FORM') }</button>`);
+        this.findElement('.submitForm').addEventListener('click', this.submitForm.bind(this));
+    }
+
+    submitForm() {
+        RecrasEventHelper.sendEvent('Recras:ContactForm:Submit');
+
+        this.loadingIndicatorHide();
+        this.loadingIndicatorShow(this.findElement('.submitForm'));
+
+        this.findElement('.submitForm').setAttribute('disabled', 'disabled');
+
+        return this.postJson('contactformulieren/' + this.id + '/opslaan', this.generateJson()).then(json => {
+            this.findElement('.submitForm').removeAttribute('disabled');
+            this.loadingIndicatorHide();
+
+            if (json.success) {
+                window.alert(this.languageHelper.translate('CONTACT_FORM_SUBMIT_SUCCESS'));
+            } else {
+                window.alert(this.languageHelper.translate('CONTACT_FORM_SUBMIT_FAILED'));
+            }
+        });
     }
 }

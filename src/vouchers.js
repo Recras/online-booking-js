@@ -164,11 +164,7 @@ class RecrasVoucher {
         this.getContactFormFields(this.selectedTemplate).then(fields => {
             let waitFor = [];
 
-            let hasCountryField = fields.filter(field => {
-                return field.field_identifier === 'contact.landcode';
-            }).length > 0;
-
-            if (hasCountryField) {
+            if (this.contactForm.hasCountryField()) {
                 waitFor.push(this.contactForm.getCountryList());
             }
             Promise.all(waitFor).then(() => {

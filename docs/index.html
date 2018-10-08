@@ -137,6 +137,11 @@
 
         <h2>Buy Voucher</h2>
         <div id="recrasvouchers"></div>
+
+        <hr>
+
+        <h2>Contact form</h2>
+        <div id="contactform"></div>
     </main>
 </body>
 <script src="../dist/onlinebooking.js"></script>
@@ -153,11 +158,17 @@
     let bookingOptions = new RecrasOptions(recrasOptions);
     new RecrasBooking(bookingOptions);
 
-
     let optionsCopy = JSON.parse(JSON.stringify(recrasOptions));
     optionsCopy.element = document.getElementById('recrasvouchers');
     let voucherOptions = new RecrasOptions(optionsCopy);
     new RecrasVoucher(voucherOptions);
+
+
+    let optionsCF = JSON.parse(JSON.stringify(recrasOptions));
+    optionsCF.element = document.getElementById('contactform');
+    let cfOptions = new RecrasOptions(optionsCF);
+    let form = new RecrasContactForm(cfOptions);
+    form.showForm(1);
 
     document.addEventListener('Recras:Booking:PackageChanged', (e) => {
         console.log('Custom event logged', e);

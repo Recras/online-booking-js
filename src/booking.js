@@ -790,13 +790,10 @@ class RecrasBooking {
     showContactForm(pack) {
         this.loadingIndicatorShow(this.findElement('.recras-datetime'));
         this.getContactFormFields(pack).then(fields => {
+            //TODO: generateForm instead of this
             let waitFor = [];
 
-            let hasCountryField = fields.filter(field => {
-                return field.field_identifier === 'contact.landcode';
-            }).length > 0;
-
-            if (hasCountryField) {
+            if (this.contactForm.hasCountryField()) {
                 waitFor.push(this.contactForm.getCountryList());
             }
             Promise.all(waitFor).then(() => {

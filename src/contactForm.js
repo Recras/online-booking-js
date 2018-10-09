@@ -244,7 +244,11 @@ class RecrasContactForm {
             this.loadingIndicatorHide();
 
             if (json.success) {
-                window.alert(this.languageHelper.translate('CONTACT_FORM_SUBMIT_SUCCESS'));
+                if (this.options.getRedirectUrl()) {
+                    window.top.location.href = this.options.getRedirectUrl();
+                } else {
+                    window.alert(this.languageHelper.translate('CONTACT_FORM_SUBMIT_SUCCESS'));
+                }
             } else {
                 window.alert(this.languageHelper.translate('CONTACT_FORM_SUBMIT_FAILED'));
             }

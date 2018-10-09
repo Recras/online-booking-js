@@ -1016,6 +1016,7 @@ class RecrasBooking {
             this.loadingIndicatorHide();
             this.findElement('.bookPackage').removeAttribute('disabled');
 
+            //TODO: redirect for payment afterwards. This needs to be implemented in Recras first
             if (json.payment_url) {
                 window.top.location.href = json.payment_url;
             } else if (json.message && json.status) {

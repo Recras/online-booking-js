@@ -1,0 +1,103 @@
+html {
+    box-sizing: border-box;
+    color: hsl(147, 25%, 25%);
+    height: 100%;
+    margin: 0;
+}
+*, *::before, *::after {
+    box-sizing: inherit;
+}
+body {
+    background-image: url('https://www.onionbooking.com/static/images/header.jpg');
+    background-position: center;
+    background-attachment: fixed;
+    background-size: cover;
+    font-family: sans-serif;
+    height: 100%;
+    margin: 0;
+}
+main {
+    background: rgba(255, 255, 255, 0.8);
+    min-height: 100vh;
+    margin: 0 auto;
+    padding: 1em;
+    max-width: 1024px;
+}
+
+img {
+    height: auto;
+    max-width: 100%;
+}
+input, select, textarea {
+    background: #fff;
+    border: 1px solid hsl(147, 25%, 50%);
+}
+button {
+    background: hsl(147, 25%, 50%);
+    border: 0;
+    border-bottom: 2px solid hsl(147, 25%, 25%);
+    border-radius: 0.25em;
+    color: #fff;
+    font: inherit;
+    padding: 0.5em 2em;
+}
+button:hover, button:active {
+    background: hsl(147, 25%, 67%);
+    border-bottom-color: hsl(147, 25%, 50%);
+}
+button:disabled {
+    cursor: not-allowed;
+}
+.recras-amountsform > div > div:first-child {
+    flex-basis: 50%;
+}
+.recras-amountsform > div > div:nth-child(2) {
+    flex-basis: calc(50% - 8em);
+}
+.recras-price, .priceSubtotal {
+    flex-basis: 8em;
+    text-align: right;
+}
+input:not([type="checkbox"]):not([type="radio"]), select, textarea {
+    font: inherit;
+    width: 300px;
+}
+.priceLine, .discountLine {
+    font-weight: bold;
+}
+.recras-contactform-required::after {
+    content: '*';
+}
+
+.recras-product-dependency, .maximum-amount, .minimum-amount {
+    color: #a00;
+}
+
+.recras-onlinebooking > *:not(:first-child) + * {
+    border-top: 2px solid hsla(147, 25%, 25%, 0.25);
+}
+
+hr {
+    background: hsl(147, 25%, 25%);
+    border: 0;
+    color: hsl(147, 25%, 25%);
+    height: 2px;
+}
+
+@media (max-width: 640px) {
+    .recras-amountsform > div {
+        flex-wrap: wrap;
+    }
+    .recras-amountsform > div > div:first-child {
+        flex-basis: 100%;
+    }
+    .recras-amountsform input {
+        flex-basis: 75%;
+    }
+    .recras-contactform > div {
+        flex-direction: column;
+    }
+    .recras-price, .priceSubtotal {
+        flex-basis: 1em;
+    }
+}

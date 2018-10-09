@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Recras Online Booking integration demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="./demo.css">
+</head>
+<body>
+    <main>
+        <a href="index.html">&laquo; Back to demo index</a>
+
+        <h1>Online Booking</h1>
+        <div id="onlinebooking"></div>
+    </main>
+</body>
+<script src="../dist/onlinebooking.js"></script>
+<script>
+    const recrasOptions = {
+        recras_hostname: 'demo.recras.nl', // Required
+        element: document.getElementById('onlinebooking'), // Required
+        locale: 'nl_NL', // Optional, default is nl_NL. Valid values are de_DE, en_GB, and nl_NL
+        //package_id: 5, // Optional, this will skip the package selection step for online booking
+        redirect_url: 'https://www.onionbooking.com/', // Optional, but recommended
+    };
+
+    let bookingOptions = new RecrasOptions(recrasOptions);
+    new RecrasBooking(bookingOptions);
+
+    document.addEventListener('Recras:Booking:PackageChanged', (e) => {
+        console.log('Custom event logged', e);
+    });
+</script>
+</html>

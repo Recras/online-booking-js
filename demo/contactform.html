@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Recras Contact form integration demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="./demo.css">
+</head>
+<body>
+    <main>
+        <a href="index.html">&laquo; Back to demo index</a>
+
+        <h1>Contact form</h1>
+        <div id="contactform"></div>
+    </main>
+</body>
+<script src="../dist/onlinebooking.js"></script>
+<script>
+    const recrasOptions = {
+        recras_hostname: 'demo.recras.nl', // Required
+        element: document.getElementById('contactform'), // Required
+        locale: 'nl_NL', // Optional, default is nl_NL. Valid values are de_DE, en_GB, and nl_NL
+    };
+
+    let cfOptions = new RecrasOptions(recrasOptions);
+    let form = new RecrasContactForm(cfOptions);
+    form.showForm(1);
+</script>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Recras Vouchers integration demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="./demo.css">
+</head>
+<body>
+    <main>
+        <a href="index.html">&laquo; Back to demo index</a>
+
+        <h1>Buy Voucher</h1>
+        <div id="recrasvouchers"></div>
+    </main>
+</body>
+<script src="../dist/onlinebooking.js"></script>
+<script>
+    const recrasOptions = {
+        recras_hostname: 'demo.recras.nl', // Required
+        element: document.getElementById('recrasvouchers'), // Required
+        locale: 'nl_NL', // Optional, default is nl_NL. Valid values are de_DE, en_GB, and nl_NL
+        redirect_url: 'https://www.onionbooking.com/', // Optional, but recommended
+        //voucher_template_id: 1, // Optional, this will skip the template selection step for voucher templates
+    };
+
+    let voucherOptions = new RecrasOptions(recrasOptions);
+    new RecrasVoucher(voucherOptions);
+</script>
+</html>

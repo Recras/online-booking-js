@@ -61,6 +61,9 @@ class RecrasContactForm {
         if (this.hasCountryField()) {
             waitFor.push(this.getCountryList());
         }
+        if (this.hasPackageField()) {
+            waitFor.push(this.getPackages(this.id));
+        }
         return Promise.all(waitFor).then(() => {
             let html = '<form class="recras-contactform">';
             this.contactFormFields.forEach((field, idx) => {
@@ -101,10 +104,24 @@ class RecrasContactForm {
             });
     }
 
-    hasCountryField() {
+    getPackages(contactFormID) {
+        return this.fetchJson(this.options.getApiBase() + 'contactformulieren/' + contactFormID)
+            .then(json => {
+                this.packages = json.Arrangementen;
+                return this.packages;
+            });
+    }
+
+    hasFieldOfType(identifier) {
         return this.contactFormFields.filter(field => {
-            return field.field_identifier === 'contact.landcode';
+            return field.field_identifier === identifier;
         }).length > 0;
+    }
+    hasCountryField() {
+        return this.hasFieldOfType('contact.landcode');
+    }
+    hasPackageField() {
+        return this.hasFieldOfType('boeking.arrangement');
     }
 
     loadingIndicatorHide() {
@@ -162,6 +179,21 @@ class RecrasContactForm {
                 Object.keys(this.countries).forEach(code => {
                     let selectedText = code.toUpperCase() === this.languageHelper.getCountry() ? ' selected' : '';
                     html += `<option value="${ code }"${ selectedText }>${ this.countries[code] }`;
+                });
+                html += '</select>';
+                return label + html;
+            case 'boeking.datum': //TODO: date picker
+                const today = RecrasDateHelper.toString(new Date());
+                return label + `<input type="date" ${ fixedAttributes } min="${ today }">`;
+            case 'boeking.groepsgrootte':
+                return label + `<input type="number" ${ fixedAttributes } min="1">`;
+            case 'boeking.starttijd': //TODO: time picker
+                return label + `<input type="time" ${ fixedAttributes }>`;
+            case 'boeking.arrangement':
+                html = `<select ${ fixedAttributes }>`;
+                html += `<option value="">`;
+                Object.values(this.packages).forEach(pack => {
+                    html += `<option value="${ pack.id }">${ pack.arrangement }`;
                 });
                 html += '</select>';
                 return label + html;

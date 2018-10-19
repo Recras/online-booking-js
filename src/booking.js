@@ -1,6 +1,6 @@
 /**********************************
 *  Recras Online Booking library  *
-*  v 0.7.4                        *
+*  v 0.7.5                        *
 **********************************/
 
 class RecrasBooking {
@@ -95,15 +95,14 @@ class RecrasBooking {
             statusEl.innerHTML = this.languageHelper.translate('VOUCHER_ALREADY_APPLIED');
             return false;
         }
-        let date = this.findElement('.recras-onlinebooking-date').value;
-        if (isNaN(Date.parse(date))) {
+        if (!this.selectedDate) {
             statusEl.innerHTML = this.languageHelper.translate('DATE_INVALID');
             return false;
         }
 
         this.postJson('onlineboeking/controleervoucher', {
             arrangement_id: packageID,
-            datum: RecrasDateHelper.datePartOnly(new Date(date)),
+            datum: RecrasDateHelper.datePartOnly(this.selectedDate),
             producten: this.productCounts(),
             vouchers: [voucherCode],
         }).then(json => {

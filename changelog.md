@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.7.5 (2018-10-19)
+* Fix date check for vouchers
+
 ## 0.7.4 (2018-10-19)
 * Fix prices being shown incorrectly (i.e. 2.50000 instead of € 2,50)
 

@@ -19,7 +19,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /**********************************
 *  Recras Online Booking library  *
-*  v 0.7.3                        *
+*  v 0.7.4                        *
 **********************************/
 
 var RecrasBooking = function () {
@@ -178,7 +178,7 @@ var RecrasBooking = function () {
         value: function bookingSizePrice(pack) {
             var lines = this.bookingSizeLines(pack);
             return lines.reduce(function (acc, line) {
-                return line.product.verkoop + acc;
+                return parseFloat(line.product.verkoop) + acc;
             }, 0);
         }
     }, {
@@ -1729,7 +1729,7 @@ var RecrasLanguageHelper = function () {
     }, {
         key: 'formatPrice',
         value: function formatPrice(price) {
-            return price.toLocaleString(this.formatLocale('currency'), {
+            return parseFloat(price).toLocaleString(this.formatLocale('currency'), {
                 currency: this.currency,
                 style: 'currency'
             });
@@ -1879,7 +1879,7 @@ var RecrasOptions = function () {
 }();
 /****************************
  *  Recras voucher library  *
- *  v 0.7.3                 *
+ *  v 0.7.4                 *
  ***************************/
 
 RecrasOptions.hostnameDebug = '172.16.0.2';

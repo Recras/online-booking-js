@@ -267,7 +267,7 @@ class RecrasLanguageHelper {
     }
 
     formatPrice(price) {
-        return price.toLocaleString(this.formatLocale('currency'), {
+        return parseFloat(price).toLocaleString(this.formatLocale('currency'), {
             currency: this.currency,
             style: 'currency',
         });

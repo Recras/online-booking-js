@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.7.4 (2018-10-19)
+* Fix prices being shown incorrectly (i.e. 2.50000 instead of € 2,50)
+
 ## 0.7.3 (2018-10-04)
 * Fix selection of disallowed payment method
 

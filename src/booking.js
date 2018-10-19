@@ -1,6 +1,6 @@
 /**********************************
 *  Recras Online Booking library  *
-*  v 0.7.3                        *
+*  v 0.7.4                        *
 **********************************/
 
 class RecrasBooking {
@@ -137,7 +137,7 @@ class RecrasBooking {
     bookingSizePrice(pack) {
         let lines = this.bookingSizeLines(pack);
         return lines.reduce((acc, line) => {
-            return line.product.verkoop + acc;
+            return parseFloat(line.product.verkoop) + acc;
         }, 0);
     }
 

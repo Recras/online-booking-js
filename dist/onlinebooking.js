@@ -116,29 +116,20 @@ var RecrasBooking = function () {
         value: function applyVoucher(packageID, voucherCode) {
             var _this3 = this;
 
-            var statusEl = this.findElement('.voucher-status');
-            if (statusEl) {
-                statusEl.innerHTML = '';
-            } else {
-                this.element.querySelector('.recras-vouchers').insertAdjacentHTML('beforeend', '<span class="voucher-status"></span>');
-                statusEl = this.findElement('.voucher-status');
-            }
-
             if (!voucherCode) {
-                statusEl.innerHTML = this.languageHelper.translate('VOUCHER_EMPTY');
-                statusEl.innerHTML = this.languageHelper.translate('VOUCHER_EMPTY');
+                this.setDiscountStatus(this.languageHelper.translate('VOUCHER_EMPTY'));
                 return false;
             }
             if (this.appliedVouchers[voucherCode]) {
-                statusEl.innerHTML = this.languageHelper.translate('VOUCHER_ALREADY_APPLIED');
+                this.setDiscountStatus(this.languageHelper.translate('VOUCHER_ALREADY_APPLIED'));
                 return false;
             }
             if (!this.selectedDate) {
-                statusEl.innerHTML = this.languageHelper.translate('DATE_INVALID');
+                this.setDiscountStatus(this.languageHelper.translate('DATE_INVALID'));
                 return false;
             }
 
-            this.postJson('onlineboeking/controleervoucher', {
+            return this.postJson('onlineboeking/controleervoucher', {
                 arrangement_id: packageID,
                 datum: RecrasDateHelper.datePartOnly(this.selectedDate),
                 producten: this.productCounts(),
@@ -146,14 +137,14 @@ var RecrasBooking = function () {
             }).then(function (json) {
                 var result = json[voucherCode];
                 if (!result.valid) {
-                    statusEl.innerHTML = _this3.languageHelper.translate('VOUCHER_INVALID');
                     return false;
                 }
 
                 _this3.appliedVouchers[voucherCode] = result.processed;
                 _this3.showTotalPrice();
 
-                statusEl.innerHTML = _this3.languageHelper.translate('VOUCHER_APPLIED');
+                _this3.setDiscountStatus(_this3.languageHelper.translate('VOUCHER_APPLIED'), false);
+                return true;
             });
         }
     }, {
@@ -260,19 +251,15 @@ var RecrasBooking = function () {
         value: function checkDiscountcode(packageID, date, code) {
             var _this6 = this;
 
-            var statusEl = this.findElement('.discount-status');
-            if (statusEl) {
-                statusEl.parentNode.removeChild(statusEl);
-            }
             return this.fetchJson(this.options.getApiBase() + 'onlineboeking/controleerkortingscode?datum=' + date + '&arrangement=' + packageID + '&kortingscode=' + code).then(function (discount) {
                 if (discount === false) {
-                    _this6.findElement('.recras-discountcode').insertAdjacentHTML('beforeend', '<span class="discount-status">' + _this6.languageHelper.translate('DISCOUNT_INVALID') + '</span>');
-                    return;
+                    return false;
                 }
                 discount.code = code;
                 _this6.discount = discount;
 
                 _this6.showTotalPrice();
+                return true;
             });
         }
     }, {
@@ -678,6 +665,24 @@ var RecrasBooking = function () {
             this.changePackage(null);
         }
     }, {
+        key: 'setDiscountStatus',
+        value: function setDiscountStatus(statusText) {
+            var isError = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+            var statusEl = this.findElement('.discount-status');
+            if (!statusEl) {
+                this.element.querySelector('.recras-discountcodes').insertAdjacentHTML('beforeend', '<span class="discount-status"></span>');
+                statusEl = this.findElement('.discount-status');
+            }
+            if (isError) {
+                statusEl.classList.add('booking-error');
+            } else {
+                statusEl.classList.remove('booking-error');
+            }
+
+            statusEl.innerHTML = statusText;
+        }
+    }, {
         key: 'setHtml',
         value: function setHtml(msg) {
             this.element.innerHTML = msg;
@@ -783,18 +788,35 @@ var RecrasBooking = function () {
         value: function showDiscountFields() {
             var _this18 = this;
 
-            [].concat(_toConsumableArray(this.findElements('.recras-discountcode, .recras-vouchers'))).forEach(function (el) {
-                el.parentNode.removeChild(el);
-            });
+            var existingEl = this.findElement('.recras-discountcodes');
+            if (existingEl) {
+                existingEl.parentNode.removeChild(existingEl);
+            }
 
-            var html = '\n            <div class="recras-discountcode">\n                <label for="discountcode">' + this.languageHelper.translate('DISCOUNT_CODE') + '</label>\n                <input type="text" id="discountcode" class="discountcode" maxlength="50">\n                <button>' + this.languageHelper.translate('DISCOUNT_CHECK') + '</button>\n            </div>\n            <div class="recras-vouchers">\n                <div>\n                    <label for="voucher">' + this.languageHelper.translate('VOUCHER') + '</label>\n                    <input type="text" class="voucher" maxlength="50">\n                    <button>' + this.languageHelper.translate('VOUCHER_APPLY') + '</button>\n                </div>\n            </div>\n        ';
+            var html = '\n            <div class="recras-discountcodes">\n                <label for="discountcode">' + this.languageHelper.translate('DISCOUNT_TITLE') + '</label>\n                <input type="text" id="discountcode" class="discountcode" maxlength="50">\n                <button>' + this.languageHelper.translate('DISCOUNT_CHECK') + '</button>\n            </div>\n        ';
             this.findElement('.recras-contactform').insertAdjacentHTML('beforebegin', html);
 
-            this.findElement('.recras-discountcode > button').addEventListener('click', function () {
-                _this18.checkDiscountcode(_this18.selectedPackage.id, _this18.findElement('.recras-onlinebooking-date').value, _this18.findElement('.discountcode').value);
-            });
-            this.findElement('.recras-vouchers button').addEventListener('click', function (e) {
-                _this18.applyVoucher(_this18.selectedPackage.id, e.srcElement.parentElement.querySelector('input').value.trim());
+            this.findElement('.recras-discountcodes button').addEventListener('click', function () {
+                var discountStatus = void 0,
+                    voucherStatus = void 0;
+                var discountPromise = _this18.checkDiscountcode(_this18.selectedPackage.id, _this18.findElement('.recras-onlinebooking-date').value, _this18.findElement('#discountcode').value.trim()).then(function (status) {
+                    discountStatus = status;
+                    return status;
+                });
+
+                var voucherPromise = _this18.applyVoucher(_this18.selectedPackage.id, _this18.findElement('#discountcode').value.trim()).then(function (status) {
+                    voucherStatus = status;
+                    return status;
+                });
+
+                Promise.all([discountPromise, voucherPromise]).then(function () {
+                    if (discountStatus || voucherStatus) {
+                        _this18.setDiscountStatus('', false);
+                        _this18.findElement('#discountcode').value = '';
+                    } else {
+                        _this18.setDiscountStatus(_this18.languageHelper.translate('DISCOUNT_INVALID'));
+                    }
+                });
             });
         }
     }, {
@@ -842,8 +864,8 @@ var RecrasBooking = function () {
             return this.getAvailableDays(pack.id, startDate, endDate).then(function () {
                 var today = RecrasDateHelper.datePartOnly(new Date());
                 var html = '<div class="recras-datetime">';
-                html += '<label for="recras-onlinebooking-date">' + _this20.languageHelper.translate('DATE') + '</label><input type="text" id="recras-onlinebooking-date" class="recras-onlinebooking-date" min="' + today + '" disabled>';
-                html += '<label for="recras-onlinebooking-time">' + _this20.languageHelper.translate('TIME') + '</label><select id="recras-onlinebooking-time" class="recras-onlinebooking-time" disabled></select>';
+                html += '<label for="recras-onlinebooking-date">' + _this20.languageHelper.translate('DATE') + '</label><input type="text" id="recras-onlinebooking-date" class="recras-onlinebooking-date" min="' + today + '" disabled autocomplete="off">';
+                html += '<label for="recras-onlinebooking-time">' + _this20.languageHelper.translate('TIME') + '</label><select id="recras-onlinebooking-time" class="recras-onlinebooking-time" disabled autocomplete="off"></select>';
                 html += '</div>';
                 _this20.appendHtml(html);
                 var pikadayOptions = _extends(RecrasCalendarHelper.defaultOptions(), {
@@ -1471,8 +1493,8 @@ var RecrasLanguageHelper = function () {
                 ATTR_REQUIRED: 'Erforderlich',
                 BOOKING_DISABLED_AMOUNTS_INVALID: 'Programme amounts are invalid',
                 BOOKING_DISABLED_CONTACT_FORM_INVALID: 'Contact form is not filled in completely, or contains invalid values',
-                BOOKING_DISABLED_INVALID_DATE: 'Selected date is invalid',
-                BOOKING_DISABLED_INVALID_TIME: 'Selected time is invalid',
+                BOOKING_DISABLED_INVALID_DATE: 'No date selected',
+                BOOKING_DISABLED_INVALID_TIME: 'No time selected',
                 BOOKING_DISABLED_REQUIRED_PRODUCT: 'Required product not yet selected',
                 BUTTON_BOOK_NOW: 'Jetzt buchen',
                 BUTTON_BUY_NOW: 'Jetzt kaufen',
@@ -1507,8 +1529,8 @@ var RecrasLanguageHelper = function () {
                 DATE_PICKER_DAY_SUNDAY_LONG: 'Sonntag',
                 DATE_PICKER_DAY_SUNDAY_SHORT: 'So',
                 DISCOUNT_CHECK: 'Überprüfen',
-                DISCOUNT_CODE: 'Rabattcode',
-                DISCOUNT_INVALID: 'Ungültiger Rabattcode',
+                DISCOUNT_TITLE: 'Rabattcode oder Gutschein',
+                DISCOUNT_INVALID: 'Ungültiger Rabattcode oder Gutschein',
                 ERR_GENERAL: 'Etwas ist schief gelaufen:',
                 ERR_INVALID_ELEMENT: 'Option "Element" ist kein gültiges Element',
                 ERR_INVALID_HOSTNAME: 'Option "recras_hostname" ist ungültig.',
@@ -1527,12 +1549,9 @@ var RecrasLanguageHelper = function () {
                 PRODUCT_MINIMUM: '(muss mindestens {MINIMUM} sein)',
                 PRODUCT_REQUIRED: '{NUM} {PRODUCT} benötigt {REQUIRED_AMOUNT} {REQUIRED_PRODUCT} um auch gebucht zu werden.',
                 TIME: 'Zeit',
-                VOUCHER: 'Gutschein',
                 VOUCHER_ALREADY_APPLIED: 'Gutschein bereits eingelöst',
                 VOUCHER_APPLIED: 'Gutschein bereits eingelöst',
-                VOUCHER_APPLY: 'Einlösen',
                 VOUCHER_EMPTY: 'Leerer Gutscheincode',
-                VOUCHER_INVALID: 'Ungültiger Gutscheincode',
                 VOUCHER_QUANTITY: 'Anzahl der Gutscheine',
                 VOUCHERS_DISCOUNT: 'Rabatt von Gutschein(en)'
             },
@@ -1541,8 +1560,8 @@ var RecrasLanguageHelper = function () {
                 ATTR_REQUIRED: 'Required',
                 BOOKING_DISABLED_AMOUNTS_INVALID: 'Programme amounts are invalid',
                 BOOKING_DISABLED_CONTACT_FORM_INVALID: 'Contact form is not filled in completely, or contains invalid values',
-                BOOKING_DISABLED_INVALID_DATE: 'Selected date is invalid',
-                BOOKING_DISABLED_INVALID_TIME: 'Selected time is invalid',
+                BOOKING_DISABLED_INVALID_DATE: 'No date selected',
+                BOOKING_DISABLED_INVALID_TIME: 'No time selected',
                 BOOKING_DISABLED_REQUIRED_PRODUCT: 'Required product not yet selected',
                 BUTTON_BOOK_NOW: 'Book now',
                 BUTTON_BUY_NOW: 'Buy now',
@@ -1577,8 +1596,8 @@ var RecrasLanguageHelper = function () {
                 DATE_PICKER_DAY_SUNDAY_LONG: 'Sunday',
                 DATE_PICKER_DAY_SUNDAY_SHORT: 'Sun',
                 DISCOUNT_CHECK: 'Check',
-                DISCOUNT_CODE: 'Discount code',
-                DISCOUNT_INVALID: 'Invalid discount code',
+                DISCOUNT_TITLE: 'Discount code or voucher',
+                DISCOUNT_INVALID: 'Invalid discount code or voucher',
                 ERR_GENERAL: 'Something went wrong:',
                 ERR_INVALID_ELEMENT: 'Option "element" is not a valid Element',
                 ERR_INVALID_HOSTNAME: 'Option "recras_hostname" is invalid.',
@@ -1597,12 +1616,9 @@ var RecrasLanguageHelper = function () {
                 PRODUCT_MINIMUM: '(must be at least {MINIMUM})',
                 PRODUCT_REQUIRED: '{NUM} {PRODUCT} requires {REQUIRED_AMOUNT} {REQUIRED_PRODUCT} to also be booked.',
                 TIME: 'Time',
-                VOUCHER: 'Voucher',
                 VOUCHER_ALREADY_APPLIED: 'Voucher already applied',
                 VOUCHER_APPLIED: 'Voucher applied',
-                VOUCHER_APPLY: 'Apply',
                 VOUCHER_EMPTY: 'Empty voucher code',
-                VOUCHER_INVALID: 'Invalid voucher code',
                 VOUCHER_QUANTITY: 'Number of vouchers',
                 VOUCHERS_DISCOUNT: 'Discount from voucher(s)'
             },
@@ -1611,8 +1627,8 @@ var RecrasLanguageHelper = function () {
                 ATTR_REQUIRED: 'Vereist',
                 BOOKING_DISABLED_AMOUNTS_INVALID: 'Aantallen in programma zijn ongeldig',
                 BOOKING_DISABLED_CONTACT_FORM_INVALID: 'Contactformuler is niet volledig ingevuld, of bevat ongeldige waardes',
-                BOOKING_DISABLED_INVALID_DATE: 'Geselecteerde datum is ongeldig',
-                BOOKING_DISABLED_INVALID_TIME: 'Geselecteerde tijd is ongeldig',
+                BOOKING_DISABLED_INVALID_DATE: 'Geen datum geselecteerd',
+                BOOKING_DISABLED_INVALID_TIME: 'Geen tijd geselecteerd',
                 BOOKING_DISABLED_REQUIRED_PRODUCT: 'Vereist product nog niet geselecteerd',
                 BUTTON_BOOK_NOW: 'Nu boeken',
                 BUTTON_BUY_NOW: 'Nu kopen',
@@ -1647,8 +1663,8 @@ var RecrasLanguageHelper = function () {
                 DATE_PICKER_DAY_SUNDAY_LONG: 'Zondag',
                 DATE_PICKER_DAY_SUNDAY_SHORT: 'Zo',
                 DISCOUNT_CHECK: 'Controleren',
-                DISCOUNT_CODE: 'Kortingscode',
-                DISCOUNT_INVALID: 'Ongeldige kortingscode',
+                DISCOUNT_TITLE: 'Kortingscode of tegoedbon',
+                DISCOUNT_INVALID: 'Ongeldige kortingscode of tegoedbon',
                 ERR_GENERAL: 'Er ging iets mis:',
                 ERR_INVALID_ELEMENT: 'Optie "element" is geen geldig Element',
                 ERR_INVALID_HOSTNAME: 'Optie "recras_hostname" is ongeldig.',
@@ -1667,12 +1683,9 @@ var RecrasLanguageHelper = function () {
                 PRODUCT_MINIMUM: '(moet minstens {MINIMUM} zijn)',
                 PRODUCT_REQUIRED: '{NUM} {PRODUCT} vereist dat ook {REQUIRED_AMOUNT} {REQUIRED_PRODUCT} geboekt wordt.',
                 TIME: 'Tijd',
-                VOUCHER: 'Tegoedbon',
                 VOUCHER_ALREADY_APPLIED: 'Tegoedbon al toegepast',
                 VOUCHER_APPLIED: 'Tegoedbon toegepast',
-                VOUCHER_APPLY: 'Toepassen',
                 VOUCHER_EMPTY: 'Lege tegoedbon',
-                VOUCHER_INVALID: 'Ongeldige tegoedbon',
                 VOUCHER_QUANTITY: 'Aantal tegoedbonnen',
                 VOUCHERS_DISCOUNT: 'Korting uit tegoedbon(nen)'
             }

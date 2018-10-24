@@ -78,29 +78,20 @@ class RecrasBooking {
     }
 
     applyVoucher(packageID, voucherCode) {
-        let statusEl = this.findElement('.voucher-status');
-        if (statusEl) {
-            statusEl.innerHTML = '';
-        } else {
-            this.element.querySelector('.recras-vouchers').insertAdjacentHTML('beforeend', `<span class="voucher-status"></span>`);
-            statusEl = this.findElement('.voucher-status');
-        }
-
         if (!voucherCode) {
-            statusEl.innerHTML = this.languageHelper.translate('VOUCHER_EMPTY');
-            statusEl.innerHTML= this.languageHelper.translate('VOUCHER_EMPTY');
+            this.setDiscountStatus(this.languageHelper.translate('VOUCHER_EMPTY'));
             return false;
         }
         if (this.appliedVouchers[voucherCode]) {
-            statusEl.innerHTML = this.languageHelper.translate('VOUCHER_ALREADY_APPLIED');
+            this.setDiscountStatus(this.languageHelper.translate('VOUCHER_ALREADY_APPLIED'));
             return false;
         }
         if (!this.selectedDate) {
-            statusEl.innerHTML = this.languageHelper.translate('DATE_INVALID');
+            this.setDiscountStatus(this.languageHelper.translate('DATE_INVALID'));
             return false;
         }
 
-        this.postJson('onlineboeking/controleervoucher', {
+        return this.postJson('onlineboeking/controleervoucher', {
             arrangement_id: packageID,
             datum: RecrasDateHelper.datePartOnly(this.selectedDate),
             producten: this.productCounts(),
@@ -108,14 +99,14 @@ class RecrasBooking {
         }).then(json => {
             let result = json[voucherCode];
             if (!result.valid) {
-                statusEl.innerHTML = this.languageHelper.translate('VOUCHER_INVALID');
                 return false;
             }
 
             this.appliedVouchers[voucherCode] = result.processed;
             this.showTotalPrice();
 
-            statusEl.innerHTML = this.languageHelper.translate('VOUCHER_APPLIED');
+            this.setDiscountStatus(this.languageHelper.translate('VOUCHER_APPLIED'), false);
+            return true;
         });
     }
 
@@ -210,20 +201,16 @@ class RecrasBooking {
     }
 
     checkDiscountcode(packageID, date, code) {
-        let statusEl = this.findElement('.discount-status');
-        if (statusEl) {
-            statusEl.parentNode.removeChild(statusEl);
-        }
         return this.fetchJson(this.options.getApiBase() + 'onlineboeking/controleerkortingscode?datum=' + date + '&arrangement=' + packageID + '&kortingscode=' + code)
             .then(discount => {
                 if (discount === false) {
-                    this.findElement('.recras-discountcode').insertAdjacentHTML('beforeend', `<span class="discount-status">${ this.languageHelper.translate('DISCOUNT_INVALID') }</span>`);
-                    return;
+                    return false;
                 }
                 discount.code = code;
                 this.discount = discount;
 
                 this.showTotalPrice();
+                return true;
             });
     }
 
@@ -576,6 +563,21 @@ class RecrasBooking {
         this.changePackage(null);
     }
 
+    setDiscountStatus(statusText, isError = true) {
+        let statusEl = this.findElement('.discount-status');
+        if (!statusEl) {
+            this.element.querySelector('.recras-discountcodes').insertAdjacentHTML('beforeend', `<span class="discount-status"></span>`);
+            statusEl = this.findElement('.discount-status');
+        }
+        if (isError) {
+            statusEl.classList.add('booking-error');
+        } else {
+            statusEl.classList.remove('booking-error');
+        }
+
+        statusEl.innerHTML = statusText;
+    }
+
     setHtml(msg) {
         this.element.innerHTML = msg;
     }
@@ -679,35 +681,47 @@ class RecrasBooking {
     }
 
     showDiscountFields() {
-        [...this.findElements('.recras-discountcode, .recras-vouchers')].forEach(el => {
-            el.parentNode.removeChild(el);
-        });
+        let existingEl = this.findElement('.recras-discountcodes');
+        if (existingEl) {
+            existingEl.parentNode.removeChild(existingEl);
+        }
 
         let html = `
-            <div class="recras-discountcode">
-                <label for="discountcode">${ this.languageHelper.translate('DISCOUNT_CODE') }</label>
+            <div class="recras-discountcodes">
+                <label for="discountcode">${ this.languageHelper.translate('DISCOUNT_TITLE') }</label>
                 <input type="text" id="discountcode" class="discountcode" maxlength="50">
                 <button>${ this.languageHelper.translate('DISCOUNT_CHECK') }</button>
-            </div>
-            <div class="recras-vouchers">
-                <div>
-                    <label for="voucher">${ this.languageHelper.translate('VOUCHER') }</label>
-                    <input type="text" class="voucher" maxlength="50">
-                    <button>${ this.languageHelper.translate('VOUCHER_APPLY') }</button>
-                </div>
             </div>
         `;
         this.findElement('.recras-contactform').insertAdjacentHTML('beforebegin', html);
 
-        this.findElement('.recras-discountcode > button').addEventListener('click', () => {
-            this.checkDiscountcode(
+        this.findElement('.recras-discountcodes button').addEventListener('click', () => {
+            let discountStatus, voucherStatus;
+            let discountPromise = this.checkDiscountcode(
                 this.selectedPackage.id,
                 this.findElement('.recras-onlinebooking-date').value,
-                this.findElement('.discountcode').value
-            );
-        });
-        this.findElement('.recras-vouchers button').addEventListener('click', e => {
-            this.applyVoucher(this.selectedPackage.id, e.srcElement.parentElement.querySelector('input').value.trim());
+                this.findElement('#discountcode').value.trim()
+            ).then(status => {
+                discountStatus = status;
+                return status;
+            });
+
+            let voucherPromise = this.applyVoucher(
+                this.selectedPackage.id,
+                this.findElement('#discountcode').value.trim()
+            ).then(status => {
+                voucherStatus = status;
+                return status;
+            });
+
+            Promise.all([discountPromise, voucherPromise]).then(() => {
+                if (discountStatus || voucherStatus) {
+                    this.setDiscountStatus('', false);
+                    this.findElement('#discountcode').value = '';
+                } else {
+                    this.setDiscountStatus(this.languageHelper.translate('DISCOUNT_INVALID'));
+                }
+            })
         });
     }
 

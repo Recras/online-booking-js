@@ -750,8 +750,8 @@ class RecrasBooking {
             .then(() => {
                 let today = RecrasDateHelper.datePartOnly(new Date());
                 let html = `<div class="recras-datetime">`;
-                html += `<label for="recras-onlinebooking-date">${ this.languageHelper.translate('DATE') }</label><input type="text" id="recras-onlinebooking-date" class="recras-onlinebooking-date" min="${ today }" disabled>`;
-                html += `<label for="recras-onlinebooking-time">${ this.languageHelper.translate('TIME') }</label><select id="recras-onlinebooking-time" class="recras-onlinebooking-time" disabled></select>`;
+                html += `<label for="recras-onlinebooking-date">${ this.languageHelper.translate('DATE') }</label><input type="text" id="recras-onlinebooking-date" class="recras-onlinebooking-date" min="${ today }" disabled autocomplete="off">`;
+                html += `<label for="recras-onlinebooking-time">${ this.languageHelper.translate('TIME') }</label><select id="recras-onlinebooking-time" class="recras-onlinebooking-time" disabled autocomplete="off"></select>`;
                 html += '</div>';
                 this.appendHtml(html);
                 let pikadayOptions = Object.assign(

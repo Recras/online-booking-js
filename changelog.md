@@ -1,5 +1,8 @@
 # Changelog
 
+## master (unreleased)
+* Disable autocomplete on date/time fields
+
 ## 0.7.5 (2018-10-19)
 * Fix date check for vouchers
 

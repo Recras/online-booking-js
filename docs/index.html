@@ -28,7 +28,7 @@
             min-height: 100vh;
             margin: 0 auto;
             padding: 1em;
-            max-width: 1024px;
+            max-width: 800px;
         }
 
         img {
@@ -56,17 +56,22 @@
             cursor: not-allowed;
         }
         .recras-amountsform > div > div:first-child {
-            flex-basis: 50%;
+            flex-basis: calc(100% - 15em);
         }
-        .recras-amountsform > div > div:nth-child(2) {
-            flex-basis: calc(50% - 8em);
+        .recras-amountsform > div > input {
+            flex-basis: 6em;
         }
         .recras-price, .priceSubtotal {
             flex-basis: 8em;
             text-align: right;
         }
-        input:not([type="checkbox"]):not([type="radio"]), select, textarea {
+        input, select, textarea {
             font: inherit;
+        }
+        .recras-amountsform input {
+            width: 4em;
+        }
+        .recras-contactform input:not([type="checkbox"]):not([type="radio"]), select, textarea {
             width: 300px;
         }
         .priceLine, .discountLine {
@@ -74,6 +79,19 @@
         }
         .recras-contactform-required::after {
             content: '*';
+        }
+
+        .recras-datetime {
+            display: -ms-grid;
+            display: grid;
+            -ms-grid-columns: 30% 70%;
+            grid-template-columns: 30% 70%;
+        }
+        .recras-datetime > * {
+            margin: 0.25em 0;
+        }
+        .recras-datetime input, .recras-datetime select {
+            max-width: 12em;
         }
 
         .recras-product-dependency, .maximum-amount, .minimum-amount {

@@ -1,6 +1,6 @@
 # Changelog
 
-## master (unreleased)
+## 0.8.0 (2018-10-29)
 * Disable autocomplete on date/time fields
 * Combine discount codes and vouchers into a single field
 

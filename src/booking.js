@@ -105,7 +105,6 @@ class RecrasBooking {
             this.appliedVouchers[voucherCode] = result.processed;
             this.showTotalPrice();
 
-            this.setDiscountStatus(this.languageHelper.translate('VOUCHER_APPLIED'), false);
             return true;
         });
     }
@@ -198,6 +197,41 @@ class RecrasBooking {
         });
 
         this.maybeDisableBookButton();
+    }
+
+    checkDiscountAndVoucher() {
+        let discountStatus, voucherStatus;
+        let discountPromise = this.checkDiscountcode(
+            this.selectedPackage.id,
+            this.findElement('.recras-onlinebooking-date').value,
+            this.findElement('#discountcode').value.trim()
+        ).then(status => {
+            discountStatus = status;
+            return status;
+        });
+
+        let voucherPromise = this.applyVoucher(
+            this.selectedPackage.id,
+            this.findElement('#discountcode').value.trim()
+        ).then(status => {
+            voucherStatus = status;
+            return status;
+        });
+
+        Promise.all([discountPromise, voucherPromise]).then(() => {
+            if (discountStatus || voucherStatus) {
+                let status;
+                if (discountStatus) {
+                    status = 'DISCOUNT_APPLIED';
+                } else {
+                    status = 'VOUCHER_APPLIED';
+                }
+                this.setDiscountStatus(this.languageHelper.translate(status), false);
+                this.findElement('#discountcode').value = '';
+            } else {
+                this.setDiscountStatus(this.languageHelper.translate('DISCOUNT_INVALID'));
+            }
+        });
     }
 
     checkDiscountcode(packageID, date, code) {
@@ -601,7 +635,7 @@ class RecrasBooking {
     }
 
     showTotalPrice() {
-        [...this.findElements('.discountLine, .voucherLine, .priceTotal')].forEach(el => {
+        [...this.findElements('.discountLine, .voucherLine, .priceWithDiscount')].forEach(el => {
             el.parentNode.removeChild(el);
         });
 
@@ -614,10 +648,11 @@ class RecrasBooking {
             html += `<div class="voucherLine"><div>${ this.languageHelper.translate('VOUCHERS_DISCOUNT') }</div><div>${ this.formatPrice(this.getVouchersPrice()) }</div></div>`;
         }
         if (this.discount || Object.keys(this.appliedVouchers).length) {
-            html += `<div class="priceTotal"><div>${ this.languageHelper.translate('PRICE_TOTAL_WITH_DISCOUNT') }</div><div>${ this.formatPrice(this.getTotalPrice()) }</div></div>`;
+            html += `<div class="priceWithDiscount"><div>${ this.languageHelper.translate('PRICE_TOTAL_WITH_DISCOUNT') }</div><div>${ this.formatPrice(this.getTotalPrice()) }</div></div>`;
         }
 
-        this.findElement('.priceLine').parentElement.insertAdjacentHTML('beforeend', html);
+        var elementToInsertBefore = this.findElement('.recras-amountsform p:last-of-type');
+        elementToInsertBefore.insertAdjacentHTML('beforebegin', html);
         this.findElement('.priceSubtotal').innerHTML = this.formatPrice(this.getSubTotal());
     }
 
@@ -695,34 +730,12 @@ class RecrasBooking {
         `;
         this.findElement('.recras-contactform').insertAdjacentHTML('beforebegin', html);
 
-        this.findElement('.recras-discounts button').addEventListener('click', () => {
-            let discountStatus, voucherStatus;
-            let discountPromise = this.checkDiscountcode(
-                this.selectedPackage.id,
-                this.findElement('.recras-onlinebooking-date').value,
-                this.findElement('#discountcode').value.trim()
-            ).then(status => {
-                discountStatus = status;
-                return status;
-            });
-
-            let voucherPromise = this.applyVoucher(
-                this.selectedPackage.id,
-                this.findElement('#discountcode').value.trim()
-            ).then(status => {
-                voucherStatus = status;
-                return status;
-            });
-
-            Promise.all([discountPromise, voucherPromise]).then(() => {
-                if (discountStatus || voucherStatus) {
-                    this.setDiscountStatus('', false);
-                    this.findElement('#discountcode').value = '';
-                } else {
-                    this.setDiscountStatus(this.languageHelper.translate('DISCOUNT_INVALID'));
-                }
-            })
+        this.findElement('.recras-discounts input').addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                this.checkDiscountAndVoucher().bind(this);
+            }
         });
+        this.findElement('.recras-discounts button').addEventListener('click', this.checkDiscountAndVoucher.bind(this));
     }
 
     showContactForm(pack) {
@@ -872,7 +885,7 @@ class RecrasBooking {
                 html += `<div class="recras-price">${ this.formatPrice(line.product.verkoop) }</div>`;
                 html += '</div>';
             });
-            html += `<div class="priceLine"><div>${ this.languageHelper.translate('PRICE_TOTAL') }</div><div class="priceSubtotal"></div></div>`;
+            html += `<div class="priceWithoutDiscount"><div>${ this.languageHelper.translate('PRICE_TOTAL') }</div><div class="priceSubtotal"></div></div>`;
 
             html += `<p>${ msgs[1] }</p>`;
             html += '</div>';

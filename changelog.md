@@ -4,6 +4,10 @@
 * Disable autocomplete on date/time fields
 * Combine discount codes and vouchers into a single field
 
+**Note for developers:** due to the discount/voucher combination, certain CSS classes have changed accordingly:
+- Removed: `.voucher-status`, `.recras-vouchers`
+- Changed: `.discount-status` is now also used for voucher messages. `.recras-discountcode` has been renamed to `.recras-discounts`
+
 ## 0.7.5 (2018-10-19)
 * Fix date check for vouchers
 

@@ -671,7 +671,7 @@ var RecrasBooking = function () {
 
             var statusEl = this.findElement('.discount-status');
             if (!statusEl) {
-                this.element.querySelector('.recras-discountcodes').insertAdjacentHTML('beforeend', '<span class="discount-status"></span>');
+                this.element.querySelector('.recras-discounts').insertAdjacentHTML('beforeend', '<span class="discount-status"></span>');
                 statusEl = this.findElement('.discount-status');
             }
             if (isError) {
@@ -788,15 +788,15 @@ var RecrasBooking = function () {
         value: function showDiscountFields() {
             var _this18 = this;
 
-            var existingEl = this.findElement('.recras-discountcodes');
+            var existingEl = this.findElement('.recras-discounts');
             if (existingEl) {
                 existingEl.parentNode.removeChild(existingEl);
             }
 
-            var html = '\n            <div class="recras-discountcodes">\n                <label for="discountcode">' + this.languageHelper.translate('DISCOUNT_TITLE') + '</label>\n                <input type="text" id="discountcode" class="discountcode" maxlength="50">\n                <button>' + this.languageHelper.translate('DISCOUNT_CHECK') + '</button>\n            </div>\n        ';
+            var html = '\n            <div class="recras-discounts">\n                <label for="discountcode">' + this.languageHelper.translate('DISCOUNT_TITLE') + '</label>\n                <input type="text" id="discountcode" class="discountcode" maxlength="50">\n                <button>' + this.languageHelper.translate('DISCOUNT_CHECK') + '</button>\n            </div>\n        ';
             this.findElement('.recras-contactform').insertAdjacentHTML('beforebegin', html);
 
-            this.findElement('.recras-discountcodes button').addEventListener('click', function () {
+            this.findElement('.recras-discounts button').addEventListener('click', function () {
                 var discountStatus = void 0,
                     voucherStatus = void 0;
                 var discountPromise = _this18.checkDiscountcode(_this18.selectedPackage.id, _this18.findElement('.recras-onlinebooking-date').value, _this18.findElement('#discountcode').value.trim()).then(function (status) {

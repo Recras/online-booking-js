@@ -566,7 +566,7 @@ class RecrasBooking {
     setDiscountStatus(statusText, isError = true) {
         let statusEl = this.findElement('.discount-status');
         if (!statusEl) {
-            this.element.querySelector('.recras-discountcodes').insertAdjacentHTML('beforeend', `<span class="discount-status"></span>`);
+            this.element.querySelector('.recras-discounts').insertAdjacentHTML('beforeend', `<span class="discount-status"></span>`);
             statusEl = this.findElement('.discount-status');
         }
         if (isError) {
@@ -681,13 +681,13 @@ class RecrasBooking {
     }
 
     showDiscountFields() {
-        let existingEl = this.findElement('.recras-discountcodes');
+        let existingEl = this.findElement('.recras-discounts');
         if (existingEl) {
             existingEl.parentNode.removeChild(existingEl);
         }
 
         let html = `
-            <div class="recras-discountcodes">
+            <div class="recras-discounts">
                 <label for="discountcode">${ this.languageHelper.translate('DISCOUNT_TITLE') }</label>
                 <input type="text" id="discountcode" class="discountcode" maxlength="50">
                 <button>${ this.languageHelper.translate('DISCOUNT_CHECK') }</button>
@@ -695,7 +695,7 @@ class RecrasBooking {
         `;
         this.findElement('.recras-contactform').insertAdjacentHTML('beforebegin', html);
 
-        this.findElement('.recras-discountcodes button').addEventListener('click', () => {
+        this.findElement('.recras-discounts button').addEventListener('click', () => {
             let discountStatus, voucherStatus;
             let discountPromise = this.checkDiscountcode(
                 this.selectedPackage.id,

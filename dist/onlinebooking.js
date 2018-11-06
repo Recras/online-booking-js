@@ -19,7 +19,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /**********************************
 *  Recras Online Booking library  *
-*  v 0.7.5                        *
+*  v 0.8.1                        *
 **********************************/
 
 var RecrasBooking = function () {
@@ -756,7 +756,6 @@ var RecrasBooking = function () {
                 html += '<div class="priceWithDiscount"><div>' + this.languageHelper.translate('PRICE_TOTAL_WITH_DISCOUNT') + '</div><div>' + this.formatPrice(this.getTotalPrice()) + '</div></div>';
             }
 
-            console.log();
             var elementToInsertBefore = this.findElement('.recras-amountsform p:last-of-type');
             elementToInsertBefore.insertAdjacentHTML('beforebegin', html);
             this.findElement('.priceSubtotal').innerHTML = this.formatPrice(this.getSubTotal());
@@ -831,10 +830,7 @@ var RecrasBooking = function () {
 
             this.findElement('.recras-discounts input').addEventListener('keydown', function (e) {
                 if (e.key === 'Enter') {
-                    console.log('Checking...');
                     _this19.checkDiscountAndVoucher().bind(_this19);
-                } else {
-                    console.log('Wrong key', e.key);
                 }
             });
             this.findElement('.recras-discounts button').addEventListener('click', this.checkDiscountAndVoucher.bind(this));
@@ -1162,6 +1158,7 @@ var RecrasCalendarHelper = function () {
                 firstDay: 1, // Monday
                 minDate: new Date(),
                 numberOfMonths: 2,
+                reposition: false,
                 toString: function toString(date) {
                     return RecrasDateHelper.toString(date);
                 }
@@ -1191,7 +1188,7 @@ var RecrasCalendarHelper = function () {
 
                 var script = document.createElement('script');
                 script.id = scriptID;
-                script.src = 'https://cdn.rawgit.com/dbushell/Pikaday/eddaaa3b/pikaday.js';
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.8.0/pikaday.min.js';
                 script.addEventListener('load', function () {
                     return resolve(script);
                 }, false);
@@ -1371,7 +1368,7 @@ var RecrasCSSHelper = function () {
     _createClass(RecrasCSSHelper, null, [{
         key: 'cssBooking',
         value: function cssBooking() {
-            return '\n@import url(\'https://cdn.rawgit.com/dbushell/Pikaday/eddaaa3b/css/pikaday.css\');\n\n.recras-onlinebooking > *:not(:first-child) + * {\n    border-top: 2px solid #dedede; /* Any love for Kirby out there? */\n}\n\n.booking-error, .minimum-amount {\n    color: hsl(0, 50%, 50%);\n}\n.minimum-amount {\n    padding-left: 0.5em;\n}\n.time-preview {\n    padding-right: 0.5em;\n}\n';
+            return '\n@import url(\'https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.8.0/css/pikaday.min.css\');\n\n.recras-onlinebooking > *:not(:first-child) + * {\n    border-top: 2px solid #dedede; /* Any love for Kirby out there? */\n}\n\n.booking-error, .minimum-amount {\n    color: hsl(0, 50%, 50%);\n}\n.minimum-amount {\n    padding-left: 0.5em;\n}\n.time-preview {\n    padding-right: 0.5em;\n}\n';
         }
     }, {
         key: 'cssGlobal',
@@ -1548,7 +1545,7 @@ var RecrasLanguageHelper = function () {
                 DATE_PICKER_DAY_SATURDAY_SHORT: 'Sa',
                 DATE_PICKER_DAY_SUNDAY_LONG: 'Sonntag',
                 DATE_PICKER_DAY_SUNDAY_SHORT: 'So',
-                DISCOUNT_APPLIED: 'Discount applied',
+                DISCOUNT_APPLIED: 'Rabatt eingelöst',
                 DISCOUNT_CHECK: 'Überprüfen',
                 DISCOUNT_TITLE: 'Rabattcode oder Gutschein',
                 DISCOUNT_INVALID: 'Ungültiger Rabattcode oder Gutschein',
@@ -1914,7 +1911,7 @@ var RecrasOptions = function () {
 }();
 /****************************
  *  Recras voucher library  *
- *  v 0.7.5                 *
+ *  v 0.8.1                 *
  ***************************/
 
 RecrasOptions.hostnameDebug = '172.16.0.2';

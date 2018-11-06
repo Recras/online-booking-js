@@ -4,6 +4,7 @@ class RecrasCalendarHelper {
             firstDay: 1, // Monday
             minDate: new Date(),
             numberOfMonths: 2,
+            reposition: false,
             toString: (date) => RecrasDateHelper.toString(date),
         };
     }
@@ -58,7 +59,7 @@ class RecrasCalendarHelper {
 
             let script = document.createElement('script');
             script.id = scriptID;
-            script.src = 'https://cdn.rawgit.com/dbushell/Pikaday/eddaaa3b/pikaday.js';
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.8.0/pikaday.min.js';
             script.addEventListener('load', () => resolve(script), false);
             script.addEventListener('error', () => reject(script), false);
             document.head.appendChild(script);

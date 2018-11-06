@@ -2,7 +2,7 @@ class RecrasCSSHelper {
 
     static cssBooking() {
         return `
-@import url('https://cdn.rawgit.com/dbushell/Pikaday/eddaaa3b/css/pikaday.css');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.8.0/css/pikaday.min.css');
 
 .recras-onlinebooking > *:not(:first-child) + * {
     border-top: 2px solid #dedede; /* Any love for Kirby out there? */

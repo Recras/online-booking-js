@@ -776,10 +776,10 @@ class RecrasBooking {
         return this.getAvailableDays(pack.id, startDate, endDate)
             .then(() => {
                 let today = RecrasDateHelper.datePartOnly(new Date());
-                let html = `<div class="recras-datetime">`;
+                let html = `<form class="recras-datetime">`;
                 html += `<label for="recras-onlinebooking-date">${ this.languageHelper.translate('DATE') }</label><input type="text" id="recras-onlinebooking-date" class="recras-onlinebooking-date" min="${ today }" disabled autocomplete="off">`;
                 html += `<label for="recras-onlinebooking-time">${ this.languageHelper.translate('TIME') }</label><select id="recras-onlinebooking-time" class="recras-onlinebooking-time" disabled autocomplete="off"></select>`;
-                html += '</div>';
+                html += '</form>';
                 this.appendHtml(html);
                 let pikadayOptions = Object.assign(
                     RecrasCalendarHelper.defaultOptions(),
@@ -865,7 +865,7 @@ class RecrasBooking {
         promises.push(this.languageHelper.filterTags(this.texts.online_boeking_step1_text_post, this.selectedPackage ? this.selectedPackage.id : null));
 
         return Promise.all(promises).then(msgs => {
-            let html = '<div class="recras-amountsform">';
+            let html = '<form class="recras-amountsform">';
             html += `<p>${ msgs[0] }</p>`;
 
             if (this.shouldShowBookingSize(pack)) {
@@ -888,7 +888,7 @@ class RecrasBooking {
             html += `<div class="priceWithoutDiscount"><div>${ this.languageHelper.translate('PRICE_TOTAL') }</div><div class="priceSubtotal"></div></div>`;
 
             html += `<p>${ msgs[1] }</p>`;
-            html += '</div>';
+            html += '</form>';
             this.appendHtml(html);
 
             [...this.findElements('[id^="packageline"], .bookingsize')].forEach(el => {
@@ -977,6 +977,9 @@ class RecrasBooking {
                     RecrasEventHelper.sendEvent('Recras:Booking:RedirectToPayment');
                     window.top.location.href = bookingParams.redirect_url;
                 } else {
+                    this.findElement('.recras-amountsform').reset();
+                    this.findElement('.recras-datetime').reset();
+                    this.findElement('.recras-contactform').reset();
                     window.alert(json.message);
                 }
             } else {

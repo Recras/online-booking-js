@@ -23,7 +23,7 @@ class RecrasBooking {
         this.element.classList.add('recras-onlinebooking');
 
         this.fetchJson = url => RecrasHttpHelper.fetchJson(url, this.error);
-        this.postJson = (url, data) => RecrasHttpHelper.postJson(this.options.getApiBase() + url, data, this.error);
+        this.postJson = (url, data) => RecrasHttpHelper.postJson(this.options.getApiBase() + url, data, this.error.bind(this));
 
         if (this.options.getLocale()) {
             if (!RecrasLanguageHelper.isValid(this.options.getLocale())) {
@@ -346,8 +346,8 @@ class RecrasBooking {
     }
 
     error(msg) {
-        this.loadingIndicatorHide().bind(this);
-        this.findElement('.latestError').innerHTML = `<strong>{ this.languageHelper.translate('ERR_GENERAL') }</strong><p>${ msg }</p>`;
+        this.loadingIndicatorHide();
+        this.findElement('.latestError').innerHTML = `<strong>${ this.languageHelper.translate('ERR_GENERAL') }</strong><p>${ msg }</p>`;
     }
 
     findElement(querystring) {

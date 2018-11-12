@@ -93,7 +93,7 @@ class RecrasVoucher {
     }
 
     error(msg) {
-        this.findElement('.latestError').innerHTML = `<strong>{ this.languageHelper.translate('ERR_GENERAL') }</strong><p>${ msg }</p>`;
+        this.findElement('.latestError').innerHTML = `<strong>${ this.languageHelper.translate('ERR_GENERAL') }</strong><p>${ msg }</p>`;
     }
 
     findElement(querystring) {

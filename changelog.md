@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.0 (2018-11-12)
+* Clear forms after successful submit
+* Improve certain error messages
+* Check booking size lines for minimum amount
+ 
 ## 0.8.1 (2018-11-06)
 * Fix datepicker position on mobile
 

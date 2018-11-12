@@ -1,6 +1,6 @@
 /**********************************
 *  Recras Online Booking library  *
-*  v 0.8.1                        *
+*  v 0.9.0                        *
 **********************************/
 
 class RecrasBooking {

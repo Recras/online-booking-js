@@ -13,6 +13,9 @@ class RecrasOptions {
     getElement() {
         return this.options.element;
     }
+    getFormId() {
+        return this.options.form_id;
+    }
     getHostname() {
         return this.options.hostname;
     }

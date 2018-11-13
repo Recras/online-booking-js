@@ -61,14 +61,15 @@ See `/demo/index.html` for integration demos
 * `locale` - optional, defaults to nl_NL - a valid locale (de_DE, en_GB, and nl_NL). This is used for country names, error messages, etc. Package names from Recras are not affected.
 
 ### Online booking only
-* `package_id` - optional - the ID of a package. This will hide the package selection dropdown and skip this step. **Only used for online booking**
+* `package_id` - optional - the ID of a package. This will hide the package selection dropdown and skip this step.
 * `redirect_url` - optional - the URL to redirect to after a successful online booking. The URL will receive the created booking ID as `boeking_id` GET parameter (i.e. `?booking_id=42`). For more information on our booking API, we refer to our [booking API documentation](https://recras.github.io/docs/endpoints/boekingen.html).
 
 ### Vouchers only
-* `voucher_template_id` - optional - the ID of a voucher template. This will hide the template selection dropdown and skip this step. **Only used for voucher templates**
+* `voucher_template_id` - optional - the ID of a voucher template. This will hide the template selection dropdown and skip this step.
 * `redirect_url` - optional - the URL to redirect to after a successful payment. The URL will receive the created booking ID as `boeking_id` GET parameter (i.e. `?booking_id=42`). For more information on our API's, we refer to our [booking API documentation](https://recras.github.io/docs/endpoints/boekingen.html) and [voucher API documentation](https://recras.github.io/docs/endpoints/vouchers.html).
 
 ### Contact form only
+* `form_id` - **required** - the ID of the form.
 * `redirect_url` - optional - the URL to redirect to after a successful form submission.
 
 

@@ -19,12 +19,13 @@
     const recrasOptions = {
         recras_hostname: 'demo.recras.nl', // Required
         element: document.getElementById('contactform'), // Required
+        form_id: 4, // Required
         locale: 'nl_NL', // Optional, default is nl_NL. Valid values are de_DE, en_GB, and nl_NL
-        redirect_url: 'https://www.onionbooking.com/', // Optional
+        //redirect_url: 'https://www.onionbooking.com/', // Optional
     };
 
     let cfOptions = new RecrasOptions(recrasOptions);
     let form = new RecrasContactForm(cfOptions);
-    form.showForm(1);
+    form.showForm();
 </script>
 </html>

@@ -7,6 +7,10 @@ class RecrasContactForm {
         }
         this.options = options;
 
+        if (!options.getFormId()) {
+            throw new Error(this.languageHelper.translate('ERR_NO_FORM'));
+        }
+
         this.element = this.options.getElement();
         this.element.classList.add('recras-contactform-wrapper');
 
@@ -64,7 +68,7 @@ class RecrasContactForm {
             waitFor.push(this.getCountryList());
         }
         if (this.hasPackageField()) {
-            waitFor.push(this.getPackages(this.id));
+            waitFor.push(this.getPackages(this.options.getFormId()));
         }
         return Promise.all(waitFor).then(() => {
             let html = '<form class="recras-contactform">';
@@ -205,11 +209,9 @@ class RecrasContactForm {
         }
     }
 
-    showForm(id) {
-        this.id = id;
-
+    showForm() {
         this.loadingIndicatorShow(this.element);
-        this.getContactFormFields(id)
+        this.getContactFormFields(this.options.getFormId())
             .then(() => form.generateForm())
             .then(html => {
                 this.appendHtml(html);
@@ -239,7 +241,7 @@ class RecrasContactForm {
 
         this.findElement('.submitForm').setAttribute('disabled', 'disabled');
 
-        return this.postJson('contactformulieren/' + this.id + '/opslaan', this.generateJson()).then(json => {
+        return this.postJson('contactformulieren/' + this.options.getFormId() + '/opslaan', this.generateJson()).then(json => {
             this.findElement('.submitForm').removeAttribute('disabled');
             this.loadingIndicatorHide();
 

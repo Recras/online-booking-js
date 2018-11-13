@@ -161,6 +161,7 @@ class RecrasVoucher {
             return t.id === templateId;
         })[0];
 
+        //TODO: generateForm instead of this
         this.getContactFormFields(this.selectedTemplate).then(fields => {
             let waitFor = [];
 

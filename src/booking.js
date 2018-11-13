@@ -438,11 +438,12 @@ class RecrasBooking {
         });
     }
 
-    getContactFormFields(pack) {
+    getContactForm(pack) {
+        this.options.setOption('form_id', pack.onlineboeking_contactformulier_id);
         let contactForm = new RecrasContactForm(this.options);
-        return contactForm.fromPackage(pack).then(formFields => {
+        return contactForm.getContactFormFields().then(() => {
             this.contactForm = contactForm;
-            return formFields;
+            return contactForm;
         });
     }
 
@@ -789,19 +790,9 @@ class RecrasBooking {
 
     showContactForm(pack) {
         this.loadingIndicatorShow(this.findElement('.recras-datetime'));
-        this.getContactFormFields(pack).then(fields => {
-            //TODO: generateForm instead of this
-            let waitFor = [];
-
-            if (this.contactForm.hasCountryField()) {
-                waitFor.push(this.contactForm.getCountryList());
-            }
-            Promise.all(waitFor).then(() => {
-                let html = '<form class="recras-contactform">';
-                fields.forEach((field, idx) => {
-                    html += '<div>' + this.contactForm.showField(field, idx) + '</div>';
-                });
-                html += '</form>';
+        this.getContactForm(pack)
+            .then(form => form.generateForm())
+            .then(html => {
                 this.appendHtml(html);
                 this.loadingIndicatorHide();
                 this.showBookButton();
@@ -810,7 +801,6 @@ class RecrasBooking {
                 [...this.findElements('[id^="contactformulier-"]')].forEach(el => {
                     el.addEventListener('change', this.maybeDisableBookButton.bind(this));
                 });
-            });
         });
     }
 

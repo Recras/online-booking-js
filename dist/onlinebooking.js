@@ -514,14 +514,15 @@ var RecrasBooking = function () {
             });
         }
     }, {
-        key: 'getContactFormFields',
-        value: function getContactFormFields(pack) {
+        key: 'getContactForm',
+        value: function getContactForm(pack) {
             var _this12 = this;
 
+            this.options.setOption('form_id', pack.onlineboeking_contactformulier_id);
             var contactForm = new RecrasContactForm(this.options);
-            return contactForm.fromPackage(pack).then(function (formFields) {
+            return contactForm.getContactFormFields().then(function () {
                 _this12.contactForm = contactForm;
-                return formFields;
+                return contactForm;
             });
         }
     }, {
@@ -899,27 +900,16 @@ var RecrasBooking = function () {
             var _this21 = this;
 
             this.loadingIndicatorShow(this.findElement('.recras-datetime'));
-            this.getContactFormFields(pack).then(function (fields) {
-                //TODO: generateForm instead of this
-                var waitFor = [];
+            this.getContactForm(pack).then(function (form) {
+                return form.generateForm();
+            }).then(function (html) {
+                _this21.appendHtml(html);
+                _this21.loadingIndicatorHide();
+                _this21.showBookButton();
+                RecrasEventHelper.sendEvent('Recras:Booking:ContactFormShown');
 
-                if (_this21.contactForm.hasCountryField()) {
-                    waitFor.push(_this21.contactForm.getCountryList());
-                }
-                Promise.all(waitFor).then(function () {
-                    var html = '<form class="recras-contactform">';
-                    fields.forEach(function (field, idx) {
-                        html += '<div>' + _this21.contactForm.showField(field, idx) + '</div>';
-                    });
-                    html += '</form>';
-                    _this21.appendHtml(html);
-                    _this21.loadingIndicatorHide();
-                    _this21.showBookButton();
-                    RecrasEventHelper.sendEvent('Recras:Booking:ContactFormShown');
-
-                    [].concat(_toConsumableArray(_this21.findElements('[id^="contactformulier-"]'))).forEach(function (el) {
-                        el.addEventListener('change', _this21.maybeDisableBookButton.bind(_this21));
-                    });
+                [].concat(_toConsumableArray(_this21.findElements('[id^="contactformulier-"]'))).forEach(function (el) {
+                    el.addEventListener('change', _this21.maybeDisableBookButton.bind(_this21));
                 });
             });
         }
@@ -1278,7 +1268,7 @@ var RecrasContactForm = function () {
         }
         this.options = options;
 
-        if (!options.getFormId()) {
+        if (!this.options.getFormId()) {
             throw new Error(this.languageHelper.translate('ERR_NO_FORM'));
         }
 
@@ -1332,11 +1322,6 @@ var RecrasContactForm = function () {
             return this.element.querySelector(querystring);
         }
     }, {
-        key: 'fromPackage',
-        value: function fromPackage(pack) {
-            return this.getContactFormFields(pack.onlineboeking_contactformulier_id);
-        }
-    }, {
         key: 'fromVoucherTemplate',
         value: function fromVoucherTemplate(template) {
             return this.getContactFormFields(template.contactform_id);
@@ -1376,10 +1361,10 @@ var RecrasContactForm = function () {
         }
     }, {
         key: 'getContactFormFields',
-        value: function getContactFormFields(formId) {
+        value: function getContactFormFields() {
             var _this30 = this;
 
-            return this.fetchJson(this.options.getApiBase() + 'contactformulieren/' + formId + '/velden').then(function (fields) {
+            return this.fetchJson(this.options.getApiBase() + 'contactformulieren/' + this.options.getFormId() + '/velden').then(function (fields) {
                 fields = fields.sort(function (a, b) {
                     return a.sort_order - b.sort_order;
                 });
@@ -1517,7 +1502,7 @@ var RecrasContactForm = function () {
             var _this34 = this;
 
             this.loadingIndicatorShow(this.element);
-            this.getContactFormFields(this.options.getFormId()).then(function () {
+            this.getContactFormFields().then(function () {
                 return form.generateForm();
             }).then(function (html) {
                 _this34.appendHtml(html);
@@ -2107,6 +2092,11 @@ var RecrasOptions = function () {
         key: 'getVoucherTemplateId',
         value: function getVoucherTemplateId() {
             return this.options.voucher_template_id;
+        }
+    }, {
+        key: 'setOption',
+        value: function setOption(option, value) {
+            this.options[option] = value;
         }
     }, {
         key: 'setOptions',

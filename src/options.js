@@ -32,6 +32,10 @@ class RecrasOptions {
         return this.options.voucher_template_id;
     }
 
+    setOption(option, value) {
+        this.options[option] = value;
+    }
+
     setOptions(options) {
         let protocol = (options.recras_hostname === RecrasOptions.hostnameDebug) ? 'http' : 'https';
         options.hostname = protocol + '://' + options.recras_hostname;

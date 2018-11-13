@@ -7,7 +7,7 @@ class RecrasContactForm {
         }
         this.options = options;
 
-        if (!options.getFormId()) {
+        if (!this.options.getFormId()) {
             throw new Error(this.languageHelper.translate('ERR_NO_FORM'));
         }
 
@@ -53,10 +53,6 @@ class RecrasContactForm {
         return this.element.querySelector(querystring);
     }
 
-    fromPackage(pack) {
-        return this.getContactFormFields(pack.onlineboeking_contactformulier_id);
-    }
-
     fromVoucherTemplate(template) {
         return this.getContactFormFields(template.contactform_id);
     }
@@ -90,8 +86,8 @@ class RecrasContactForm {
         return contactForm;
     }
 
-    getContactFormFields(formId) {
-        return this.fetchJson(this.options.getApiBase() + 'contactformulieren/' + formId + '/velden')
+    getContactFormFields() {
+        return this.fetchJson(this.options.getApiBase() + 'contactformulieren/' + this.options.getFormId() + '/velden')
             .then(fields => {
                 fields = fields.sort((a, b) => {
                     return a.sort_order - b.sort_order;
@@ -211,7 +207,7 @@ class RecrasContactForm {
 
     showForm() {
         this.loadingIndicatorShow(this.element);
-        this.getContactFormFields(this.options.getFormId())
+        this.getContactFormFields()
             .then(() => form.generateForm())
             .then(html => {
                 this.appendHtml(html);

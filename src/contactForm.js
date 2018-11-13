@@ -53,11 +53,7 @@ class RecrasContactForm {
         return this.element.querySelector(querystring);
     }
 
-    fromVoucherTemplate(template) {
-        return this.getContactFormFields(template.contactform_id);
-    }
-
-    generateForm() {
+    generateForm(extraOptions = {}) {
         let waitFor = [];
 
         if (this.hasCountryField()) {
@@ -68,6 +64,9 @@ class RecrasContactForm {
         }
         return Promise.all(waitFor).then(() => {
             let html = '<form class="recras-contactform">';
+            if (extraOptions.voucherQuantitySelector) {
+                html += this.quantitySelector();
+            }
             this.contactFormFields.forEach((field, idx) => {
                 html += '<div>' + this.showField(field, idx) + '</div>';
             });
@@ -137,6 +136,10 @@ class RecrasContactForm {
             return;
         }
         afterEl.insertAdjacentHTML('beforeend', `<span class="recrasLoadingIndicator">${ this.languageHelper.translate('LOADING') }</span>`);
+    }
+
+    quantitySelector() {
+        return `<div><label for="number-of-vouchers">${ this.languageHelper.translate('VOUCHER_QUANTITY') }</label><input type="number" id="number-of-vouchers" class="number-of-vouchers" min="1" value="1" required></div>`;
     }
 
     showField(field, idx) {

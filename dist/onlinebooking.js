@@ -1322,14 +1322,11 @@ var RecrasContactForm = function () {
             return this.element.querySelector(querystring);
         }
     }, {
-        key: 'fromVoucherTemplate',
-        value: function fromVoucherTemplate(template) {
-            return this.getContactFormFields(template.contactform_id);
-        }
-    }, {
         key: 'generateForm',
         value: function generateForm() {
             var _this29 = this;
+
+            var extraOptions = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
             var waitFor = [];
 
@@ -1341,6 +1338,9 @@ var RecrasContactForm = function () {
             }
             return Promise.all(waitFor).then(function () {
                 var html = '<form class="recras-contactform">';
+                if (extraOptions.voucherQuantitySelector) {
+                    html += _this29.quantitySelector();
+                }
                 _this29.contactFormFields.forEach(function (field, idx) {
                     html += '<div>' + _this29.showField(field, idx) + '</div>';
                 });
@@ -1424,6 +1424,11 @@ var RecrasContactForm = function () {
                 return;
             }
             afterEl.insertAdjacentHTML('beforeend', '<span class="recrasLoadingIndicator">' + this.languageHelper.translate('LOADING') + '</span>');
+        }
+    }, {
+        key: 'quantitySelector',
+        value: function quantitySelector() {
+            return '<div><label for="number-of-vouchers">' + this.languageHelper.translate('VOUCHER_QUANTITY') + '</label><input type="number" id="number-of-vouchers" class="number-of-vouchers" min="1" value="1" required></div>';
         }
     }, {
         key: 'showField',
@@ -2268,14 +2273,15 @@ var RecrasVoucher = function () {
             return this.languageHelper.formatPrice(price);
         }
     }, {
-        key: 'getContactFormFields',
-        value: function getContactFormFields(template) {
+        key: 'getContactForm',
+        value: function getContactForm(template) {
             var _this39 = this;
 
+            this.options.setOption('form_id', template.contactform_id);
             var contactForm = new RecrasContactForm(this.options);
-            return contactForm.fromVoucherTemplate(template).then(function (formFields) {
+            return contactForm.getContactFormFields().then(function () {
                 _this39.contactForm = contactForm;
-                return formFields;
+                return contactForm;
             });
         }
     }, {
@@ -2312,11 +2318,6 @@ var RecrasVoucher = function () {
             }
         }
     }, {
-        key: 'quantitySelector',
-        value: function quantitySelector() {
-            return '<div><label for="number-of-vouchers">' + this.languageHelper.translate('VOUCHER_QUANTITY') + '</label><input type="number" id="number-of-vouchers" class="number-of-vouchers" min="1" value="1" required></div>';
-        }
-    }, {
         key: 'showBuyButton',
         value: function showBuyButton() {
             var html = '<div><button type="submit" class="buyTemplate" disabled>' + this.languageHelper.translate('BUTTON_BUY_NOW') + '</button></div>';
@@ -2332,26 +2333,16 @@ var RecrasVoucher = function () {
                 return t.id === templateId;
             })[0];
 
-            //TODO: generateForm instead of this
-            this.getContactFormFields(this.selectedTemplate).then(function (fields) {
-                var waitFor = [];
+            this.getContactForm(this.selectedTemplate).then(function (form) {
+                return form.generateForm({
+                    voucherQuantitySelector: true
+                });
+            }).then(function (html) {
+                _this41.appendHtml(html);
+                _this41.showBuyButton();
 
-                if (_this41.contactForm.hasCountryField()) {
-                    waitFor.push(_this41.contactForm.getCountryList());
-                }
-                Promise.all(waitFor).then(function () {
-                    var html = '<form class="recras-contactform">';
-                    html += _this41.quantitySelector();
-                    fields.forEach(function (field, idx) {
-                        html += '<div>' + _this41.contactForm.showField(field, idx) + '</div>';
-                    });
-                    html += '</form>';
-                    _this41.appendHtml(html);
-                    _this41.showBuyButton();
-
-                    [].concat(_toConsumableArray(_this41.findElements('[id^="contactformulier-"]'))).forEach(function (el) {
-                        el.addEventListener('change', _this41.maybeDisableBuyButton.bind(_this41));
-                    });
+                [].concat(_toConsumableArray(_this41.findElements('[id^="contactformulier-"]'))).forEach(function (el) {
+                    el.addEventListener('change', _this41.maybeDisableBuyButton.bind(_this41));
                 });
             });
         }

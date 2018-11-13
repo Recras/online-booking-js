@@ -108,11 +108,12 @@ class RecrasVoucher {
         return this.languageHelper.formatPrice(price);
     }
 
-    getContactFormFields(template) {
+    getContactForm(template) {
+        this.options.setOption('form_id', template.contactform_id);
         let contactForm = new RecrasContactForm(this.options);
-        return contactForm.fromVoucherTemplate(template).then(formFields => {
+        return contactForm.getContactFormFields().then(() => {
             this.contactForm = contactForm;
-            return formFields;
+            return contactForm;
         });
     }
 
@@ -146,10 +147,6 @@ class RecrasVoucher {
         }
     }
 
-    quantitySelector() {
-        return `<div><label for="number-of-vouchers">${ this.languageHelper.translate('VOUCHER_QUANTITY') }</label><input type="number" id="number-of-vouchers" class="number-of-vouchers" min="1" value="1" required></div>`;
-    }
-
     showBuyButton() {
         let html = `<div><button type="submit" class="buyTemplate" disabled>${ this.languageHelper.translate('BUTTON_BUY_NOW') }</button></div>`;
         this.appendHtml(html);
@@ -161,28 +158,17 @@ class RecrasVoucher {
             return t.id === templateId;
         })[0];
 
-        //TODO: generateForm instead of this
-        this.getContactFormFields(this.selectedTemplate).then(fields => {
-            let waitFor = [];
-
-            if (this.contactForm.hasCountryField()) {
-                waitFor.push(this.contactForm.getCountryList());
-            }
-            Promise.all(waitFor).then(() => {
-                let html = '<form class="recras-contactform">';
-                html += this.quantitySelector();
-                fields.forEach((field, idx) => {
-                    html += '<div>' + this.contactForm.showField(field, idx) + '</div>';
-                });
-                html += '</form>';
+        this.getContactForm(this.selectedTemplate)
+            .then(form => form.generateForm({
+                voucherQuantitySelector: true,
+            }))
+            .then(html => {
                 this.appendHtml(html);
                 this.showBuyButton();
 
                 [...this.findElements('[id^="contactformulier-"]')].forEach(el => {
                     el.addEventListener('change', this.maybeDisableBuyButton.bind(this));
                 });
-            });
-
         });
     }
 

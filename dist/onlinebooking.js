@@ -105,6 +105,7 @@ var RecrasBooking = function () {
                 if (this.bookingSize() < this.bookingSizeMinimum(pack) || this.bookingSize() > this.bookingSizeMaximum(pack)) {
                     return false;
                 }
+                hasAtLeastOneProduct = true;
             }
             return hasAtLeastOneProduct;
         }
@@ -574,7 +575,11 @@ var RecrasBooking = function () {
             var total = 0;
             this.productCounts().forEach(function (line) {
                 var product = _this14.findProduct(line.arrangementsregel_id).product;
-                total += line.aantal * product.verkoop;
+                var aantal = line.aantal;
+                if (isNaN(aantal)) {
+                    aantal = 0;
+                }
+                total += aantal * product.verkoop;
             });
             return total;
         }

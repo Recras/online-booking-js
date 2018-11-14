@@ -71,6 +71,7 @@ class RecrasBooking {
             if (this.bookingSize() < this.bookingSizeMinimum(pack) || this.bookingSize() > this.bookingSizeMaximum(pack)) {
                 return false;
             }
+            hasAtLeastOneProduct = true;
         }
         return hasAtLeastOneProduct;
     }
@@ -478,7 +479,11 @@ class RecrasBooking {
         let total = 0;
         this.productCounts().forEach(line => {
             let product = this.findProduct(line.arrangementsregel_id).product;
-            total += (line.aantal * product.verkoop);
+            let aantal = line.aantal;
+            if (isNaN(aantal)) {
+                aantal = 0;
+            }
+            total += (aantal * product.verkoop);
         });
         return total;
     }

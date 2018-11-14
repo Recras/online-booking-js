@@ -1,5 +1,9 @@
 # Changelog
 
+## master (unreleased)
+* Fix "NaN" price when amount input field was cleared
+* Fix "Programme amounts are invalid" error in some cases
+
 ## 0.9.0 (2018-11-12)
 * Clear forms after successful submit
 * Improve certain error messages

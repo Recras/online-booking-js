@@ -70,6 +70,9 @@ class RecrasContactForm {
             this.contactFormFields.forEach((field, idx) => {
                 html += '<div>' + this.showField(field, idx) + '</div>';
             });
+            if (extraOptions.showSubmit) {
+                html += this.submitButtonHtml();
+            }
             html += '</form>';
 
             return html;
@@ -211,10 +214,12 @@ class RecrasContactForm {
     showForm() {
         this.loadingIndicatorShow(this.element);
         this.getContactFormFields()
-            .then(() => form.generateForm())
+            .then(() => form.generateForm({
+                showSubmit: true,
+            }))
             .then(html => {
                 this.appendHtml(html);
-                this.showSubmitButton();
+                this.findElement('.submitForm').addEventListener('click', this.submitForm.bind(this));
                 this.loadingIndicatorHide();
             });
     }
@@ -227,21 +232,21 @@ class RecrasContactForm {
         return `<label for="contactformulier-${ idx }">${ labelText }</label>`;
     }
 
-    showSubmitButton() {
-        this.appendHtml(`<button type="submit" class="submitForm">${ this.languageHelper.translate('BUTTON_SUBMIT_CONTACT_FORM') }</button>`);
-        this.findElement('.submitForm').addEventListener('click', this.submitForm.bind(this));
+    submitButtonHtml() {
+        return `<button type="submit" class="submitForm">${ this.languageHelper.translate('BUTTON_SUBMIT_CONTACT_FORM') }</button>`;
     }
 
     submitForm() {
         RecrasEventHelper.sendEvent('Recras:ContactForm:Submit');
+        let submitButton = this.findElement('.submitForm');
 
         this.loadingIndicatorHide();
-        this.loadingIndicatorShow(this.findElement('.submitForm'));
+        this.loadingIndicatorShow(submitButton);
 
-        this.findElement('.submitForm').setAttribute('disabled', 'disabled');
+        submitButton.setAttribute('disabled', 'disabled');
 
         return this.postJson('contactformulieren/' + this.options.getFormId() + '/opslaan', this.generateJson()).then(json => {
-            this.findElement('.submitForm').removeAttribute('disabled');
+            submitButton.removeAttribute('disabled');
             this.loadingIndicatorHide();
 
             if (json.success) {
@@ -249,6 +254,7 @@ class RecrasContactForm {
                     window.top.location.href = this.options.getRedirectUrl();
                 } else {
                     window.alert(this.languageHelper.translate('CONTACT_FORM_SUBMIT_SUCCESS'));
+                    submitButton.parentNode.reset();
                 }
             } else {
                 window.alert(this.languageHelper.translate('CONTACT_FORM_SUBMIT_FAILED'));

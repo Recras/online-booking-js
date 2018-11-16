@@ -80,7 +80,7 @@ class RecrasContactForm {
     }
 
     generateJson() {
-        let elements = this.options.getElement().querySelectorAll('[id^="contactformulier-"]');
+        let elements = this.options.getElement().querySelectorAll('[id^="contactformulier-"], input[type="radio"]:checked');
         let contactForm = {};
         [...elements].forEach(field => {
             contactForm[field.dataset.identifier] = field.value;
@@ -168,6 +168,13 @@ class RecrasContactForm {
                     html += `<option value="${ choice }">${ choice }`;
                 });
                 html += '</select>';
+                return label + html;
+            case 'keuze_enkel':
+                html = `<div class="radioGroup">`;
+                field.mogelijke_keuzes.forEach(choice => {
+                    html += `<label><input type="radio" name="contactformulier${ idx }" value="${ choice }"${ attrRequired } data-identifier="${ field.field_identifier }">${ choice }</label>`;
+                });
+                html += `</div>`;
                 return label + html;
             case 'veel_tekst':
                 return label + `<textarea ${ fixedAttributes }></textarea>`;

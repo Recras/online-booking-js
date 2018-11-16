@@ -1350,7 +1350,7 @@ var RecrasContactForm = function () {
                     html += '<div>' + _this29.showField(field, idx) + '</div>';
                 });
                 if (extraOptions.showSubmit) {
-                    html += _this29.submitButton();
+                    html += _this29.submitButtonHtml();
                 }
                 html += '</form>';
 
@@ -1360,7 +1360,7 @@ var RecrasContactForm = function () {
     }, {
         key: 'generateJson',
         value: function generateJson() {
-            var elements = this.options.getElement().querySelectorAll('[id^="contactformulier-"]');
+            var elements = this.options.getElement().querySelectorAll('[id^="contactformulier-"], input[type="radio"]:checked');
             var contactForm = {};
             [].concat(_toConsumableArray(elements)).forEach(function (field) {
                 contactForm[field.dataset.identifier] = field.value;
@@ -1466,6 +1466,13 @@ var RecrasContactForm = function () {
                     });
                     html += '</select>';
                     return label + html;
+                case 'keuze_enkel':
+                    html = '<div class="radioGroup">';
+                    field.mogelijke_keuzes.forEach(function (choice) {
+                        html += '<label><input type="radio" name="contactformulier' + idx + '" value="' + choice + '"' + attrRequired + ' data-identifier="' + field.field_identifier + '">' + choice + '</label>';
+                    });
+                    html += '</div>';
+                    return label + html;
                 case 'veel_tekst':
                     return label + ('<textarea ' + fixedAttributes + '></textarea>');
                 case 'contactpersoon.telefoon1':
@@ -1535,8 +1542,8 @@ var RecrasContactForm = function () {
             return '<label for="contactformulier-' + idx + '">' + labelText + '</label>';
         }
     }, {
-        key: 'submitButton',
-        value: function submitButton() {
+        key: 'submitButtonHtml',
+        value: function submitButtonHtml() {
             return '<button type="submit" class="submitForm">' + this.languageHelper.translate('BUTTON_SUBMIT_CONTACT_FORM') + '</button>';
         }
     }, {
@@ -1586,7 +1593,7 @@ var RecrasCSSHelper = function () {
     }, {
         key: 'cssGlobal',
         value: function cssGlobal() {
-            return '\n.recras-onlinebooking > *:not(.latestError):not(.recrasLoadingIndicator) {\n    padding: 1em 0;\n}\n.recras-contactform > div, .recras-amountsform > div {\n    align-items: start;\n    display: flex;\n    justify-content: space-between;\n    padding: 0.25em 0;\n}\n\n.recrasLoadingIndicator {\n    animation: recrasSpinner 1.1s infinite linear;\n    border: 0.2em solid rgba(0, 0, 0, 0.2);\n    border-left-color: rgba(0, 0, 0, 0.5);\n    border-radius: 50%;\n    display: inline-block;\n    height: 2em;\n    overflow: hidden;\n    text-indent: -100vw;\n    width: 2em;\n}\n@keyframes recrasSpinner {\n    0% {\n        transform: rotate(0deg);\n    }\n    100% {\n        transform: rotate(360deg);\n    }\n}\nbutton .recrasLoadingIndicator {\n    height: 1em;\n    margin-left: 0.5em;\n    vertical-align: middle;\n    width: 1em;\n}\n';
+            return '\n.recras-onlinebooking > *:not(.latestError):not(.recrasLoadingIndicator) {\n    padding: 1em 0;\n}\n.recras-contactform > div, .recras-amountsform > div {\n    align-items: start;\n    display: flex;\n    justify-content: space-between;\n    padding: 0.25em 0;\n}\n.recras-contactform label {\n    display: block;\n}\n\n.recrasLoadingIndicator {\n    animation: recrasSpinner 1.1s infinite linear;\n    border: 0.2em solid rgba(0, 0, 0, 0.2);\n    border-left-color: rgba(0, 0, 0, 0.5);\n    border-radius: 50%;\n    display: inline-block;\n    height: 2em;\n    overflow: hidden;\n    text-indent: -100vw;\n    width: 2em;\n}\n@keyframes recrasSpinner {\n    0% {\n        transform: rotate(0deg);\n    }\n    100% {\n        transform: rotate(360deg);\n    }\n}\nbutton .recrasLoadingIndicator {\n    height: 1em;\n    margin-left: 0.5em;\n    vertical-align: middle;\n    width: 1em;\n}\n';
         }
     }, {
         key: 'loadCSS',

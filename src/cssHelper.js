@@ -30,6 +30,9 @@ class RecrasCSSHelper {
     justify-content: space-between;
     padding: 0.25em 0;
 }
+.recras-contactform label {
+    display: block;
+}
 
 .recrasLoadingIndicator {
     animation: recrasSpinner 1.1s infinite linear;

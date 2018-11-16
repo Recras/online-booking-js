@@ -1,7 +1,8 @@
 # Changelog
 
-## branch contact-form (2018-xx-xx)
+## branch contact-form (2018-11-xx)
 * Add standalone contact form integration
+* Implement `keuze_enkel` fields in contact forms
 * Fix "NaN" price when amount input field was cleared
 * Fix "Programme amounts are invalid" error in some cases
 

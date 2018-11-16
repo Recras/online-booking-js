@@ -58,9 +58,12 @@ button:disabled {
     flex-basis: 8em;
     text-align: right;
 }
-input:not([type="checkbox"]):not([type="radio"]), select, textarea {
+input:not([type="checkbox"]):not([type="radio"]), select, textarea, .radioGroup {
     font: inherit;
     width: 300px;
+}
+.radioGroup {
+    line-height: 1.5;
 }
 .priceLine, .discountLine {
     font-weight: bold;

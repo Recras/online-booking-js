@@ -19,7 +19,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /**********************************
 *  Recras Online Booking library  *
-*  v 0.9.0                        *
+*  v 0.10.0                       *
 **********************************/
 
 var RecrasBooking = function () {
@@ -1257,6 +1257,10 @@ var RecrasCalendarHelper = function () {
 
     return RecrasCalendarHelper;
 }();
+/**********************************
+*  Recras Online Booking library  *
+*  v 0.10.0                       *
+**********************************/
 
 var RecrasContactForm = function () {
     function RecrasContactForm() {
@@ -2159,7 +2163,7 @@ var RecrasOptions = function () {
 }();
 /****************************
  *  Recras voucher library  *
- *  v 0.9.0                 *
+ *  v 0.10.0                *
  ***************************/
 
 RecrasOptions.hostnameDebug = '172.16.0.2';

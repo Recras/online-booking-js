@@ -1,3 +1,8 @@
+/**********************************
+*  Recras Online Booking library  *
+*  v 0.10.0                       *
+**********************************/
+
 class RecrasContactForm {
     constructor(options = {}) {
         this.languageHelper = new RecrasLanguageHelper();

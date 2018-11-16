@@ -1,6 +1,6 @@
 # Changelog
 
-## branch contact-form (2018-11-xx)
+## 0.10.0 (2018-11-16)
 * Add standalone contact form integration
 * Implement `keuze_enkel` fields in contact forms
 * Fix "NaN" price when amount input field was cleared

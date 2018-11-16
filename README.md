@@ -1,5 +1,5 @@
 # Recras Online Booking JS library
-Version: 0.9.0
+Version: 0.10.0
 
 JS library for easy online booking & voucher integration
 
@@ -44,9 +44,10 @@ In your HTML document,
 var options = new RecrasOptions({
     recras_hostname: 'demo.recras.nl', // Required
     element: document.getElementById('recras-contactform'), // Required
+    form_id: 4, // Required
 });
 var form = new RecrasContactForm(options);
-form.showForm(1); // where 1 is an ID of a contact form
+form.showForm();
 ```
 See the section Options below for an overview of all options
 

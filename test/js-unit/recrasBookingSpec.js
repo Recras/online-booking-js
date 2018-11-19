@@ -1,48 +1,5 @@
 describe('RecrasBooking', () => {
     describe('constructor', () => {
-        describe('options', () => {
-            it('fails without options', () => {
-                expect(() => {
-                    new RecrasBooking();
-                }).toThrow();
-            });
-
-            it('fails without "element"', () => {
-                expect(() => {
-                    let options = new RecrasOptions({});
-                    new RecrasBooking(options);
-                }).toThrow(new Error('Optie "element" niet ingesteld.'));
-            });
-
-            it('fails with non-element "element"', () => {
-                expect(() => {
-                    let options = new RecrasOptions({
-                        element: 'just a string',
-                    });
-                    new RecrasBooking(options);
-                }).toThrow(new Error('Optie "element" is geen geldig Element'));
-            });
-
-            it('fails without "recras_hostname"', () => {
-                expect(() => {
-                    let options = new RecrasOptions({
-                        element: document.createElement('div'),
-                    });
-                    new RecrasBooking(options);
-                }).toThrow(new Error('Optie "recras_hostname" niet ingesteld.'));
-            });
-
-            it('fails with invalid "recras_hostname"', () => {
-                expect(() => {
-                    let options = new RecrasOptions({
-                        element: document.createElement('div'),
-                        recras_hostname: 'example.com',
-                    });
-                    new RecrasBooking(options);
-                }).toThrow(new Error('Optie "recras_hostname" is ongeldig.'));
-            });
-        });
-
         describe('locale', () => {
             it('has default locale', () => {
                 let options = new RecrasOptions({
@@ -90,6 +47,7 @@ describe('RecrasBooking', () => {
             this.rb.appliedVouchers = {};
             this.rb.contactForm = new RecrasContactForm(new RecrasOptions({
                 element: document.createElement('div'),
+                form_id: 1,
                 recras_hostname: 'demo.recras.nl',
             }));
         });

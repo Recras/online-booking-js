@@ -1,6 +1,6 @@
 /****************************
  *  Recras voucher library  *
- *  v 0.10.0                *
+ *  v 0.10.1                *
  ***************************/
 
 class RecrasVoucher {
@@ -120,6 +120,7 @@ class RecrasVoucher {
     getVoucherTemplates() {
         return this.fetchJson(this.options.getApiBase() + 'voucher_templates')
             .then(templates => {
+                templates = templates.filter(template => !!template.contactform_id);
                 this.templates = templates;
                 return templates;
             });

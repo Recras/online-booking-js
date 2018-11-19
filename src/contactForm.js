@@ -1,7 +1,7 @@
-/**********************************
-*  Recras Online Booking library  *
-*  v 0.10.0                       *
-**********************************/
+/********************************
+*  Recras contact form library  *
+*  v 0.10.1                     *
+********************************/
 
 class RecrasContactForm {
     constructor(options = {}) {

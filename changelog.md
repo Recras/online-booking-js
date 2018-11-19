@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.10.1 (2018-11-19)
+* Voucher sales showed templates without contact form when logged in - fixed
+
 ## 0.10.0 (2018-11-16)
 * Add standalone contact form integration
 * Implement `keuze_enkel` fields in contact forms

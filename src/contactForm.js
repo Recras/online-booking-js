@@ -1,8 +1,3 @@
-/********************************
-*  Recras contact form library  *
-*  v 0.10.2                     *
-********************************/
-
 class RecrasContactForm {
     constructor(options = {}) {
         this.languageHelper = new RecrasLanguageHelper();

@@ -1,8 +1,3 @@
-/****************************
- *  Recras voucher library  *
- *  v 0.10.2                *
- ***************************/
-
 class RecrasVoucher {
     constructor(options = {}) {
         this.languageHelper = new RecrasLanguageHelper();

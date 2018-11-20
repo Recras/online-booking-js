@@ -17,10 +17,10 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-/**********************************
-*  Recras Online Booking library  *
-*  v 0.10.2                       *
-**********************************/
+/*******************************
+*  Recras integration library  *
+*  v 0.10.3                    *
+*******************************/
 
 var RecrasBooking = function () {
     function RecrasBooking() {
@@ -1257,10 +1257,6 @@ var RecrasCalendarHelper = function () {
 
     return RecrasCalendarHelper;
 }();
-/********************************
-*  Recras contact form library  *
-*  v 0.10.2                     *
-********************************/
 
 var RecrasContactForm = function () {
     function RecrasContactForm() {
@@ -2162,10 +2158,6 @@ var RecrasOptions = function () {
 
     return RecrasOptions;
 }();
-/****************************
- *  Recras voucher library  *
- *  v 0.10.2                *
- ***************************/
 
 RecrasOptions.hostnameDebug = '172.16.0.2';
 

@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.10.3 (2018-11-20)
+* Fix standalone contact forms
+
 ## 0.10.2 (2018-11-20)
 * Fix not being able to submit online booking form
 

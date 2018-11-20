@@ -1,6 +1,6 @@
 /********************************
 *  Recras contact form library  *
-*  v 0.10.1                     *
+*  v 0.10.2                     *
 ********************************/
 
 class RecrasContactForm {
@@ -85,7 +85,8 @@ class RecrasContactForm {
     }
 
     generateJson() {
-        let elements = this.options.getElement().querySelectorAll('[id^="contactformulier-"], input[type="radio"]:checked');
+        let formEl = this.options.getElement().querySelector('.recras-contactform');
+        let elements = formEl.querySelectorAll('[id^="contactformulier-"], input[type="radio"]:checked');
         let contactForm = {};
         [...elements].forEach(field => {
             contactForm[field.dataset.identifier] = field.value;

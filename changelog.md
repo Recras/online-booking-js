@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.10.2 (2018-11-20)
+* Fix not being able to submit online booking form
+
 ## 0.10.1 (2018-11-19)
 * Voucher sales showed templates without contact form when logged in - fixed
 

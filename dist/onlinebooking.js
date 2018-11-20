@@ -19,7 +19,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /**********************************
 *  Recras Online Booking library  *
-*  v 0.10.1                       *
+*  v 0.10.2                       *
 **********************************/
 
 var RecrasBooking = function () {
@@ -1259,7 +1259,7 @@ var RecrasCalendarHelper = function () {
 }();
 /********************************
 *  Recras contact form library  *
-*  v 0.10.1                     *
+*  v 0.10.2                     *
 ********************************/
 
 var RecrasContactForm = function () {
@@ -1364,7 +1364,8 @@ var RecrasContactForm = function () {
     }, {
         key: 'generateJson',
         value: function generateJson() {
-            var elements = this.options.getElement().querySelectorAll('[id^="contactformulier-"], input[type="radio"]:checked');
+            var formEl = this.options.getElement().querySelector('.recras-contactform');
+            var elements = formEl.querySelectorAll('[id^="contactformulier-"], input[type="radio"]:checked');
             var contactForm = {};
             [].concat(_toConsumableArray(elements)).forEach(function (field) {
                 contactForm[field.dataset.identifier] = field.value;
@@ -2163,7 +2164,7 @@ var RecrasOptions = function () {
 }();
 /****************************
  *  Recras voucher library  *
- *  v 0.10.1                *
+ *  v 0.10.2                *
  ***************************/
 
 RecrasOptions.hostnameDebug = '172.16.0.2';

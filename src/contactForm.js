@@ -227,7 +227,7 @@ class RecrasContactForm {
     showForm() {
         this.loadingIndicatorShow(this.element);
         this.getContactFormFields()
-            .then(() => form.generateForm({
+            .then(() => this.generateForm({
                 showSubmit: true,
             }))
             .then(html => {

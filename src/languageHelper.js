@@ -11,6 +11,7 @@ class RecrasLanguageHelper {
             de_DE: {
                 AGREE_ATTACHMENTS: 'Ich stimme mit den folgenden Unterlagen:',
                 ATTR_REQUIRED: 'Erforderlich',
+                BOOKING_DISABLED_AGREEMENT: 'You have not agreed to the terms yet',
                 BOOKING_DISABLED_AMOUNTS_INVALID: 'Programme amounts are invalid',
                 BOOKING_DISABLED_CONTACT_FORM_INVALID: 'Contact form is not filled in completely, or contains invalid values',
                 BOOKING_DISABLED_INVALID_DATE: 'No date selected',
@@ -84,6 +85,7 @@ class RecrasLanguageHelper {
             en_GB: {
                 AGREE_ATTACHMENTS: 'I agree with the following documents:',
                 ATTR_REQUIRED: 'Required',
+                BOOKING_DISABLED_AGREEMENT: 'You have not agreed to the terms yet',
                 BOOKING_DISABLED_AMOUNTS_INVALID: 'Programme amounts are invalid',
                 BOOKING_DISABLED_CONTACT_FORM_INVALID: 'Contact form is not filled in completely, or contains invalid values',
                 BOOKING_DISABLED_INVALID_DATE: 'No date selected',
@@ -157,6 +159,7 @@ class RecrasLanguageHelper {
             nl_NL: {
                 AGREE_ATTACHMENTS: 'Ik ga akkoord met de volgende gegevens:',
                 ATTR_REQUIRED: 'Vereist',
+                BOOKING_DISABLED_AGREEMENT: 'Je bent nog niet akkoord met de voorwaarden',
                 BOOKING_DISABLED_AMOUNTS_INVALID: 'Aantallen in programma zijn ongeldig',
                 BOOKING_DISABLED_CONTACT_FORM_INVALID: 'Contactformuler is niet volledig ingevuld, of bevat ongeldige waardes',
                 BOOKING_DISABLED_INVALID_DATE: 'Geen datum geselecteerd',

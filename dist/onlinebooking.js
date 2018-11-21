@@ -673,6 +673,11 @@ var RecrasBooking = function () {
                 bookingDisabledReasons.push('BOOKING_DISABLED_CONTACT_FORM_INVALID');
             }
 
+            var agreeEl = this.findElement('#recrasAgreeToAttachments');
+            if (agreeEl && !agreeEl.checked) {
+                bookingDisabledReasons.push('BOOKING_DISABLED_AGREEMENT');
+            }
+
             if (bookingDisabledReasons.length > 0) {
                 var reasonsList = bookingDisabledReasons.map(function (reason) {
                     return _this16.languageHelper.translate(reason);
@@ -812,7 +817,7 @@ var RecrasBooking = function () {
             var attachments = this.standardAttachments(this.selectedPackage);
             var attachmentHtml = '';
             if (Object.keys(attachments).length) {
-                attachmentHtml += '<p><label><input type="checkbox" required>' + this.languageHelper.translate('AGREE_ATTACHMENTS') + '</label></p>';
+                attachmentHtml += '<p><label><input type="checkbox" id="recrasAgreeToAttachments" required>' + this.languageHelper.translate('AGREE_ATTACHMENTS') + '</label></p>';
                 attachmentHtml += '<ul>';
                 _objectValues(attachments).forEach(function (attachment) {
                     attachmentHtml += '<li><a href="' + attachment.filename + '" download target="_blank">' + attachment.naam + '</a></li>';
@@ -820,6 +825,7 @@ var RecrasBooking = function () {
                 attachmentHtml += '</ul>';
             }
             this.findElement('.standard-attachments').innerHTML = attachmentHtml;
+            this.findElement('#recrasAgreeToAttachments').addEventListener('change', this.maybeDisableBookButton.bind(this));
         }
     }, {
         key: 'showTotalPrice',
@@ -1753,6 +1759,7 @@ var RecrasLanguageHelper = function () {
             de_DE: {
                 AGREE_ATTACHMENTS: 'Ich stimme mit den folgenden Unterlagen:',
                 ATTR_REQUIRED: 'Erforderlich',
+                BOOKING_DISABLED_AGREEMENT: 'You have not agreed to the terms yet',
                 BOOKING_DISABLED_AMOUNTS_INVALID: 'Programme amounts are invalid',
                 BOOKING_DISABLED_CONTACT_FORM_INVALID: 'Contact form is not filled in completely, or contains invalid values',
                 BOOKING_DISABLED_INVALID_DATE: 'No date selected',
@@ -1826,6 +1833,7 @@ var RecrasLanguageHelper = function () {
             en_GB: {
                 AGREE_ATTACHMENTS: 'I agree with the following documents:',
                 ATTR_REQUIRED: 'Required',
+                BOOKING_DISABLED_AGREEMENT: 'You have not agreed to the terms yet',
                 BOOKING_DISABLED_AMOUNTS_INVALID: 'Programme amounts are invalid',
                 BOOKING_DISABLED_CONTACT_FORM_INVALID: 'Contact form is not filled in completely, or contains invalid values',
                 BOOKING_DISABLED_INVALID_DATE: 'No date selected',
@@ -1899,6 +1907,7 @@ var RecrasLanguageHelper = function () {
             nl_NL: {
                 AGREE_ATTACHMENTS: 'Ik ga akkoord met de volgende gegevens:',
                 ATTR_REQUIRED: 'Vereist',
+                BOOKING_DISABLED_AGREEMENT: 'Je bent nog niet akkoord met de voorwaarden',
                 BOOKING_DISABLED_AMOUNTS_INVALID: 'Aantallen in programma zijn ongeldig',
                 BOOKING_DISABLED_CONTACT_FORM_INVALID: 'Contactformuler is niet volledig ingevuld, of bevat ongeldige waardes',
                 BOOKING_DISABLED_INVALID_DATE: 'Geen datum geselecteerd',

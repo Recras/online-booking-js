@@ -578,6 +578,11 @@ class RecrasBooking {
             bookingDisabledReasons.push('BOOKING_DISABLED_CONTACT_FORM_INVALID');
         }
 
+        const agreeEl = this.findElement('#recrasAgreeToAttachments');
+        if (agreeEl && !agreeEl.checked) {
+            bookingDisabledReasons.push('BOOKING_DISABLED_AGREEMENT');
+        }
+
         if (bookingDisabledReasons.length > 0) {
             const reasonsList = bookingDisabledReasons.map(reason => this.languageHelper.translate(reason)).join('<li>');
             this.findElement('#bookingErrors').innerHTML = `<ul><li>${ reasonsList }</ul>`;
@@ -698,7 +703,7 @@ class RecrasBooking {
         let attachments = this.standardAttachments(this.selectedPackage);
         let attachmentHtml = ``;
         if (Object.keys(attachments).length) {
-            attachmentHtml += `<p><label><input type="checkbox" required>${ this.languageHelper.translate('AGREE_ATTACHMENTS') }</label></p>`;
+            attachmentHtml += `<p><label><input type="checkbox" id="recrasAgreeToAttachments" required>${ this.languageHelper.translate('AGREE_ATTACHMENTS') }</label></p>`;
             attachmentHtml += `<ul>`;
             Object.values(attachments).forEach(attachment => {
                 attachmentHtml += `<li><a href="${ attachment.filename }" download target="_blank">${ attachment.naam }</a></li>`;
@@ -706,6 +711,10 @@ class RecrasBooking {
             attachmentHtml += `</ul>`;
         }
         this.findElement('.standard-attachments').innerHTML = attachmentHtml;
+        const agreeEl = this.findElement('#recrasAgreeToAttachments');
+        if (agreeEl) {
+            agreeEl.addEventListener('change', this.maybeDisableBookButton.bind(this));
+        }
     }
 
     showTotalPrice() {

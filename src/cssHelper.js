@@ -33,6 +33,9 @@ class RecrasCSSHelper {
 .recras-contactform label {
     display: block;
 }
+.recras-full-width {
+    flex: 0 0 100%;
+}
 
 .recrasLoadingIndicator {
     animation: recrasSpinner 1.1s infinite linear;

@@ -1,5 +1,8 @@
 # Changelog
 
+## master
+* Show "amount is more than allowed for online booking" message directly underneath the corresponding input instead of at the end of the form.
+
 ## 0.10.3 (2018-11-20)
 * Fix standalone contact forms
 

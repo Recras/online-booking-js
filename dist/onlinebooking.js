@@ -356,7 +356,20 @@ var RecrasBooking = function () {
             this.languageHelper.filterTags(this.texts.maximum_aantal_online_boeking_overschreden, this.selectedPackage ? this.selectedPackage.id : null).then(function (msg) {
                 selectedProducts.forEach(function (p) {
                     if (p.aantal > maxPerLine && !showWarning) {
-                        _this9.findElement('.recras-amountsform').insertAdjacentHTML('beforeend', '<span class="maximum-amount">' + msg + '</span>');
+                        var input = _this9.findElement('[data-package-id="' + p.arrangementsregel_id + '"]');
+                        if (!input) {
+                            input = _this9.findElement('#bookingsize');
+                        }
+
+                        if (input) {
+                            var warningEl = document.createElement('span');
+                            warningEl.classList.add('maximum-amount');
+                            warningEl.classList.add('recras-full-width');
+                            warningEl.innerHTML = msg;
+                            input.parentNode.parentNode.insertBefore(warningEl, input.parentNode.nextSibling);
+                        } else {
+                            _this9.findElement('.recras-amountsform').insertAdjacentHTML('beforeend', '<span class="maximum-amount">' + msg + '</span>');
+                        }
                         showWarning = true;
                     }
                 });
@@ -1594,7 +1607,7 @@ var RecrasCSSHelper = function () {
     }, {
         key: 'cssGlobal',
         value: function cssGlobal() {
-            return '\n.recras-onlinebooking > *:not(.latestError):not(.recrasLoadingIndicator) {\n    padding: 1em 0;\n}\n.recras-contactform > div, .recras-amountsform > div {\n    align-items: start;\n    display: flex;\n    justify-content: space-between;\n    padding: 0.25em 0;\n}\n.recras-contactform label {\n    display: block;\n}\n\n.recrasLoadingIndicator {\n    animation: recrasSpinner 1.1s infinite linear;\n    border: 0.2em solid rgba(0, 0, 0, 0.2);\n    border-left-color: rgba(0, 0, 0, 0.5);\n    border-radius: 50%;\n    display: inline-block;\n    height: 2em;\n    overflow: hidden;\n    text-indent: -100vw;\n    width: 2em;\n}\n@keyframes recrasSpinner {\n    0% {\n        transform: rotate(0deg);\n    }\n    100% {\n        transform: rotate(360deg);\n    }\n}\nbutton .recrasLoadingIndicator {\n    height: 1em;\n    margin-left: 0.5em;\n    vertical-align: middle;\n    width: 1em;\n}\n';
+            return '\n.recras-onlinebooking > *:not(.latestError):not(.recrasLoadingIndicator) {\n    padding: 1em 0;\n}\n.recras-contactform > div, .recras-amountsform > div {\n    align-items: start;\n    display: flex;\n    justify-content: space-between;\n    padding: 0.25em 0;\n}\n.recras-contactform label {\n    display: block;\n}\n.recras-full-width {\n    flex: 0 0 100%;\n}\n\n.recrasLoadingIndicator {\n    animation: recrasSpinner 1.1s infinite linear;\n    border: 0.2em solid rgba(0, 0, 0, 0.2);\n    border-left-color: rgba(0, 0, 0, 0.5);\n    border-radius: 50%;\n    display: inline-block;\n    height: 2em;\n    overflow: hidden;\n    text-indent: -100vw;\n    width: 2em;\n}\n@keyframes recrasSpinner {\n    0% {\n        transform: rotate(0deg);\n    }\n    100% {\n        transform: rotate(360deg);\n    }\n}\nbutton .recrasLoadingIndicator {\n    height: 1em;\n    margin-left: 0.5em;\n    vertical-align: middle;\n    width: 1em;\n}\n';
         }
     }, {
         key: 'loadCSS',

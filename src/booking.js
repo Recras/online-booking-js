@@ -300,7 +300,20 @@ class RecrasBooking {
         this.languageHelper.filterTags(this.texts.maximum_aantal_online_boeking_overschreden, this.selectedPackage ? this.selectedPackage.id : null).then(msg => {
             selectedProducts.forEach(p => {
                 if (p.aantal > maxPerLine && !showWarning) {
-                    this.findElement('.recras-amountsform').insertAdjacentHTML('beforeend', `<span class="maximum-amount">${ msg }</span>`);
+                    let input = this.findElement(`[data-package-id="${ p.arrangementsregel_id }"]`);
+                    if (!input) {
+                        input = this.findElement('#bookingsize');
+                    }
+
+                    if (input) {
+                        let warningEl = document.createElement('span');
+                        warningEl.classList.add('maximum-amount');
+                        warningEl.classList.add('recras-full-width');
+                        warningEl.innerHTML = msg;
+                        input.parentNode.parentNode.insertBefore(warningEl, input.parentNode.nextSibling);
+                    } else {
+                        this.findElement('.recras-amountsform').insertAdjacentHTML('beforeend', `<span class="maximum-amount">${ msg }</span>`);
+                    }
                     showWarning = true;
                 }
             });

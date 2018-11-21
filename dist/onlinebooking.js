@@ -342,10 +342,6 @@ var RecrasBooking = function () {
         value: function checkMaximumAmounts() {
             var _this9 = this;
 
-            [].concat(_toConsumableArray(this.findElements('.maximum-amount'))).forEach(function (el) {
-                el.parentNode.removeChild(el);
-            });
-
             var maxPerLine = this.selectedPackage.maximum_aantal_personen_online;
             if (maxPerLine === null) {
                 return;
@@ -367,6 +363,7 @@ var RecrasBooking = function () {
                             warningEl.classList.add('recras-full-width');
                             warningEl.innerHTML = msg;
                             input.parentNode.parentNode.insertBefore(warningEl, input.parentNode.nextSibling);
+                            input.classList.add('recras-input-invalid');
                         } else {
                             _this9.findElement('.recras-amountsform').insertAdjacentHTML('beforeend', '<span class="maximum-amount">' + msg + '</span>');
                         }
@@ -382,6 +379,7 @@ var RecrasBooking = function () {
 
             var warnEl = document.createElement('span');
             warnEl.classList.add(type + '-amount');
+            this.findElement('#' + lineID).classList.add('recras-input-invalid');
 
             var text = void 0;
             if (type === 'minimum') {
@@ -400,10 +398,6 @@ var RecrasBooking = function () {
     }, {
         key: 'checkMinimumAmounts',
         value: function checkMinimumAmounts() {
-            [].concat(_toConsumableArray(this.findElements('.minimum-amount'))).forEach(function (el) {
-                el.parentNode.removeChild(el);
-            });
-
             var selectedProducts = this.productCounts();
             for (var i = 0; i < selectedProducts.length; i++) {
                 var product = selectedProducts[i];
@@ -755,6 +749,19 @@ var RecrasBooking = function () {
                 });
             });
             return counts;
+        }
+    }, {
+        key: 'removeWarnings',
+        value: function removeWarnings() {
+            [].concat(_toConsumableArray(this.findElements('.minimum-amount'))).forEach(function (el) {
+                el.parentNode.removeChild(el);
+            });
+            [].concat(_toConsumableArray(this.findElements('.maximum-amount'))).forEach(function (el) {
+                el.parentNode.removeChild(el);
+            });
+            [].concat(_toConsumableArray(this.findElements('.recras-input-invalid'))).forEach(function (el) {
+                el.classList.remove('recras-input-invalid');
+            });
         }
     }, {
         key: 'requiredAmount',
@@ -1197,6 +1204,7 @@ var RecrasBooking = function () {
                 }
             });
 
+            this.removeWarnings();
             this.checkDependencies();
             this.checkMinimumAmounts();
             this.checkMaximumAmounts();
@@ -1602,7 +1610,7 @@ var RecrasCSSHelper = function () {
     _createClass(RecrasCSSHelper, null, [{
         key: 'cssBooking',
         value: function cssBooking() {
-            return '\n@import url(\'https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.8.0/css/pikaday.min.css\');\n\n.recras-onlinebooking > *:not(:first-child) + * {\n    border-top: 2px solid #dedede; /* Any love for Kirby out there? */\n}\n\n.booking-error, .minimum-amount {\n    color: hsl(0, 50%, 50%);\n}\n.minimum-amount {\n    padding-left: 0.5em;\n}\n.time-preview {\n    padding-right: 0.5em;\n}\n';
+            return '\n@import url(\'https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.8.0/css/pikaday.min.css\');\n\n.recras-onlinebooking > *:not(:first-child) + * {\n    border-top: 2px solid #dedede; /* Any love for Kirby out there? */\n}\n.recras-input-invalid {\n    border: 1px solid hsl(0, 50%, 50%);\n}\n.booking-error, .minimum-amount {\n    color: hsl(0, 50%, 50%);\n}\n.minimum-amount {\n    padding-left: 0.5em;\n}\n.time-preview {\n    padding-right: 0.5em;\n}\n';
         }
     }, {
         key: 'cssGlobal',

@@ -7,7 +7,9 @@ class RecrasCSSHelper {
 .recras-onlinebooking > *:not(:first-child) + * {
     border-top: 2px solid #dedede; /* Any love for Kirby out there? */
 }
-
+.recras-input-invalid {
+    border: 1px solid hsl(0, 50%, 50%);
+}
 .booking-error, .minimum-amount {
     color: hsl(0, 50%, 50%);
 }

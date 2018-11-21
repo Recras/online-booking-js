@@ -286,10 +286,6 @@ class RecrasBooking {
     }
 
     checkMaximumAmounts() {
-        [...this.findElements('.maximum-amount')].forEach(el => {
-            el.parentNode.removeChild(el);
-        });
-
         const maxPerLine = this.selectedPackage.maximum_aantal_personen_online;
         if (maxPerLine === null) {
             return;
@@ -311,6 +307,7 @@ class RecrasBooking {
                         warningEl.classList.add('recras-full-width');
                         warningEl.innerHTML = msg;
                         input.parentNode.parentNode.insertBefore(warningEl, input.parentNode.nextSibling);
+                        input.classList.add('recras-input-invalid');
                     } else {
                         this.findElement('.recras-amountsform').insertAdjacentHTML('beforeend', `<span class="maximum-amount">${ msg }</span>`);
                     }
@@ -324,6 +321,7 @@ class RecrasBooking {
     setMinMaxAmountWarning(lineID, minAmount, type = 'minimum') {
         let warnEl = document.createElement('span');
         warnEl.classList.add(type + '-amount');
+        this.findElement(`#${ lineID }`).classList.add('recras-input-invalid');
 
         let text;
         if (type === 'minimum') {
@@ -341,10 +339,6 @@ class RecrasBooking {
     }
 
     checkMinimumAmounts() {
-        [...this.findElements('.minimum-amount')].forEach(el => {
-            el.parentNode.removeChild(el);
-        });
-
         let selectedProducts = this.productCounts();
         for (let i = 0; i < selectedProducts.length; i++) {
             let product = selectedProducts[i];
@@ -649,6 +643,18 @@ class RecrasBooking {
             });
         });
         return counts;
+    }
+
+    removeWarnings() {
+        [...this.findElements('.minimum-amount')].forEach(el => {
+            el.parentNode.removeChild(el);
+        });
+        [...this.findElements('.maximum-amount')].forEach(el => {
+            el.parentNode.removeChild(el);
+        });
+        [...this.findElements('.recras-input-invalid')].forEach(el => {
+            el.classList.remove('recras-input-invalid');
+        });
     }
 
     requiredAmount(hasNow, requiredProduct) {
@@ -1064,6 +1070,7 @@ class RecrasBooking {
                 }
             });
 
+        this.removeWarnings();
         this.checkDependencies();
         this.checkMinimumAmounts();
         this.checkMaximumAmounts();

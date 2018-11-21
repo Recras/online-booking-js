@@ -825,7 +825,10 @@ var RecrasBooking = function () {
                 attachmentHtml += '</ul>';
             }
             this.findElement('.standard-attachments').innerHTML = attachmentHtml;
-            this.findElement('#recrasAgreeToAttachments').addEventListener('change', this.maybeDisableBookButton.bind(this));
+            var agreeEl = this.findElement('#recrasAgreeToAttachments');
+            if (agreeEl) {
+                agreeEl.addEventListener('change', this.maybeDisableBookButton.bind(this));
+            }
         }
     }, {
         key: 'showTotalPrice',
@@ -1057,8 +1060,8 @@ var RecrasBooking = function () {
                 if (_this24.shouldShowBookingSize(pack)) {
                     html += '<div>';
                     html += '<div><label for="bookingsize">' + (pack.weergavenaam || pack.arrangement) + '</label></div>';
-                    html += '<input type="number" id="bookingsize" class="bookingsize" min="0">';
-                    html += '<div class="recras-price">' + _this24.formatPrice(_this24.bookingSizePrice(pack)) + '</div>';
+                    html += '<input type="number" id="bookingsize" class="bookingsize" min="0" data-price="' + _this24.bookingSizePrice(pack) + '">';
+                    html += '<div class="recras-price recrasUnitPrice">' + _this24.formatPrice(_this24.bookingSizePrice(pack)) + '</div>';
                     html += '</div>';
                 }
 
@@ -1067,8 +1070,8 @@ var RecrasBooking = function () {
                     html += '<div><div>';
                     html += '<label for="packageline' + idx + '">' + line.beschrijving_templated + '</label>';
                     var maxAttr = line.max ? 'max="' + line.max + '"' : '';
-                    html += '</div><input id="packageline' + idx + '" type="number" min="0" ' + maxAttr + ' data-package-id="' + line.id + '">';
-                    html += '<div class="recras-price">' + _this24.formatPrice(line.product.verkoop) + '</div>';
+                    html += '</div><input id="packageline' + idx + '" type="number" min="0" ' + maxAttr + ' data-package-id="' + line.id + '" data-price="' + line.product.verkoop + '">';
+                    html += '<div class="recras-price recrasUnitPrice">' + _this24.formatPrice(line.product.verkoop) + '</div>';
                     html += '</div>';
                 });
                 html += '<div class="priceWithoutDiscount"><div>' + _this24.languageHelper.translate('PRICE_TOTAL') + '</div><div class="priceSubtotal"></div></div>';
@@ -1079,6 +1082,7 @@ var RecrasBooking = function () {
 
                 [].concat(_toConsumableArray(_this24.findElements('[id^="packageline"], .bookingsize'))).forEach(function (el) {
                     el.addEventListener('input', _this24.updateProductAmounts.bind(_this24));
+                    el.addEventListener('input', _this24.updateProductPrice.bind(_this24, el));
                 });
             });
         }
@@ -1217,6 +1221,19 @@ var RecrasBooking = function () {
             this.checkBookingSize(this.selectedPackage);
             this.showTotalPrice();
             this.showStandardAttachments();
+        }
+    }, {
+        key: 'updateProductPrice',
+        value: function updateProductPrice(el) {
+            var priceEl = el.parentNode.querySelector('.recras-price');
+            var amount = parseInt(el.value, 10);
+            if (amount > 0) {
+                priceEl.classList.remove('recrasUnitPrice');
+            } else {
+                priceEl.classList.add('recrasUnitPrice');
+            }
+            amount = Math.max(amount, 1);
+            priceEl.innerHTML = this.formatPrice(amount * el.dataset.price);
         }
     }, {
         key: 'validPaymentMethod',
@@ -1616,7 +1633,7 @@ var RecrasCSSHelper = function () {
     _createClass(RecrasCSSHelper, null, [{
         key: 'cssBooking',
         value: function cssBooking() {
-            return '\n@import url(\'https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.8.0/css/pikaday.min.css\');\n\n.recras-onlinebooking > *:not(:first-child) + * {\n    border-top: 2px solid #dedede; /* Any love for Kirby out there? */\n}\n.recras-input-invalid {\n    border: 1px solid hsl(0, 50%, 50%);\n}\n.booking-error, .minimum-amount {\n    color: hsl(0, 50%, 50%);\n}\n.minimum-amount {\n    padding-left: 0.5em;\n}\n.time-preview {\n    padding-right: 0.5em;\n}\n';
+            return '\n@import url(\'https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.8.0/css/pikaday.min.css\');\n\n.recras-onlinebooking > *:not(:first-child) + * {\n    border-top: 2px solid #dedede; /* Any love for Kirby out there? */\n}\n.recras-input-invalid {\n    border: 1px solid hsl(0, 50%, 50%);\n}\n.booking-error, .minimum-amount {\n    color: hsl(0, 50%, 50%);\n}\n.minimum-amount {\n    padding-left: 0.5em;\n}\n.time-preview {\n    padding-right: 0.5em;\n}\n.recrasUnitPrice {\n    opacity: 0.5;\n}\n';
         }
     }, {
         key: 'cssGlobal',

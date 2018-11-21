@@ -19,6 +19,9 @@ class RecrasCSSHelper {
 .time-preview {
     padding-right: 0.5em;
 }
+.recrasUnitPrice {
+    opacity: 0.5;
+}
 `;
     }
     static cssGlobal() {

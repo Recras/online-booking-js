@@ -940,8 +940,8 @@ class RecrasBooking {
             if (this.shouldShowBookingSize(pack)) {
                 html += `<div>`;
                 html += `<div><label for="bookingsize">${ (pack.weergavenaam || pack.arrangement) }</label></div>`;
-                html += `<input type="number" id="bookingsize" class="bookingsize" min="0">`;
-                html += `<div class="recras-price">${ this.formatPrice(this.bookingSizePrice(pack)) }</div>`;
+                html += `<input type="number" id="bookingsize" class="bookingsize" min="0" data-price="${ this.bookingSizePrice(pack) }">`;
+                html += `<div class="recras-price recrasUnitPrice">${ this.formatPrice(this.bookingSizePrice(pack)) }</div>`;
                 html += `</div>`;
             }
 
@@ -950,8 +950,8 @@ class RecrasBooking {
                 html += '<div><div>';
                 html += `<label for="packageline${ idx }">${ line.beschrijving_templated }</label>`;
                 let maxAttr = line.max ? `max="${ line.max }"` : '';
-                html += `</div><input id="packageline${ idx }" type="number" min="0" ${ maxAttr } data-package-id="${ line.id }">`;
-                html += `<div class="recras-price">${ this.formatPrice(line.product.verkoop) }</div>`;
+                html += `</div><input id="packageline${ idx }" type="number" min="0" ${ maxAttr } data-package-id="${ line.id }" data-price="${ line.product.verkoop }">`;
+                html += `<div class="recras-price recrasUnitPrice">${ this.formatPrice(line.product.verkoop) }</div>`;
                 html += '</div>';
             });
             html += `<div class="priceWithoutDiscount"><div>${ this.languageHelper.translate('PRICE_TOTAL') }</div><div class="priceSubtotal"></div></div>`;
@@ -962,6 +962,7 @@ class RecrasBooking {
 
             [...this.findElements('[id^="packageline"], .bookingsize')].forEach(el => {
                 el.addEventListener('input', this.updateProductAmounts.bind(this));
+                el.addEventListener('input', this.updateProductPrice.bind(this, el));
             });
         });
     }
@@ -1086,6 +1087,18 @@ class RecrasBooking {
         this.checkBookingSize(this.selectedPackage);
         this.showTotalPrice();
         this.showStandardAttachments();
+    }
+
+    updateProductPrice(el) {
+        const priceEl = el.parentNode.querySelector('.recras-price');
+        let amount = parseInt(el.value, 10);
+        if (amount > 0) {
+            priceEl.classList.remove('recrasUnitPrice');
+        } else {
+            priceEl.classList.add('recrasUnitPrice');
+        }
+        amount = Math.max(amount, 1);
+        priceEl.innerHTML = this.formatPrice(amount * el.dataset.price);
     }
 
     validPaymentMethod(pack, method) {

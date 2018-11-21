@@ -407,7 +407,7 @@ var RecrasBooking = function () {
 
                 var packageLineID = product.arrangementsregel_id;
                 var packageLine = this.findProduct(packageLineID);
-                if (product.aantal >= packageLine.aantal_personen) {
+                if (product.aantal >= packageLine.product.minimum_aantal) {
                     continue;
                 }
 
@@ -417,7 +417,7 @@ var RecrasBooking = function () {
                     continue;
                 }
 
-                this.setMinMaxAmountWarning(input.id, packageLine.aantal_personen);
+                this.setMinMaxAmountWarning(input.id, packageLine.product.minimum_aantal);
             }
         }
     }, {

@@ -348,7 +348,7 @@ class RecrasBooking {
 
             let packageLineID = product.arrangementsregel_id;
             let packageLine = this.findProduct(packageLineID);
-            if (product.aantal >= packageLine.aantal_personen) {
+            if (product.aantal >= packageLine.product.minimum_aantal) {
                 continue;
             }
 
@@ -358,7 +358,7 @@ class RecrasBooking {
                 continue;
             }
 
-            this.setMinMaxAmountWarning(input.id, packageLine.aantal_personen);
+            this.setMinMaxAmountWarning(input.id, packageLine.product.minimum_aantal);
         }
     }
 

@@ -627,7 +627,7 @@ class RecrasBooking {
                 let normalisedEnd = this.normaliseDate(new Date(line.eind), packageStart, this.selectedDate);
                 this.findElement(`label[for="packageline${ idx }"]`).insertAdjacentHTML(
                     'afterbegin',
-                    `<span class="time-preview">(${ RecrasDateHelper.timePartOnly(normalisedStart) } – ${ RecrasDateHelper.timePartOnly(normalisedEnd) })</span>`
+                    `<span class="time-preview">${ RecrasDateHelper.timePartOnly(normalisedStart) } – ${ RecrasDateHelper.timePartOnly(normalisedEnd) }</span>`
                 );
             });
         }

@@ -4,6 +4,9 @@ class RecrasCSSHelper {
         return `
 @import url('https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.8.0/css/pikaday.min.css');
 
+.recras-onlinebooking {
+    max-width: 800px;
+}
 .recras-onlinebooking > *:not(:first-child) + * {
     border-top: 2px solid #dedede; /* Any love for Kirby out there? */
 }
@@ -16,11 +19,38 @@ class RecrasCSSHelper {
 .minimum-amount {
     padding-left: 0.5em;
 }
+.recras-datetime {
+    display: -ms-grid;
+    display: grid;
+    -ms-grid-columns: 30% 70%;
+    grid-template-columns: 30% 70%;
+}
+.recras-datetime > * {
+    margin: 0.25em 0;
+}
+.recras-datetime label {
+    -ms-grid-column: 1;
+}
+.recras-datetime input, .recras-datetime select {
+    max-width: 12em;
+    -ms-grid-column: 2;
+}
+.recras-datetime > :nth-child(-n + 2) {
+    -ms-grid-row: 1;
+}
+.recras-datetime > :nth-last-child(-n + 2) {
+    -ms-grid-row: 2;
+}
 .time-preview {
     padding-right: 0.5em;
 }
 .recrasUnitPrice {
     opacity: 0.5;
+}
+.bookPackage {
+    font: inherit;
+    font-weight: bold;
+    padding: 0.5em 2em;
 }
 `;
     }

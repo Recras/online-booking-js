@@ -38,8 +38,6 @@ button {
     border-bottom: 2px solid hsl(147, 25%, 25%);
     border-radius: 0.25em;
     color: #fff;
-    font: inherit;
-    padding: 0.5em 2em;
 }
 button:hover, button:active {
     background: hsl(147, 25%, 67%);

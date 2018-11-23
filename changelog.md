@@ -6,6 +6,7 @@
 * Use minimum amount instead of number of people for "minimum amount" calculation
 * Fix book button being enabled despite "I agree" checkbox not being checked
 * Show line price based on amount selected
+* Fix form validation for standalone contact forms
 
 ## 0.10.3 (2018-11-20)
 * Fix standalone contact forms

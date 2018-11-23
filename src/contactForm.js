@@ -227,7 +227,7 @@ class RecrasContactForm {
             }))
             .then(html => {
                 this.appendHtml(html);
-                this.findElement('.submitForm').addEventListener('click', this.submitForm.bind(this));
+                this.findElement('.recras-contactform').addEventListener('submit', this.submitForm.bind(this));
                 this.loadingIndicatorHide();
             });
     }
@@ -244,7 +244,8 @@ class RecrasContactForm {
         return `<button type="submit" class="submitForm">${ this.languageHelper.translate('BUTTON_SUBMIT_CONTACT_FORM') }</button>`;
     }
 
-    submitForm() {
+    submitForm(e) {
+        e.preventDefault();
         RecrasEventHelper.sendEvent('Recras:ContactForm:Submit');
         let submitButton = this.findElement('.submitForm');
 
@@ -253,7 +254,7 @@ class RecrasContactForm {
 
         submitButton.setAttribute('disabled', 'disabled');
 
-        return this.postJson('contactformulieren/' + this.options.getFormId() + '/opslaan', this.generateJson()).then(json => {
+        this.postJson('contactformulieren/' + this.options.getFormId() + '/opslaan', this.generateJson()).then(json => {
             submitButton.removeAttribute('disabled');
             this.loadingIndicatorHide();
 
@@ -268,5 +269,6 @@ class RecrasContactForm {
                 window.alert(this.languageHelper.translate('CONTACT_FORM_SUBMIT_FAILED'));
             }
         });
+        return false;
     }
 }

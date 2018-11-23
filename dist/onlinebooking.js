@@ -1573,7 +1573,7 @@ var RecrasContactForm = function () {
                 });
             }).then(function (html) {
                 _this34.appendHtml(html);
-                _this34.findElement('.submitForm').addEventListener('click', _this34.submitForm.bind(_this34));
+                _this34.findElement('.recras-contactform').addEventListener('submit', _this34.submitForm.bind(_this34));
                 _this34.loadingIndicatorHide();
             });
         }
@@ -1593,9 +1593,10 @@ var RecrasContactForm = function () {
         }
     }, {
         key: 'submitForm',
-        value: function submitForm() {
+        value: function submitForm(e) {
             var _this35 = this;
 
+            e.preventDefault();
             RecrasEventHelper.sendEvent('Recras:ContactForm:Submit');
             var submitButton = this.findElement('.submitForm');
 
@@ -1604,7 +1605,7 @@ var RecrasContactForm = function () {
 
             submitButton.setAttribute('disabled', 'disabled');
 
-            return this.postJson('contactformulieren/' + this.options.getFormId() + '/opslaan', this.generateJson()).then(function (json) {
+            this.postJson('contactformulieren/' + this.options.getFormId() + '/opslaan', this.generateJson()).then(function (json) {
                 submitButton.removeAttribute('disabled');
                 _this35.loadingIndicatorHide();
 
@@ -1619,6 +1620,7 @@ var RecrasContactForm = function () {
                     window.alert(_this35.languageHelper.translate('CONTACT_FORM_SUBMIT_FAILED'));
                 }
             });
+            return false;
         }
     }]);
 

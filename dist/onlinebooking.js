@@ -587,7 +587,7 @@ var RecrasBooking = function () {
                 if (isNaN(aantal)) {
                     aantal = 0;
                 }
-                total += aantal * product.verkoop;
+                total += aantal * parseFloat(product.verkoop);
             });
             return total;
         }

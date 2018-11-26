@@ -510,7 +510,6 @@ class RecrasBooking {
             'online_boeking_step0_text_post',
             'online_boeking_step1_text_pre',
             'online_boeking_step1_text_post',
-            'online_boeking_step3_text_pre',
             'online_boeking_step3_text_post',
         ];
         let promises = [];

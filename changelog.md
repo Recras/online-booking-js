@@ -8,6 +8,7 @@
 * Show line price based on amount selected
 * Fix form validation for standalone contact forms
 * Fix subtotal when logged in
+* Move generic error message to the bottom (when possible)
 
 ## 0.10.3 (2018-11-20)
 * Fix standalone contact forms

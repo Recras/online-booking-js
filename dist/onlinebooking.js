@@ -468,6 +468,10 @@ var RecrasBooking = function () {
         key: 'error',
         value: function error(msg) {
             this.loadingIndicatorHide();
+            var bookingErrorsEl = this.findElement('#bookingErrors');
+            if (bookingErrorsEl) {
+                bookingErrorsEl.parentNode.appendChild(this.findElement('.latestError'));
+            }
             this.findElement('.latestError').innerHTML = '<strong>' + this.languageHelper.translate('ERR_GENERAL') + '</strong><p>' + msg + '</p>';
         }
     }, {
@@ -1641,7 +1645,7 @@ var RecrasCSSHelper = function () {
     }, {
         key: 'cssGlobal',
         value: function cssGlobal() {
-            return '\n.recras-onlinebooking > *:not(.latestError):not(.recrasLoadingIndicator) {\n    padding: 1em 0;\n}\n.recras-contactform > div, .recras-amountsform > div {\n    align-items: start;\n    display: flex;\n    justify-content: space-between;\n    padding: 0.25em 0;\n}\n.recras-contactform label {\n    display: block;\n}\n.recras-full-width {\n    flex: 0 0 100%;\n}\n\n.recrasLoadingIndicator {\n    animation: recrasSpinner 1.1s infinite linear;\n    border: 0.2em solid rgba(0, 0, 0, 0.2);\n    border-left-color: rgba(0, 0, 0, 0.5);\n    border-radius: 50%;\n    display: inline-block;\n    height: 2em;\n    overflow: hidden;\n    text-indent: -100vw;\n    width: 2em;\n}\n@keyframes recrasSpinner {\n    0% {\n        transform: rotate(0deg);\n    }\n    100% {\n        transform: rotate(360deg);\n    }\n}\nbutton .recrasLoadingIndicator {\n    height: 1em;\n    margin-left: 0.5em;\n    vertical-align: middle;\n    width: 1em;\n}\n';
+            return '\n.latestError {\n    color: hsl(0, 50%, 50%);\n}\n.recras-onlinebooking > *:not(.latestError):not(.recrasLoadingIndicator) {\n    padding: 1em 0;\n}\n.recras-contactform > div, .recras-amountsform > div {\n    align-items: start;\n    display: flex;\n    justify-content: space-between;\n    padding: 0.25em 0;\n}\n.recras-contactform label {\n    display: block;\n}\n.recras-full-width {\n    flex: 0 0 100%;\n}\n\n.recrasLoadingIndicator {\n    animation: recrasSpinner 1.1s infinite linear;\n    border: 0.2em solid rgba(0, 0, 0, 0.2);\n    border-left-color: rgba(0, 0, 0, 0.5);\n    border-radius: 50%;\n    display: inline-block;\n    height: 2em;\n    overflow: hidden;\n    text-indent: -100vw;\n    width: 2em;\n}\n@keyframes recrasSpinner {\n    0% {\n        transform: rotate(0deg);\n    }\n    100% {\n        transform: rotate(360deg);\n    }\n}\nbutton .recrasLoadingIndicator {\n    height: 1em;\n    margin-left: 0.5em;\n    vertical-align: middle;\n    width: 1em;\n}\n';
         }
     }, {
         key: 'loadCSS',

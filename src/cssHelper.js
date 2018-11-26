@@ -56,6 +56,9 @@ class RecrasCSSHelper {
     }
     static cssGlobal() {
         return `
+.latestError {
+    color: hsl(0, 50%, 50%);
+}
 .recras-onlinebooking > *:not(.latestError):not(.recrasLoadingIndicator) {
     padding: 1em 0;
 }

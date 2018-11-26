@@ -404,6 +404,10 @@ class RecrasBooking {
 
     error(msg) {
         this.loadingIndicatorHide();
+        let bookingErrorsEl = this.findElement('#bookingErrors');
+        if (bookingErrorsEl) {
+            bookingErrorsEl.parentNode.appendChild(this.findElement('.latestError'));
+        }
         this.findElement('.latestError').innerHTML = `<strong>${ this.languageHelper.translate('ERR_GENERAL') }</strong><p>${ msg }</p>`;
     }
 

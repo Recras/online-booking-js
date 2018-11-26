@@ -1,6 +1,6 @@
 # Changelog
 
-## master
+## 0.10.4 (2018-11-26)
 * Show "amount is more than allowed for online booking" message directly underneath the corresponding input instead of at the end of the form.
 * Add `recras-input-invalid` class to invalid amount inputs
 * Use minimum amount instead of number of people for "minimum amount" calculation

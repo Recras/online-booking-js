@@ -832,6 +832,7 @@ class RecrasBooking {
                 RecrasEventHelper.sendEvent('Recras:Booking:ContactFormShown');
 
                 [...this.findElements('[id^="contactformulier-"]')].forEach(el => {
+                    el.addEventListener('input', this.maybeDisableBookButton.bind(this));
                     el.addEventListener('change', this.maybeDisableBookButton.bind(this));
                 });
         });

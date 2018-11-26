@@ -943,6 +943,7 @@ var RecrasBooking = function () {
                 RecrasEventHelper.sendEvent('Recras:Booking:ContactFormShown');
 
                 [].concat(_toConsumableArray(_this21.findElements('[id^="contactformulier-"]'))).forEach(function (el) {
+                    el.addEventListener('input', _this21.maybeDisableBookButton.bind(_this21));
                     el.addEventListener('change', _this21.maybeDisableBookButton.bind(_this21));
                 });
             });

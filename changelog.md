@@ -4,6 +4,7 @@
 * Don't fetch unused booking text
 * Show "choice - multiple" & "newsletter" fields as checkboxes
 * Get ready for "website" field
+* Improve autocomplete
 
 ## 0.10.4 (2018-11-26)
 * Show "amount is more than allowed for online booking" message directly underneath the corresponding input instead of at the end of the form.

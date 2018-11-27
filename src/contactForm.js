@@ -31,14 +31,13 @@ class RecrasContactForm {
         };
         // https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#inappropriate-for-the-control
         this.AUTOCOMPLETE_OPTIONS = {
-            'contactpersoon.voornaam': 'given-name',
-            'contactpersoon.achternaam': 'family-name',
-            'contact.landcode': 'country',
             'contact.naam': 'organization',
             'contact.website': 'url',
+            'contactpersoon.achternaam': 'family-name',
             'contactpersoon.adres': 'address-line1',
-            'contactpersoon.postcode': 'postal-code',
             'contactpersoon.plaats': 'address-level2',
+            'contactpersoon.postcode': 'postal-code',
+            'contactpersoon.voornaam': 'given-name',
         };
     }
 
@@ -221,8 +220,10 @@ class RecrasContactForm {
             case 'veel_tekst':
                 return label + `<textarea ${ fixedAttributes }></textarea>`;
             case 'contactpersoon.telefoon1':
+            case 'contactpersoon.telefoon2':
                 return label + `<input type="tel" ${ fixedAttributes } autocomplete="tel">`;
             case 'contactpersoon.email1':
+            case 'contactpersoon.email2':
                 return label + `<input type="email" ${ fixedAttributes } autocomplete="email">`;
             case 'contactpersoon.nieuwsbrieven':
                 classes = ['checkboxGroup'];
@@ -237,7 +238,7 @@ class RecrasContactForm {
                 html += '</div>';
                 return label + html;
             case 'contact.landcode':
-                html = `<select ${ fixedAttributes }>`;
+                html = `<select ${ fixedAttributes } autocomplete="country">`;
                 Object.keys(this.countries).forEach(code => {
                     let selectedText = code.toUpperCase() === this.languageHelper.getCountry() ? ' selected' : '';
                     html += `<option value="${ code }"${ selectedText }>${ this.countries[code] }`;

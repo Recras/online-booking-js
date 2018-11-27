@@ -19,7 +19,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /*******************************
 *  Recras integration library  *
-*  v 0.10.4                    *
+*  v 0.11.0                    *
 *******************************/
 
 var RecrasBooking = function () {

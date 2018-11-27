@@ -577,7 +577,7 @@ class RecrasBooking {
         if (!this.findElement('.recras-onlinebooking-time').value) {
             bookingDisabledReasons.push('BOOKING_DISABLED_INVALID_TIME');
         }
-        if (!this.findElement('.recras-contactform').checkValidity()) {
+        if (!this.findElement('.recras-contactform').checkValidity() || !this.contactForm.checkRequiredCheckboxes()) {
             bookingDisabledReasons.push('BOOKING_DISABLED_CONTACT_FORM_INVALID');
         }
 
@@ -834,7 +834,7 @@ class RecrasBooking {
                 this.showBookButton();
                 RecrasEventHelper.sendEvent('Recras:Booking:ContactFormShown');
 
-                [...this.findElements('[id^="contactformulier-"]')].forEach(el => {
+                [...this.findElements('[name^="contactformulier"]')].forEach(el => {
                     el.addEventListener('input', this.maybeDisableBookButton.bind(this));
                     el.addEventListener('change', this.maybeDisableBookButton.bind(this));
                 });
@@ -1000,13 +1000,18 @@ class RecrasBooking {
     }
 
     submitBooking() {
-        RecrasEventHelper.sendEvent('Recras:Booking:BuyInProgress');
         let productCounts = this.productCounts().map(line => line.aantal);
         let productSum = productCounts.reduce((a, b) => a + b, 0);
         if (this.bookingSize() === 0 && productSum === 0) {
             window.alert(this.languageHelper.translate('NO_PRODUCTS'));
             return false;
         }
+        let status = this.contactForm.checkRequiredCheckboxes();
+        if (!status) {
+            return false;
+        }
+
+        RecrasEventHelper.sendEvent('Recras:Booking:BuyInProgress');
 
         let paymentMethod = this.paymentMethods(this.selectedPackage)[0];
         let paymentMethodEl = this.findElement('[name="paymentMethod"]:checked');

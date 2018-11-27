@@ -41,6 +41,22 @@ class RecrasContactForm {
         };
     }
 
+    checkRequiredCheckboxes() {
+        this.removeWarnings();
+        let isOkay = true;
+        [...this.findElements('.checkboxGroupRequired')].forEach(group => {
+            let checked = group.querySelectorAll('input:checked');
+            if (checked.length === 0) {
+                group.parentNode.querySelector('label').insertAdjacentHTML('beforeend', `<div class="recrasError">${ this.languageHelper.translate('CONTACT_FORM_CHECKBOX_REQUIRED') }</div>`);
+                isOkay = false;
+            }
+            [...group.querySelectorAll('input')].forEach(el => {
+                el.addEventListener('change', this.checkRequiredCheckboxes.bind(this));
+            })
+        });
+        return isOkay;
+    }
+
     appendHtml(msg) {
         this.element.insertAdjacentHTML('beforeend', msg);
     }
@@ -51,6 +67,10 @@ class RecrasContactForm {
 
     findElement(querystring) {
         return this.element.querySelector(querystring);
+    }
+
+    findElements(querystring) {
+        return this.element.querySelectorAll(querystring);
     }
 
     generateForm(extraOptions = {}) {
@@ -83,9 +103,17 @@ class RecrasContactForm {
         let formEl = this.options.getElement().querySelector('.recras-contactform');
         let elements = formEl.querySelectorAll('[id^="contactformulier-"], input[type="radio"]:checked');
         let contactForm = {};
+
         [...elements].forEach(field => {
             contactForm[field.dataset.identifier] = field.value;
         });
+        [...formEl.querySelectorAll('input[type="checkbox"]:checked')].forEach(field => {
+            if (contactForm[field.dataset.identifier] === undefined) {
+                contactForm[field.dataset.identifier] = [];
+            }
+            contactForm[field.dataset.identifier].push(field.value);
+        });
+
         return contactForm;
     }
 
@@ -146,6 +174,12 @@ class RecrasContactForm {
         return `<div><label for="number-of-vouchers">${ this.languageHelper.translate('VOUCHER_QUANTITY') }</label><input type="number" id="number-of-vouchers" class="number-of-vouchers" min="1" value="1" required></div>`;
     }
 
+    removeWarnings() {
+        [...this.findElements('.recrasError')].forEach(el => {
+            el.parentNode.removeChild(el);
+        });
+    }
+
     showField(field, idx) {
         if (field.soort_invoer === 'header') {
             return `<h3>${ field.naam }</h3>`;
@@ -153,6 +187,7 @@ class RecrasContactForm {
 
         let label = this.showLabel(field, idx);
         let attrRequired = field.verplicht ? 'required' : '';
+        let classes;
         let html;
         let fixedAttributes = `id="contactformulier-${ idx }" name="contactformulier${ idx }" ${ attrRequired } data-identifier="${ field.field_identifier }"`;
         switch (field.soort_invoer) {
@@ -164,11 +199,16 @@ class RecrasContactForm {
                 html += '</select>';
                 return label + html;
             case 'keuze':
-                html = `<select ${ fixedAttributes } multiple>`;
+                classes = ['checkboxGroup'];
+                if (field.verplicht) {
+                    classes.push('checkboxGroupRequired');
+                }
+
+                html = `<div class="${ classes.join(' ') }">`;
                 field.mogelijke_keuzes.forEach(choice => {
-                    html += `<option value="${ choice }">${ choice }`;
+                    html += `<label><input type="checkbox" name="contactformulier${ idx }" value="${ choice }" data-identifier="${ field.field_identifier }">${ choice }</label>`;
                 });
-                html += '</select>';
+                html += '</div>';
                 return label + html;
             case 'keuze_enkel':
                 html = `<div class="radioGroup">`;
@@ -184,11 +224,16 @@ class RecrasContactForm {
             case 'contactpersoon.email1':
                 return label + `<input type="email" ${ fixedAttributes } autocomplete="email">`;
             case 'contactpersoon.nieuwsbrieven':
-                html = `<select ${ fixedAttributes } multiple>`;
+                classes = ['checkboxGroup'];
+                if (field.verplicht) {
+                    classes.push('checkboxGroupRequired');
+                }
+
+                html = `<div class="${ classes.join(' ') }">`;
                 Object.keys(field.newsletter_options).forEach(key => {
-                    html += `<option value="${ key }">${ field.newsletter_options[key] }`;
+                    html += `<label><input type="checkbox" name="contactformulier${ idx }" value="${ key }" data-identifier="${ field.field_identifier }">${ field.newsletter_options[key] }</label>`;
                 });
-                html += '</select>';
+                html += '</div>';
                 return label + html;
             case 'contact.landcode':
                 html = `<select ${ fixedAttributes }>`;
@@ -198,13 +243,13 @@ class RecrasContactForm {
                 });
                 html += '</select>';
                 return label + html;
-            case 'boeking.datum': //TODO: date picker
+            case 'boeking.datum': //TODO: add optional fallback
                 const today = RecrasDateHelper.toString(new Date());
-                return label + `<input type="date" ${ fixedAttributes } min="${ today }">`;
+                return label + `<input type="date" ${ fixedAttributes } min="${ today }" pattern="[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])">`;
             case 'boeking.groepsgrootte':
                 return label + `<input type="number" ${ fixedAttributes } min="1">`;
-            case 'boeking.starttijd': //TODO: time picker
-                return label + `<input type="time" ${ fixedAttributes }>`;
+            case 'boeking.starttijd': //TODO: add optional fallback
+                return label + `<input type="time" ${ fixedAttributes } pattern="(0[0-9]|1[0-9]|2[0-3])(:[0-5][0-9])">`;
             case 'boeking.arrangement':
                 html = `<select ${ fixedAttributes }>`;
                 html += `<option value="">`;
@@ -248,6 +293,11 @@ class RecrasContactForm {
         e.preventDefault();
         RecrasEventHelper.sendEvent('Recras:ContactForm:Submit');
         let submitButton = this.findElement('.submitForm');
+
+        let status = this.checkRequiredCheckboxes();
+        if (!status) {
+            return false;
+        }
 
         this.loadingIndicatorHide();
         this.loadingIndicatorShow(submitButton);

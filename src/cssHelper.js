@@ -47,7 +47,7 @@ class RecrasCSSHelper {
 .recrasUnitPrice {
     opacity: 0.5;
 }
-.bookPackage {
+.bookPackage, .submitForm, .buyTemplate {
     font: inherit;
     font-weight: bold;
     padding: 0.5em 2em;
@@ -56,7 +56,7 @@ class RecrasCSSHelper {
     }
     static cssGlobal() {
         return `
-.latestError {
+.latestError, .recrasError {
     color: hsl(0, 50%, 50%);
 }
 .recras-onlinebooking > *:not(.latestError):not(.recrasLoadingIndicator) {

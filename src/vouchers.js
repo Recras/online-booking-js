@@ -41,6 +41,11 @@ class RecrasVoucher {
     }
 
     buyTemplate() {
+        let status = this.contactForm.checkRequiredCheckboxes();
+        if (!status) {
+            return false;
+        }
+
         RecrasEventHelper.sendEvent('Recras:Voucher:BuyInProgress');
         this.findElement('.buyTemplate').setAttribute('disabled', 'disabled');
 
@@ -128,7 +133,7 @@ class RecrasVoucher {
         }
 
         let shouldDisable = false;
-        if (!this.findElement('.recras-contactform').checkValidity()) {
+        if (!this.findElement('.recras-contactform').checkValidity() || !this.contactForm.checkRequiredCheckboxes()) {
             shouldDisable = true;
         }
 
@@ -162,7 +167,7 @@ class RecrasVoucher {
                 this.appendHtml(html);
                 this.showBuyButton();
 
-                [...this.findElements('[id^="contactformulier-"]')].forEach(el => {
+                [...this.findElements('[name^="contactformulier"]')].forEach(el => {
                     el.addEventListener('change', this.maybeDisableBuyButton.bind(this));
                 });
         });

@@ -35,6 +35,7 @@ class RecrasContactForm {
             'contactpersoon.achternaam': 'family-name',
             'contact.landcode': 'country',
             'contact.naam': 'organization',
+            'contact.website': 'url',
             'contactpersoon.adres': 'address-line1',
             'contactpersoon.postcode': 'postal-code',
             'contactpersoon.plaats': 'address-level2',
@@ -258,6 +259,8 @@ class RecrasContactForm {
                 });
                 html += '</select>';
                 return label + html;
+            case 'contact.website':
+                //TODO: type=url ?
             default:
                 let autocomplete = this.AUTOCOMPLETE_OPTIONS[field.soort_invoer] ? this.AUTOCOMPLETE_OPTIONS[field.soort_invoer] : '';
                 return label + `<input type="text" ${ fixedAttributes } autocomplete="${ autocomplete }">`;

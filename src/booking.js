@@ -218,20 +218,24 @@ class RecrasBooking {
             if (line.aantal > 0) {
                 let packageLineID = line.arrangementsregel_id;
                 let product = this.findProduct(packageLineID).product;
-                product.vereist_product.forEach(vp => {
-                    if (!this.dependencySatisfied(line.aantal, vp)) {
-                        this.requiresProduct = true;
-                        let requiredAmount = this.requiredAmount(line.aantal, vp);
-                        let requiredProductName = this.getProductByID(vp.vereist_product_id).weergavenaam;
-                        let message = this.languageHelper.translate('PRODUCT_REQUIRED', {
-                            NUM: line.aantal,
-                            PRODUCT: product.weergavenaam,
-                            REQUIRED_AMOUNT: requiredAmount,
-                            REQUIRED_PRODUCT: requiredProductName,
-                        });
-                        this.findElement('.recras-amountsform').insertAdjacentHTML('beforeend', `<span class="recras-product-dependency">${ message }</span>`);
-                    }
-                });
+                if (!product.vereist_product) {
+                    console.warn('You are logged in to this particular Recras. Because of API differences between logged-in and logged-out state, required products do not work as expected.');
+                } else {
+                    product.vereist_product.forEach(vp => {
+                        if (!this.dependencySatisfied(line.aantal, vp)) {
+                            this.requiresProduct = true;
+                            let requiredAmount = this.requiredAmount(line.aantal, vp);
+                            let requiredProductName = this.getProductByID(vp.vereist_product_id).weergavenaam;
+                            let message = this.languageHelper.translate('PRODUCT_REQUIRED', {
+                                NUM: line.aantal,
+                                PRODUCT: product.weergavenaam,
+                                REQUIRED_AMOUNT: requiredAmount,
+                                REQUIRED_PRODUCT: requiredProductName,
+                            });
+                            this.findElement('.recras-amountsform').insertAdjacentHTML('beforeend', `<span class="recras-product-dependency">${ message }</span>`);
+                        }
+                    });
+                }
             }
         });
 

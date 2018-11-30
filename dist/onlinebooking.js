@@ -1115,6 +1115,9 @@ var RecrasBooking = function () {
             var _this25 = this;
 
             var attachments = {};
+            if (!this.selectedPackage.onlineboeking_standaardbijlagen_meesturen) {
+                return attachments;
+            }
             this.productCounts().forEach(function (line) {
                 if (line.aantal > 0) {
                     var product = _this25.findProduct(line.arrangementsregel_id).product;

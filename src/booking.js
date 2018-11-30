@@ -989,6 +989,9 @@ class RecrasBooking {
 
     standardAttachments() {
         let attachments = {};
+        if (!this.selectedPackage.onlineboeking_standaardbijlagen_meesturen) {
+            return attachments;
+        }
         this.productCounts().forEach(line => {
             if (line.aantal > 0) {
                 let product = this.findProduct(line.arrangementsregel_id).product;

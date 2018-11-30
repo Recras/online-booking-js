@@ -2,6 +2,7 @@
 
 ## master
 * Add `autoScroll` option to online bookings
+* Fixed attachments being shown even when "Send standard attachments" was disabled for a package
 
 ## 0.11.0 (2018-11-27)
 * Don't fetch unused booking text

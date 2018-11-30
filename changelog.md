@@ -1,6 +1,6 @@
 # Changelog
 
-## master
+## 0.12.0 (2018-11-30)
 * Add `autoScroll` option to online bookings
 * Fixed attachments being shown even when "Send standard attachments" was disabled for a package
 * Show console warning when you are logged in to the Recras being used

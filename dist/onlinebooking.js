@@ -223,13 +223,15 @@ var RecrasBooking = function () {
             this.selectedPackage = selectedPackage[0];
             this.showProducts(this.selectedPackage).then(function () {
                 RecrasEventHelper.sendEvent('Recras:Booking:ProductsShown');
-                var scrollOptions = {
-                    behavior: 'smooth'
-                };
-                if (!('scrollBehavior' in document.documentElement.style)) {
-                    scrollOptions = true;
+                if (_this5.options.getAutoScroll() === true) {
+                    var scrollOptions = {
+                        behavior: 'smooth'
+                    };
+                    if (!('scrollBehavior' in document.documentElement.style)) {
+                        scrollOptions = true;
+                    }
+                    _this5.findElement('.recras-amountsform').scrollIntoView(scrollOptions);
                 }
-                _this5.findElement('.recras-amountsform').scrollIntoView(scrollOptions);
 
                 _this5.checkDependencies();
                 _this5.loadingIndicatorShow(_this5.findElement('.recras-amountsform'));
@@ -2202,6 +2204,11 @@ var RecrasOptions = function () {
         key: 'getApiBase',
         value: function getApiBase() {
             return this.getHostname() + '/api2/';
+        }
+    }, {
+        key: 'getAutoScroll',
+        value: function getAutoScroll() {
+            return this.options.autoScroll !== undefined ? this.options.autoScroll : true;
         }
     }, {
         key: 'getElement',

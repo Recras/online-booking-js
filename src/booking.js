@@ -173,13 +173,15 @@ class RecrasBooking {
         this.selectedPackage = selectedPackage[0];
         this.showProducts(this.selectedPackage).then(() => {
             RecrasEventHelper.sendEvent('Recras:Booking:ProductsShown');
-            let scrollOptions = {
-                behavior: 'smooth',
-            };
-            if (!('scrollBehavior' in document.documentElement.style)) {
-                scrollOptions = true;
+            if (this.options.getAutoScroll() === true) {
+                let scrollOptions = {
+                    behavior: 'smooth',
+                };
+                if (!('scrollBehavior' in document.documentElement.style)) {
+                    scrollOptions = true;
+                }
+                this.findElement('.recras-amountsform').scrollIntoView(scrollOptions);
             }
-            this.findElement('.recras-amountsform').scrollIntoView(scrollOptions);
 
             this.checkDependencies();
             this.loadingIndicatorShow(this.findElement('.recras-amountsform'));

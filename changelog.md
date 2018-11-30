@@ -1,5 +1,8 @@
 # Changelog
 
+## master
+* Add `autoScroll` option to online bookings
+
 ## 0.11.0 (2018-11-27)
 * Don't fetch unused booking text
 * Show "choice - multiple" & "newsletter" fields as checkboxes

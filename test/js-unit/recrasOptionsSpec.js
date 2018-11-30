@@ -37,4 +37,32 @@ describe('RecrasOptions', () => {
             }).toThrow(new Error('Optie "recras_hostname" is ongeldig.'));
         });
     });
+
+    describe('autoScroll', () => {
+        it('is true if omitted', () => {
+            let options = new RecrasOptions({
+                element: document.createElement('div'),
+                recras_hostname: 'demo.recras.nl',
+            });
+            expect(options.getAutoScroll()).toBe(true);
+        });
+
+        it('is true if specified', () => {
+            let options = new RecrasOptions({
+                autoScroll: true,
+                element: document.createElement('div'),
+                recras_hostname: 'demo.recras.nl',
+            });
+            expect(options.getAutoScroll()).toBe(true);
+        });
+
+        it('is false if specified', () => {
+            let options = new RecrasOptions({
+                autoScroll: false,
+                element: document.createElement('div'),
+                recras_hostname: 'demo.recras.nl',
+            });
+            expect(options.getAutoScroll()).toBe(false);
+        });
+    });
 });

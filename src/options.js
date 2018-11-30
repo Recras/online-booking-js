@@ -10,6 +10,9 @@ class RecrasOptions {
     getApiBase() {
         return this.getHostname() + '/api2/';
     }
+    getAutoScroll() {
+        return (this.options.autoScroll !== undefined ? this.options.autoScroll : true);
+    }
     getElement() {
         return this.options.element;
     }

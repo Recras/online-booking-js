@@ -1,5 +1,8 @@
 class RecrasOptions {
-    static hostnameDebug = '172.16.0.2';
+    static hostnamesDebug = [
+        '172.16.0.2', // Local development
+        'nginx', // Docker Selenium tests
+    ];
 
     constructor(options) {
         this.languageHelper = new RecrasLanguageHelper();
@@ -40,7 +43,10 @@ class RecrasOptions {
     }
 
     setOptions(options) {
-        let protocol = (options.recras_hostname === RecrasOptions.hostnameDebug) ? 'http' : 'https';
+        let protocol = 'https';
+        if (RecrasOptions.hostnamesDebug.includes(options.recras_hostname)) {
+            protocol = 'http';
+        }
         options.hostname = protocol + '://' + options.recras_hostname;
 
         return options;
@@ -59,7 +65,7 @@ class RecrasOptions {
         if (!options.recras_hostname) {
             throw new Error(this.languageHelper.translate('ERR_NO_HOSTNAME'));
         }
-        if (!hostnameRegex.test(options.recras_hostname) && options.recras_hostname !== RecrasOptions.hostnameDebug) {
+        if (!hostnameRegex.test(options.recras_hostname) && RecrasOptions.hostnamesDebug.includes(options.recras_hostname)) {
             throw new Error(this.languageHelper.translate('ERR_INVALID_HOSTNAME'));
         }
         if (options.redirect_url) {

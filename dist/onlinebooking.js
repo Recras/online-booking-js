@@ -2260,7 +2260,10 @@ var RecrasOptions = function () {
     }, {
         key: 'setOptions',
         value: function setOptions(options) {
-            var protocol = options.recras_hostname === RecrasOptions.hostnameDebug ? 'http' : 'https';
+            var protocol = 'https';
+            if (RecrasOptions.hostnamesDebug.includes(options.recras_hostname)) {
+                protocol = 'http';
+            }
             options.hostname = protocol + '://' + options.recras_hostname;
 
             return options;
@@ -2280,7 +2283,7 @@ var RecrasOptions = function () {
             if (!options.recras_hostname) {
                 throw new Error(this.languageHelper.translate('ERR_NO_HOSTNAME'));
             }
-            if (!hostnameRegex.test(options.recras_hostname) && options.recras_hostname !== RecrasOptions.hostnameDebug) {
+            if (!hostnameRegex.test(options.recras_hostname) && RecrasOptions.hostnamesDebug.includes(options.recras_hostname)) {
                 throw new Error(this.languageHelper.translate('ERR_INVALID_HOSTNAME'));
             }
             if (options.redirect_url) {
@@ -2294,7 +2297,8 @@ var RecrasOptions = function () {
     return RecrasOptions;
 }();
 
-RecrasOptions.hostnameDebug = '172.16.0.2';
+RecrasOptions.hostnamesDebug = ['172.16.0.2', // Local development
+'nginx'];
 
 var RecrasVoucher = function () {
     function RecrasVoucher() {

@@ -10,6 +10,9 @@ class RecrasOptions {
         this.options = this.setOptions(options);
     }
 
+    getAnalyticsObject() {
+        return this.options.analytics;
+    }
     getApiBase() {
         return this.getHostname() + '/api2/';
     }

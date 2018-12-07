@@ -1,5 +1,5 @@
 class RecrasEventHelper {
-    static sendEvent(name) {
+    static sendEvent(name, analytics) {
         let event;
 
         try {
@@ -9,6 +9,11 @@ class RecrasEventHelper {
             event = document.createEvent('Event');
             event.initEvent(name, true, true);
         }
+
+        if (analytics && typeof analytics === 'function') {
+            analytics('send', name);
+        }
+
         return document.dispatchEvent(event);
     }
 }

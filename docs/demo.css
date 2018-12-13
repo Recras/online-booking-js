@@ -85,6 +85,10 @@ hr {
     height: 2px;
 }
 
+.recras-onlinebooking > *:not(.recras-active):not(.recras-completed) {
+    display: none; /* Hide sections we haven't gotten to yet */
+}
+
 @media (max-width: 640px) {
     .recras-amountsform > div {
         flex-wrap: wrap;

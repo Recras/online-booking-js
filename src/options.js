@@ -31,6 +31,9 @@ class RecrasOptions {
     getPackageId() {
         return this.options.package_id;
     }
+    getPreviewTimes() {
+        return (this.options.previewTimes !== undefined ? this.options.previewTimes : true);
+    }
     getRedirectUrl() {
         return this.options.redirect_url;
     }

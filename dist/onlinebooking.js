@@ -1041,7 +1041,9 @@ var RecrasBooking = function () {
                 _this23.findElement('.recras-onlinebooking-time').addEventListener('change', function () {
                     RecrasEventHelper.sendEvent('Recras:Booking:TimeSelected');
                     _this23.selectedTime = _this23.findElement('.recras-onlinebooking-time').value;
-                    _this23.previewTimes();
+                    if (_this23.options.getPreviewTimes() === true) {
+                        _this23.previewTimes();
+                    }
                     _this23.maybeDisableBookButton();
                 });
             });
@@ -2273,6 +2275,11 @@ var RecrasOptions = function () {
         key: 'getPackageId',
         value: function getPackageId() {
             return this.options.package_id;
+        }
+    }, {
+        key: 'getPreviewTimes',
+        value: function getPreviewTimes() {
+            return this.options.previewTimes !== undefined ? this.options.previewTimes : true;
         }
     }, {
         key: 'getRedirectUrl',

@@ -925,7 +925,9 @@ class RecrasBooking {
                 this.findElement('.recras-onlinebooking-time').addEventListener('change', () => {
                     RecrasEventHelper.sendEvent('Recras:Booking:TimeSelected');
                     this.selectedTime = this.findElement('.recras-onlinebooking-time').value;
-                    this.previewTimes();
+                    if (this.options.getPreviewTimes() === true) {
+                        this.previewTimes();
+                    }
                     this.maybeDisableBookButton();
                 });
             });

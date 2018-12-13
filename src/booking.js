@@ -294,12 +294,12 @@ class RecrasBooking {
     checkMaximumAmounts() {
         const maxPerLine = this.selectedPackage.maximum_aantal_personen_online;
         if (maxPerLine === null) {
-            return;
+            return Promise.resolve(null);
         }
 
         let showWarning = false;
         let selectedProducts = this.productCounts();
-        this.languageHelper.filterTags(this.texts.maximum_aantal_online_boeking_overschreden, this.selectedPackage ? this.selectedPackage.id : null).then(msg => {
+        return this.languageHelper.filterTags(this.texts.maximum_aantal_online_boeking_overschreden, this.selectedPackage ? this.selectedPackage.id : null).then(msg => {
             selectedProducts.forEach(p => {
                 if (p.aantal > maxPerLine && !showWarning) {
                     let input = this.findElement(`[data-package-id="${ p.arrangementsregel_id }"]`);
@@ -1079,32 +1079,45 @@ class RecrasBooking {
 
     updateProductAmounts() {
         this.loadingIndicatorHide();
-        this.loadingIndicatorShow(this.findElement('label[for="recras-onlinebooking-date"]'));
-        let startDate = new Date();
-        let endDate = new Date();
-        endDate.setMonth(endDate.getMonth() + 3);
-
         this.availableDays = [];
-        this.getAvailableDays(this.selectedPackage.id, startDate, endDate)
-            .then(availableDays => {
-                this.loadingIndicatorHide();
-
-                let datePickerEl = this.findElement('.recras-onlinebooking-date');
-                if (datePickerEl.value && availableDays.indexOf(datePickerEl.value) === -1) {
-                    datePickerEl.value = '';
-                    this.clearTimes();
-                } else {
-                    datePickerEl.removeAttribute('disabled');
-                }
-            });
 
         this.removeWarnings();
         this.checkDependencies();
         this.checkMinimumAmounts();
-        this.checkMaximumAmounts();
+        const maxPromise = this.checkMaximumAmounts();
         this.checkBookingSize(this.selectedPackage);
         this.showTotalPrice();
         this.showStandardAttachments();
+
+        let datePickerEl = this.findElement('.recras-onlinebooking-date');
+
+        var thisClass = this;
+        maxPromise.then(function() {
+            let amountErrors = thisClass.findElements(
+                '.minimum-amount, .maximum-amount, .recras-product-dependency'
+            );
+            if (amountErrors.length > 0) {
+                datePickerEl.setAttribute('disabled', 'disabled');
+                return;
+            }
+
+            thisClass.loadingIndicatorShow(thisClass.findElement('label[for="recras-onlinebooking-date"]'));
+            let startDate = new Date();
+            let endDate = new Date();
+            endDate.setMonth(endDate.getMonth() + 3);
+
+            thisClass.getAvailableDays(thisClass.selectedPackage.id, startDate, endDate)
+                .then(availableDays => {
+                    thisClass.loadingIndicatorHide();
+
+                    if (datePickerEl.value && availableDays.indexOf(datePickerEl.value) === -1) {
+                        datePickerEl.value = '';
+                        thisClass.clearTimes();
+                    } else {
+                        datePickerEl.removeAttribute('disabled');
+                    }
+                });
+        });
     }
 
     updateProductPrice(el) {

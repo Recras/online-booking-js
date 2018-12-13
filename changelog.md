@@ -1,5 +1,8 @@
 # Changelog
 
+## master
+* Disable date selection if there are min/max amount or dependency errors
+
 ## 0.12.0 (2018-11-30)
 * Add `autoScroll` option to online bookings
 * Fixed attachments being shown even when "Send standard attachments" was disabled for a package

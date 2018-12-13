@@ -1139,6 +1139,10 @@ class RecrasBooking {
     updateProductPrice(el) {
         const priceEl = el.parentNode.querySelector('.recras-price');
         let amount = parseInt(el.value, 10);
+        if (isNaN(amount)) {
+            amount = 0;
+        }
+
         if (amount > 0) {
             priceEl.classList.remove('recrasUnitPrice');
         } else {

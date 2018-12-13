@@ -2,6 +2,7 @@
 
 ## master
 * Disable date selection if there are min/max amount or dependency errors
+* Fix "NaN" price when booking size input field was cleared
 
 ## 0.12.0 (2018-11-30)
 * Add `autoScroll` option to online bookings

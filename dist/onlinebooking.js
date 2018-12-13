@@ -1274,6 +1274,10 @@ var RecrasBooking = function () {
         value: function updateProductPrice(el) {
             var priceEl = el.parentNode.querySelector('.recras-price');
             var amount = parseInt(el.value, 10);
+            if (isNaN(amount)) {
+                amount = 0;
+            }
+
             if (amount > 0) {
                 priceEl.classList.remove('recrasUnitPrice');
             } else {

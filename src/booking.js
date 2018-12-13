@@ -144,11 +144,27 @@ class RecrasBooking {
         return minSize;
     }
 
+    amountFromPersons(product, persons) {
+        return persons;
+
+        //TODO: this doesn't work yet because public product API does not send:
+        // aantalbepaling, aantal, per_x_personen_afronding, per_x_personen
+        if (product.aantalbepaling === 'vast') {
+            return product.aantal;
+        }
+
+        let fn = product.per_x_personen_afronding === 'beneden' ? Math.floor : Math.ceil;
+        return product.aantal * fn(persons / product.per_x_personen);
+    }
+
     bookingSizePrice(pack) {
+        let nrOfPersons = Math.max(pack.aantal_personen, 1);
+        let price = 0;
         let lines = this.bookingSizeLines(pack);
-        return lines.reduce((acc, line) => {
-            return parseFloat(line.product.verkoop) + acc;
-        }, 0);
+        lines.forEach(line => {
+            price += Math.max(this.amountFromPersons(line.product, nrOfPersons), line.product.minimum_aantal) * parseFloat(line.product.verkoop);
+        });
+        return price / nrOfPersons;
     }
 
     changePackage(packageID) {

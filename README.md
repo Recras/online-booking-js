@@ -107,4 +107,5 @@ The library sends out a few custom events when certain things change:
 * `Recras:Voucher:BuyInProgress` - when the voucher form is submitted
 * `Recras:Voucher:RedirectToPayment` - when the user is redirected to the payment provider
 
-You can use these events for custom actions, such as analytics.
+You can use these events for custom actions, such as analytics. For use in code, please refer to 
+the constants in [src/eventHelper.js](src/eventHelper.js).

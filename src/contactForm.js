@@ -295,7 +295,7 @@ class RecrasContactForm {
 
     submitForm(e) {
         e.preventDefault();
-        RecrasEventHelper.sendEvent('Recras:ContactForm:Submit');
+        RecrasEventHelper.sendEvent(RecrasEventHelper.EVENT_CONTACT_FORM_SUBMIT);
         let submitButton = this.findElement('.submitForm');
 
         let status = this.checkRequiredCheckboxes();

@@ -46,7 +46,7 @@ class RecrasVoucher {
             return false;
         }
 
-        RecrasEventHelper.sendEvent('Recras:Voucher:BuyInProgress');
+        RecrasEventHelper.sendEvent(RecrasEventHelper.EVENT_VOUCHER_VOUCHER_SUBMITTED);
         this.findElement('.buyTemplate').setAttribute('disabled', 'disabled');
 
         let payload = {
@@ -62,7 +62,7 @@ class RecrasVoucher {
                 this.findElement('.buyTemplate').removeAttribute('disabled');
 
                 if (json.payment_url) {
-                    RecrasEventHelper.sendEvent('Recras:Voucher:RedirectToPayment');
+                    RecrasEventHelper.sendEvent(RecrasEventHelper.EVENT_VOUCHER_REDIRECT_PAYMENT);
                     window.top.location.href = json.payment_url;
                 } else {
                     console.log(json);
@@ -73,7 +73,7 @@ class RecrasVoucher {
     changeTemplate(templateID) {
         this.clearAllExceptTemplateSelection();
         this.showContactForm(templateID);
-        RecrasEventHelper.sendEvent('Recras:Voucher:TemplateChanged');
+        RecrasEventHelper.sendEvent(RecrasEventHelper.EVENT_VOUCHER_TEMPLATE_CHANGED);
     }
 
     clearAll() {

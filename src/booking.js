@@ -180,17 +180,17 @@ class RecrasBooking {
             this.selectedPackage = null;
             this.clearAll();
             this.showPackages(this.packages);
-            RecrasEventHelper.sendEvent('Recras:Booking:Reset');
+            RecrasEventHelper.sendEvent(RecrasEventHelper.EVENT_BOOKING_RESET);
             return false;
         } else {
             this.clearAllExceptPackageSelection();
-            RecrasEventHelper.sendEvent('Recras:Booking:PackageChanged');
+            RecrasEventHelper.sendEvent(RecrasEventHelper.EVENT_BOOKING_PACKAGE_CHANGED);
         }
         this.selectedPackage = selectedPackage[0];
         this.showProducts(this.selectedPackage).then(() => {
             this.nextSectionActive('.recras-package-select', '.recras-amountsform');
 
-            RecrasEventHelper.sendEvent('Recras:Booking:ProductsShown');
+            RecrasEventHelper.sendEvent(RecrasEventHelper.EVENT_BOOKING_PRODUCTS_SHOWN);
             if (this.options.getAutoScroll() === true) {
                 let scrollOptions = {
                     behavior: 'smooth',
@@ -876,7 +876,7 @@ class RecrasBooking {
                 this.appendHtml(html);
                 this.loadingIndicatorHide();
                 this.showBookButton();
-                RecrasEventHelper.sendEvent('Recras:Booking:ContactFormShown');
+                RecrasEventHelper.sendEvent(RecrasEventHelper.EVENT_BOOKING_CONTACT_FORM_SHOWN);
 
                 [...this.findElements('[name^="contactformulier"]')].forEach(el => {
                     el.addEventListener('input', this.maybeDisableBookButton.bind(this));
@@ -935,7 +935,7 @@ class RecrasBooking {
                         },
                         onSelect: (date) => {
                             this.loadingIndicatorShow(this.findElement('label[for="recras-onlinebooking-time"]'));
-                            RecrasEventHelper.sendEvent('Recras:Booking:DateSelected');
+                            RecrasEventHelper.sendEvent(RecrasEventHelper.EVENT_BOOKING_DATE_SELECTED);
                             this.selectedDate = date;
                             this.getAvailableTimes(pack.id, date).then(times => {
                                 times = times.map(time => RecrasDateHelper.timePartOnly(new Date(time)));
@@ -951,7 +951,7 @@ class RecrasBooking {
                 this.datePicker = new Pikaday(pikadayOptions);
 
                 this.findElement('.recras-onlinebooking-time').addEventListener('change', () => {
-                    RecrasEventHelper.sendEvent('Recras:Booking:TimeSelected');
+                    RecrasEventHelper.sendEvent(RecrasEventHelper.EVENT_BOOKING_TIME_SELECTED);
                     this.selectedTime = this.findElement('.recras-onlinebooking-time').value;
 
                     this.nextSectionActive('.recras-datetime', '.recras-discounts');
@@ -981,7 +981,7 @@ class RecrasBooking {
         Promise.all(promises).then(msgs => {
             this.appendHtml(`<div class="recras-package-select recras-active"><p>${ msgs[0] }</p>${ html }<p>
 ${ msgs[1] }</p></div>`);
-            RecrasEventHelper.sendEvent('Recras:Booking:PackagesShown');
+            RecrasEventHelper.sendEvent(RecrasEventHelper.EVENT_BOOKING_PACKAGES_SHOWN);
 
             let packageSelectEl = this.findElement('.recras-package-selection');
             packageSelectEl.addEventListener('change', () => {
@@ -1075,7 +1075,7 @@ ${ msgs[1] }</p></div>`);
             return false;
         }
 
-        RecrasEventHelper.sendEvent('Recras:Booking:BuyInProgress');
+        RecrasEventHelper.sendEvent(RecrasEventHelper.EVENT_BOOKING_BOOKING_SUBMITTED);
 
         let paymentMethod = this.paymentMethods(this.selectedPackage)[0];
         let paymentMethodEl = this.findElement('[name="paymentMethod"]:checked');
@@ -1118,7 +1118,7 @@ ${ msgs[1] }</p></div>`);
                 window.top.location.href = json.payment_url;
             } else if (json.message && json.status) {
                 if (bookingParams.redirect_url) {
-                    RecrasEventHelper.sendEvent('Recras:Booking:RedirectToPayment');
+                    RecrasEventHelper.sendEvent(RecrasEventHelper.EVENT_BOOKING_REDIRECT_PAYMENT);
                     window.top.location.href = bookingParams.redirect_url;
                 } else {
                     this.findElement('.recras-amountsform').reset();

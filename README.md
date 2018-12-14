@@ -61,6 +61,9 @@ See `/demo/index.html` for integration demos
 * `element` - **required** - a single HTML element, using `getElementById` or `querySelector`
 * `locale` - optional, defaults to nl_NL - a valid locale (de_DE, en_GB, and nl_NL). This is used for country names, error messages, etc. Package names from Recras are not affected.
 * `analytics` - optional - a reference to a Google Analytics `ga` object, i.e. if you normally use `tracker('create', 'UA-12345678-1', 'auto');` then you set this to `tracker`
+* `analyticsEvents` - optional - a list of events to track. `analytics` must be set for this to 
+work. If omitted, all events will be sent. For a list of events, refer to the section Events at 
+the end of this document. 
 
 ### Online booking only
 * `package_id` - optional - the ID of a package. This will hide the package selection dropdown and skip this step.

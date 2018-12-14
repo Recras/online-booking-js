@@ -16,9 +16,27 @@ class RecrasEventHelper {
 
     static EVENT_CONTACT_FORM_SUBMIT = self.PREFIX_CONTACT_FORM + 'Submit';
 
-    static EVENT_VOUCHER_VOUCHER_SUBMITTED = self.PREFIX_VOUCHER + 'BuyInProgress';
     static EVENT_VOUCHER_REDIRECT_PAYMENT = self.PREFIX_VOUCHER + 'RedirectToPayment';
     static EVENT_VOUCHER_TEMPLATE_CHANGED = self.PREFIX_VOUCHER + 'TemplateChanged';
+    static EVENT_VOUCHER_VOUCHER_SUBMITTED = self.PREFIX_VOUCHER + 'BuyInProgress';
+
+    static allEvents() {
+        return [
+            self.EVENT_BOOKING_BOOKING_SUBMITTED,
+            self.EVENT_BOOKING_CONTACT_FORM_SHOWN,
+            self.EVENT_BOOKING_DATE_SELECTED,
+            self.EVENT_BOOKING_PACKAGE_CHANGED,
+            self.EVENT_BOOKING_PACKAGES_SHOWN,
+            self.EVENT_BOOKING_PRODUCTS_SHOWN,
+            self.EVENT_BOOKING_REDIRECT_PAYMENT,
+            self.EVENT_BOOKING_RESET,
+            self.EVENT_BOOKING_TIME_SELECTED,
+            self.EVENT_CONTACT_FORM_SUBMIT,
+            self.EVENT_VOUCHER_REDIRECT_PAYMENT,
+            self.EVENT_VOUCHER_TEMPLATE_CHANGED,
+            self.EVENT_VOUCHER_VOUCHER_SUBMITTED,
+        ];
+    }
 
     static sendEvent(name, analytics) {
         let event;

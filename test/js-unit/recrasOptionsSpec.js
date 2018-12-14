@@ -65,4 +65,46 @@ describe('RecrasOptions', () => {
             expect(options.getAutoScroll()).toBe(false);
         });
     });
+
+    describe('getAnalyticsEvents', () => {
+        it('throws when "analytics" is not set', () => {
+            expect(() => {
+                new RecrasOptions({
+                    element: document.createElement('div'),
+                    recras_hostname: 'demo.recras.nl',
+                    analyticsEvents: [],
+                });
+            }).toThrow(new Error('Optie "analytics" moet ingesteld zijn om "analyticsEvents" te laten werken.'));
+        });
+
+        it('defaults to all events when an invalid option is passed', () => {
+            let options = new RecrasOptions({
+                element: document.createElement('div'),
+                recras_hostname: 'demo.recras.nl',
+                analytics: function() {},
+                analyticsEvents: 'foo',
+            });
+            expect(options.getAnalyticsEvents().length).toBeGreaterThan(0);
+        });
+
+        it('defaults to all events when an empty array is passed', () => {
+            let options = new RecrasOptions({
+                element: document.createElement('div'),
+                recras_hostname: 'demo.recras.nl',
+                analytics: function() {},
+                analyticsEvents: [],
+            });
+            expect(options.getAnalyticsEvents().length).toBeGreaterThan(0);
+        });
+
+        it('removes invalid events', () => {
+            let options = new RecrasOptions({
+                element: document.createElement('div'),
+                recras_hostname: 'demo.recras.nl',
+                analytics: function() {},
+                analyticsEvents: ['foo', RecrasEventHelper.BOOKING_DISABLED_INVALID_DATE],
+            });
+            expect(options.getAnalyticsEvents()).toBe([RecrasEventHelper.BOOKING_DISABLED_INVALID_DATE]);
+        });
+    });
 });

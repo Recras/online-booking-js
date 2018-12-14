@@ -10,6 +10,27 @@ class RecrasOptions {
         this.options = this.setOptions(options);
     }
 
+    getAnalyticsEvents() {
+        if (!this.getAnalyticsObject()) {
+            throw new Error(this.languageHelper.translate('ERR_NO_ANALYTICS'));
+        }
+        if (!Array.isArray(this.options.analyticsEvents)) {
+            this.options.analyticsEvents = RecrasEventHelper.allEvents();
+        }
+
+        this.options.analyticsEvents = this.options.analyticsEvents.filter(event => {
+            let eventExists = RecrasEventHelper.allEvents().includes(event);
+            if (!eventExists) {
+                console.warn('Invalid event: ' + event);
+            }
+            return eventExists;
+        });
+
+        if (this.options.analyticsEvents.length === 0) {
+            this.options.analyticsEvents = RecrasEventHelper.allEvents();
+        }
+        return this.options.analyticsEvents;
+    }
     getAnalyticsObject() {
         return this.options.analytics;
     }

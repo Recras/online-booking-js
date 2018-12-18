@@ -1050,6 +1050,7 @@ var RecrasBooking = function () {
                         _this23.getAvailableDays(pack.id, lastAvailableDay, newEndDate);
                     },
                     onSelect: function onSelect(date) {
+                        _this23.loadingIndicatorShow(_this23.findElement('label[for="recras-onlinebooking-time"]'));
                         RecrasEventHelper.sendEvent('Recras:Booking:DateSelected');
                         _this23.selectedDate = date;
                         _this23.getAvailableTimes(pack.id, date).then(function (times) {
@@ -1057,6 +1058,7 @@ var RecrasBooking = function () {
                                 return RecrasDateHelper.timePartOnly(new Date(time));
                             });
                             _this23.showTimes(times);
+                            _this23.loadingIndicatorHide();
                         });
                         _this23.maybeDisableBookButton();
                         _this23.showDiscountFields();

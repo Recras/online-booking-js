@@ -6,6 +6,7 @@
 * Add `previewTimes` option to disable programme times preview for online bookings
 * Add `recras-completed` and `recras-active` classes. `recras-completed` is added to each section
  the user has successfully completed, `recras-active` is added to the currently active section.
+* Add loading indicator when loading available time slots
   
  **Note for developers** when returning to an already completed section (i.e. changing amounts 
  after selecting a date and time) can make multiple sections active. Entering an invalid amount 

@@ -932,11 +932,13 @@ class RecrasBooking {
                             this.getAvailableDays(pack.id, lastAvailableDay, newEndDate);
                         },
                         onSelect: (date) => {
+                            this.loadingIndicatorShow(this.findElement('label[for="recras-onlinebooking-time"]'));
                             RecrasEventHelper.sendEvent('Recras:Booking:DateSelected');
                             this.selectedDate = date;
                             this.getAvailableTimes(pack.id, date).then(times => {
                                 times = times.map(time => RecrasDateHelper.timePartOnly(new Date(time)));
                                 this.showTimes(times);
+                                this.loadingIndicatorHide();
                             });
                             this.maybeDisableBookButton();
                             this.showDiscountFields();

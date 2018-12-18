@@ -398,8 +398,10 @@ class RecrasBooking {
 
     clearAllExceptPackageSelection() {
         let packageSelect = this.findElement('.recras-package-select');
-        packageSelect.classList.remove('recras-completed');
-        packageSelect.classList.add('recras-active');
+        if (packageSelect) {
+            packageSelect.classList.remove('recras-completed');
+            packageSelect.classList.add('recras-active');
+        }
 
         let elements = document.querySelectorAll('#' + this.element.id + ' > *:not(.recras-package-select)');
         this.clearElements(elements);
@@ -631,7 +633,7 @@ class RecrasBooking {
     }
 
     nextSectionActive(completedQuery, activeQuery) {
-        if (completedQuery) {
+        if (completedQuery && this.findElement(completedQuery)) {
             this.findElement(completedQuery).classList.add('recras-completed');
             this.findElement(completedQuery).classList.remove('recras-active');
         }

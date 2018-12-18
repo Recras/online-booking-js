@@ -464,8 +464,10 @@ var RecrasBooking = function () {
         key: 'clearAllExceptPackageSelection',
         value: function clearAllExceptPackageSelection() {
             var packageSelect = this.findElement('.recras-package-select');
-            packageSelect.classList.remove('recras-completed');
-            packageSelect.classList.add('recras-active');
+            if (packageSelect) {
+                packageSelect.classList.remove('recras-completed');
+                packageSelect.classList.add('recras-active');
+            }
 
             var elements = document.querySelectorAll('#' + this.element.id + ' > *:not(.recras-package-select)');
             this.clearElements(elements);
@@ -735,7 +737,7 @@ var RecrasBooking = function () {
     }, {
         key: 'nextSectionActive',
         value: function nextSectionActive(completedQuery, activeQuery) {
-            if (completedQuery) {
+            if (completedQuery && this.findElement(completedQuery)) {
                 this.findElement(completedQuery).classList.add('recras-completed');
                 this.findElement(completedQuery).classList.remove('recras-active');
             }

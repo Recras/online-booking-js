@@ -953,10 +953,11 @@ class RecrasBooking {
                     this.nextSectionActive('.recras-datetime', '.recras-discounts');
                     this.nextSectionActive(null, '.recras-contactform');
 
+                    this.selectedDate = RecrasDateHelper.setTimeForDate(this.selectedDate, this.selectedTime);
                     if (this.options.getPreviewTimes() === true) {
                         this.previewTimes();
                     }
-                    this.selectedDate = RecrasDateHelper.setTimeForDate(this.selectedDate, this.selectedTime);
+
                     this.maybeDisableBookButton();
                 });
             });

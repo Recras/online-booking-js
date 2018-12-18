@@ -1072,10 +1072,11 @@ var RecrasBooking = function () {
                     _this23.nextSectionActive('.recras-datetime', '.recras-discounts');
                     _this23.nextSectionActive(null, '.recras-contactform');
 
+                    _this23.selectedDate = RecrasDateHelper.setTimeForDate(_this23.selectedDate, _this23.selectedTime);
                     if (_this23.options.getPreviewTimes() === true) {
                         _this23.previewTimes();
                     }
-                    _this23.selectedDate = RecrasDateHelper.setTimeForDate(_this23.selectedDate, _this23.selectedTime);
+
                     _this23.maybeDisableBookButton();
                 });
             });

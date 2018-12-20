@@ -11,9 +11,9 @@ class RecrasOptions {
     }
 
     getAnalyticsEvents() {
-        if (!this.getAnalyticsObject()) {
+        /*if (!this.getAnalyticsObject()) {
             throw new Error(this.languageHelper.translate('ERR_NO_ANALYTICS'));
-        }
+        }*/
         if (!Array.isArray(this.options.analyticsEvents)) {
             this.options.analyticsEvents = RecrasEventHelper.allEvents();
         }

@@ -1,58 +1,80 @@
 class RecrasEventHelper {
-    static PREFIX_GLOBAL = 'Recras:';
-    static PREFIX_BOOKING = 'Booking:';
-    static PREFIX_CONTACT_FORM = 'ContactForm:';
-    static PREFIX_VOUCHER = 'Voucher:';
+    static PREFIX_GLOBAL = 'Recras';
+    static PREFIX_BOOKING = 'Booking';
+    static PREFIX_CONTACT_FORM = 'ContactForm';
+    static PREFIX_VOUCHER = 'Voucher';
 
-    static EVENT_BOOKING_BOOKING_SUBMITTED = self.PREFIX_BOOKING + 'BuyInProgress';
-    static EVENT_BOOKING_CONTACT_FORM_SHOWN = self.PREFIX_BOOKING + 'ContactFormShown';
-    static EVENT_BOOKING_DATE_SELECTED = self.PREFIX_BOOKING + 'DateSelected';
-    static EVENT_BOOKING_PACKAGE_CHANGED = self.PREFIX_BOOKING + 'PackageChanged';
-    static EVENT_BOOKING_PACKAGES_SHOWN = self.PREFIX_BOOKING + 'PackagesShown';
-    static EVENT_BOOKING_PRODUCTS_SHOWN = self.PREFIX_BOOKING + 'ProductsShown';
-    static EVENT_BOOKING_REDIRECT_PAYMENT = self.PREFIX_BOOKING + 'RedirectToPayment';
-    static EVENT_BOOKING_RESET = self.PREFIX_BOOKING + 'Reset';
-    static EVENT_BOOKING_TIME_SELECTED = self.PREFIX_BOOKING + 'TimeSelected';
+    static EVENT_BOOKING_BOOKING_SUBMITTED = 'BuyInProgress';
+    static EVENT_BOOKING_CONTACT_FORM_SHOWN = 'ContactFormShown';
+    static EVENT_BOOKING_DATE_SELECTED = 'DateSelected';
+    static EVENT_BOOKING_PACKAGE_CHANGED = 'PackageChanged';
+    static EVENT_BOOKING_PACKAGES_SHOWN = 'PackagesShown';
+    static EVENT_BOOKING_PRODUCTS_SHOWN = 'ProductsShown';
+    static EVENT_BOOKING_REDIRECT_PAYMENT = 'RedirectToPayment';
+    static EVENT_BOOKING_RESET = 'Reset';
+    static EVENT_BOOKING_TIME_SELECTED = 'TimeSelected';
 
-    static EVENT_CONTACT_FORM_SUBMIT = self.PREFIX_CONTACT_FORM + 'Submit';
+    static EVENT_CONTACT_FORM_SUBMIT = 'Submit';
 
-    static EVENT_VOUCHER_REDIRECT_PAYMENT = self.PREFIX_VOUCHER + 'RedirectToPayment';
-    static EVENT_VOUCHER_TEMPLATE_CHANGED = self.PREFIX_VOUCHER + 'TemplateChanged';
-    static EVENT_VOUCHER_VOUCHER_SUBMITTED = self.PREFIX_VOUCHER + 'BuyInProgress';
+    static EVENT_VOUCHER_REDIRECT_PAYMENT = 'RedirectToPayment';
+    static EVENT_VOUCHER_TEMPLATE_CHANGED = 'TemplateChanged';
+    static EVENT_VOUCHER_VOUCHER_SUBMITTED = 'BuyInProgress';
+
+    constructor() {
+        this.analyticsObj = null;
+        this.eventsEnabled = RecrasEventHelper.allEvents();
+    }
+
 
     static allEvents() {
         return [
-            self.EVENT_BOOKING_BOOKING_SUBMITTED,
-            self.EVENT_BOOKING_CONTACT_FORM_SHOWN,
-            self.EVENT_BOOKING_DATE_SELECTED,
-            self.EVENT_BOOKING_PACKAGE_CHANGED,
-            self.EVENT_BOOKING_PACKAGES_SHOWN,
-            self.EVENT_BOOKING_PRODUCTS_SHOWN,
-            self.EVENT_BOOKING_REDIRECT_PAYMENT,
-            self.EVENT_BOOKING_RESET,
-            self.EVENT_BOOKING_TIME_SELECTED,
-            self.EVENT_CONTACT_FORM_SUBMIT,
-            self.EVENT_VOUCHER_REDIRECT_PAYMENT,
-            self.EVENT_VOUCHER_TEMPLATE_CHANGED,
-            self.EVENT_VOUCHER_VOUCHER_SUBMITTED,
+            RecrasEventHelper.EVENT_BOOKING_BOOKING_SUBMITTED,
+            RecrasEventHelper.EVENT_BOOKING_CONTACT_FORM_SHOWN,
+            RecrasEventHelper.EVENT_BOOKING_DATE_SELECTED,
+            RecrasEventHelper.EVENT_BOOKING_PACKAGE_CHANGED,
+            RecrasEventHelper.EVENT_BOOKING_PACKAGES_SHOWN,
+            RecrasEventHelper.EVENT_BOOKING_PRODUCTS_SHOWN,
+            RecrasEventHelper.EVENT_BOOKING_REDIRECT_PAYMENT,
+            RecrasEventHelper.EVENT_BOOKING_RESET,
+            RecrasEventHelper.EVENT_BOOKING_TIME_SELECTED,
+            RecrasEventHelper.EVENT_CONTACT_FORM_SUBMIT,
+            RecrasEventHelper.EVENT_VOUCHER_REDIRECT_PAYMENT,
+            RecrasEventHelper.EVENT_VOUCHER_TEMPLATE_CHANGED,
+            RecrasEventHelper.EVENT_VOUCHER_VOUCHER_SUBMITTED,
         ];
     }
 
-    static sendEvent(name, analytics) {
+    eventEnabled(name) {
+        return this.eventsEnabled.includes(name);
+    }
+
+    sendEvent(cat, name, value = undefined) {
         let event;
 
         try {
-            event = new Event(self.PREFIX_GLOBAL + name);
+            event = new Event(RecrasEventHelper.PREFIX_GLOBAL + ':' + cat + ':' + name);
         } catch (e) {
             // IE
             event = document.createEvent('Event');
             event.initEvent(name, true, true);
         }
 
-        if (analytics && typeof analytics === 'function') {
-            analytics('send', name);
+        if (this.analyticsObj && typeof this.analyticsObj === 'function' && this.eventEnabled(name)) {
+            this.analyticsObj('send', 'event', {
+                eventCategory: RecrasEventHelper.PREFIX_GLOBAL + ':' + cat,
+                eventAction: name,
+                eventValue: value,
+            });
         }
 
         return document.dispatchEvent(event);
+    }
+
+    setAnalytics(analyticsObj) {
+        this.analyticsObj = analyticsObj;
+    }
+
+    setEvents(events) {
+        this.eventsEnabled = events;
     }
 }

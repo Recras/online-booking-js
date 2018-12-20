@@ -11,6 +11,9 @@ class RecrasContactForm {
             throw new Error(this.languageHelper.translate('ERR_NO_FORM'));
         }
 
+        this.eventHelper = new RecrasEventHelper();
+        this.eventHelper.setEvents(this.options.getAnalyticsEvents());
+
         this.element = this.options.getElement();
         this.element.classList.add('recras-contactform-wrapper');
 
@@ -295,7 +298,7 @@ class RecrasContactForm {
 
     submitForm(e) {
         e.preventDefault();
-        RecrasEventHelper.sendEvent(RecrasEventHelper.EVENT_CONTACT_FORM_SUBMIT);
+        this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_CONTACT_FORM, RecrasEventHelper.EVENT_CONTACT_FORM_SUBMIT);
         let submitButton = this.findElement('.submitForm');
 
         let status = this.checkRequiredCheckboxes();

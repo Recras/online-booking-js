@@ -1,6 +1,6 @@
 # Changelog
 
-## master
+## 0.13.0 (2019-01-07)
 * Disable date selection if there are min/max amount or dependency errors
 * Fix "NaN" price when booking size input field was cleared
 * Add `previewTimes` option to disable programme times preview for online bookings
@@ -8,10 +8,10 @@
  the user has successfully completed, `recras-active` is added to the currently active section.
 * Add loading indicator when loading available time slots
   
- **Note for developers** when returning to an already completed section (i.e. changing amounts 
- after selecting a date and time) can make multiple sections active. Entering an invalid amount 
- to the already completed amounts section will leave the section completed. If you want to do 
- things like hide completed sections, be aware of this and test thoroughly!
+**Notes for developers**
+
+- When returning to an already completed section (i.e. changing amounts after selecting a date and time) can make multiple sections active.
+- Entering an invalid amount to the already completed amounts section will leave the section completed. If you want to do things like hide completed sections, be aware of this and test thoroughly!
 
 ## 0.12.0 (2018-11-30)
 * Add `autoScroll` option to online bookings

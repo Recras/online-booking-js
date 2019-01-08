@@ -2361,7 +2361,7 @@ var RecrasOptions = function () {
             if (!options.recras_hostname) {
                 throw new Error(this.languageHelper.translate('ERR_NO_HOSTNAME'));
             }
-            if (!hostnameRegex.test(options.recras_hostname) && RecrasOptions.hostnamesDebug.includes(options.recras_hostname)) {
+            if (!hostnameRegex.test(options.recras_hostname) && !RecrasOptions.hostnamesDebug.includes(options.recras_hostname)) {
                 throw new Error(this.languageHelper.translate('ERR_INVALID_HOSTNAME'));
             }
             if (options.redirect_url) {

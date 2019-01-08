@@ -1,7 +1,7 @@
 # Changelog
 
-## 0.13.1 (2019-01-07)
-* fix the test for development instances
+## 0.13.1 (2019-01-08)
+* Fix the test for development instances
 
 ## 0.13.0 (2019-01-07)
 * Disable date selection if there are min/max amount or dependency errors

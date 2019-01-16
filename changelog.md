@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.13.2 (2019-01-16)
+* Fix error message related to default attachments when you are logged in to the Recras being used
+
 ## 0.13.1 (2019-01-08)
 * Fix the test for development instances
 

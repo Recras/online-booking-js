@@ -1,6 +1,6 @@
 /*******************************
 *  Recras integration library  *
-*  v 0.13.0                    *
+*  v 0.13.2                    *
 *******************************/
 
 class RecrasBooking {
@@ -1052,9 +1052,11 @@ ${ msgs[1] }</p></div>`);
         this.productCounts().forEach(line => {
             if (line.aantal > 0) {
                 let product = this.findProduct(line.arrangementsregel_id).product;
-                product.standaardbijlagen.forEach(attachment => {
-                    attachments[attachment.id] = attachment;
-                });
+                if (product.standaardbijlagen) {
+                    product.standaardbijlagen.forEach(attachment => {
+                        attachments[attachment.id] = attachment;
+                    });
+                }
             }
         });
 

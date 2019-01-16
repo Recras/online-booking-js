@@ -19,7 +19,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /*******************************
 *  Recras integration library  *
-*  v 0.13.0                    *
+*  v 0.13.2                    *
 *******************************/
 
 var RecrasBooking = function () {
@@ -1183,9 +1183,11 @@ var RecrasBooking = function () {
             this.productCounts().forEach(function (line) {
                 if (line.aantal > 0) {
                     var product = _this26.findProduct(line.arrangementsregel_id).product;
-                    product.standaardbijlagen.forEach(function (attachment) {
-                        attachments[attachment.id] = attachment;
-                    });
+                    if (product.standaardbijlagen) {
+                        product.standaardbijlagen.forEach(function (attachment) {
+                            attachments[attachment.id] = attachment;
+                        });
+                    }
                 }
             });
 

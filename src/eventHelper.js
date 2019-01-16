@@ -48,22 +48,22 @@ class RecrasEventHelper {
         return this.eventsEnabled.includes(name);
     }
 
-    sendEvent(cat, name, value = undefined) {
+    sendEvent(cat, action, value = undefined) {
         let event;
 
         try {
-            event = new Event(RecrasEventHelper.PREFIX_GLOBAL + ':' + cat + ':' + name);
+            event = new Event(RecrasEventHelper.PREFIX_GLOBAL + ':' + cat + ':' + action);
         } catch (e) {
             // IE
             event = document.createEvent('Event');
-            event.initEvent(name, true, true);
+            event.initEvent(action, true, true);
         }
 
-        if (this.analyticsObj && typeof this.analyticsObj === 'function' && this.eventEnabled(name)) {
-            this.analyticsObj('send', 'event', {
-                eventCategory: RecrasEventHelper.PREFIX_GLOBAL + ':' + cat,
-                eventAction: name,
-                eventValue: value,
+        if (this.analyticsObj && typeof this.analyticsObj === 'function' && this.eventEnabled(action)) {
+            this.analyticsObj('event', action, {
+                event_category: RecrasEventHelper.PREFIX_GLOBAL + ':' + cat,
+                event_label: 'method', //TODO: can we make this more specific?
+                value: value,
             });
         }
 

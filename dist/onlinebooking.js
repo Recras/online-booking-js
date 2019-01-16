@@ -42,6 +42,10 @@ var RecrasBooking = function () {
         }
         this.options = options;
 
+        this.eventHelper = new RecrasEventHelper();
+        this.eventHelper.setAnalytics(this.options.getAnalyticsObject());
+        this.eventHelper.setEvents(this.options.getAnalyticsEvents());
+
         var optionsPromise = this.languageHelper.setOptions(options);
 
         this.element = this.options.getElement();
@@ -233,17 +237,17 @@ var RecrasBooking = function () {
                 this.selectedPackage = null;
                 this.clearAll();
                 this.showPackages(this.packages);
-                RecrasEventHelper.sendEvent('Recras:Booking:Reset');
+                this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_RESET);
                 return false;
             } else {
                 this.clearAllExceptPackageSelection();
-                RecrasEventHelper.sendEvent('Recras:Booking:PackageChanged');
+                this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_PACKAGE_CHANGED);
             }
             this.selectedPackage = selectedPackage[0];
             this.showProducts(this.selectedPackage).then(function () {
                 _this6.nextSectionActive('.recras-package-select', '.recras-amountsform');
 
-                RecrasEventHelper.sendEvent('Recras:Booking:ProductsShown');
+                _this6.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_PRODUCTS_SHOWN);
                 if (_this6.options.getAutoScroll() === true) {
                     var scrollOptions = {
                         behavior: 'smooth'
@@ -994,7 +998,7 @@ var RecrasBooking = function () {
                 _this22.appendHtml(html);
                 _this22.loadingIndicatorHide();
                 _this22.showBookButton();
-                RecrasEventHelper.sendEvent('Recras:Booking:ContactFormShown');
+                _this22.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_CONTACT_FORM_SHOWN);
 
                 [].concat(_toConsumableArray(_this22.findElements('[name^="contactformulier"]'))).forEach(function (el) {
                     el.addEventListener('input', _this22.maybeDisableBookButton.bind(_this22));
@@ -1053,7 +1057,7 @@ var RecrasBooking = function () {
                     },
                     onSelect: function onSelect(date) {
                         _this23.loadingIndicatorShow(_this23.findElement('label[for="recras-onlinebooking-time"]'));
-                        RecrasEventHelper.sendEvent('Recras:Booking:DateSelected');
+                        _this23.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_DATE_SELECTED);
                         _this23.selectedDate = date;
                         _this23.getAvailableTimes(pack.id, date).then(function (times) {
                             times = times.map(function (time) {
@@ -1070,7 +1074,7 @@ var RecrasBooking = function () {
                 _this23.datePicker = new Pikaday(pikadayOptions);
 
                 _this23.findElement('.recras-onlinebooking-time').addEventListener('change', function () {
-                    RecrasEventHelper.sendEvent('Recras:Booking:TimeSelected');
+                    _this23.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_TIME_SELECTED);
                     _this23.selectedTime = _this23.findElement('.recras-onlinebooking-time').value;
 
                     _this23.nextSectionActive('.recras-datetime', '.recras-discounts');
@@ -1104,7 +1108,7 @@ var RecrasBooking = function () {
             promises.push(this.languageHelper.filterTags(this.texts.online_boeking_step0_text_post, this.selectedPackage ? this.selectedPackage.id : null));
             Promise.all(promises).then(function (msgs) {
                 _this24.appendHtml('<div class="recras-package-select recras-active"><p>' + msgs[0] + '</p>' + html + '<p>\n' + msgs[1] + '</p></div>');
-                RecrasEventHelper.sendEvent('Recras:Booking:PackagesShown');
+                _this24.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_PACKAGES_SHOWN);
 
                 var packageSelectEl = _this24.findElement('.recras-package-selection');
                 packageSelectEl.addEventListener('change', function () {
@@ -1213,7 +1217,7 @@ var RecrasBooking = function () {
                 return false;
             }
 
-            RecrasEventHelper.sendEvent('Recras:Booking:BuyInProgress');
+            this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_BOOKING_SUBMITTED);
 
             var paymentMethod = this.paymentMethods(this.selectedPackage)[0];
             var paymentMethodEl = this.findElement('[name="paymentMethod"]:checked');
@@ -1256,7 +1260,7 @@ var RecrasBooking = function () {
                     window.top.location.href = json.payment_url;
                 } else if (json.message && json.status) {
                     if (bookingParams.redirect_url) {
-                        RecrasEventHelper.sendEvent('Recras:Booking:RedirectToPayment');
+                        _this27.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_REDIRECT_PAYMENT);
                         window.top.location.href = bookingParams.redirect_url;
                     } else {
                         _this27.findElement('.recras-amountsform').reset();
@@ -1414,6 +1418,9 @@ var RecrasContactForm = function () {
         if (!this.options.getFormId()) {
             throw new Error(this.languageHelper.translate('ERR_NO_FORM'));
         }
+
+        this.eventHelper = new RecrasEventHelper();
+        this.eventHelper.setEvents(this.options.getAnalyticsEvents());
 
         this.element = this.options.getElement();
         this.element.classList.add('recras-contactform-wrapper');
@@ -1745,7 +1752,7 @@ var RecrasContactForm = function () {
             var _this36 = this;
 
             e.preventDefault();
-            RecrasEventHelper.sendEvent('Recras:ContactForm:Submit');
+            this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_CONTACT_FORM, RecrasEventHelper.EVENT_CONTACT_FORM_SUBMIT);
             var submitButton = this.findElement('.submitForm');
 
             var status = this.checkRequiredCheckboxes();
@@ -1851,26 +1858,78 @@ var RecrasDateHelper = function () {
 var RecrasEventHelper = function () {
     function RecrasEventHelper() {
         _classCallCheck(this, RecrasEventHelper);
+
+        this.analyticsObj = null;
+        this.eventsEnabled = RecrasEventHelper.allEvents();
     }
 
-    _createClass(RecrasEventHelper, null, [{
+    _createClass(RecrasEventHelper, [{
+        key: 'eventEnabled',
+        value: function eventEnabled(name) {
+            return this.eventsEnabled.includes(name);
+        }
+    }, {
         key: 'sendEvent',
-        value: function sendEvent(name) {
+        value: function sendEvent(cat, action) {
+            var value = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : undefined;
+
             var event = void 0;
 
             try {
-                event = new Event(name);
+                event = new Event(RecrasEventHelper.PREFIX_GLOBAL + ':' + cat + ':' + action);
             } catch (e) {
                 // IE
                 event = document.createEvent('Event');
-                event.initEvent(name, true, true);
+                event.initEvent(action, true, true);
             }
+
+            if (this.analyticsObj && typeof this.analyticsObj === 'function' && this.eventEnabled(action)) {
+                this.analyticsObj('event', action, {
+                    event_category: RecrasEventHelper.PREFIX_GLOBAL + ':' + cat,
+                    event_label: 'method', //TODO: can we make this more specific?
+                    value: value
+                });
+            }
+
             return document.dispatchEvent(event);
+        }
+    }, {
+        key: 'setAnalytics',
+        value: function setAnalytics(analyticsObj) {
+            this.analyticsObj = analyticsObj;
+        }
+    }, {
+        key: 'setEvents',
+        value: function setEvents(events) {
+            this.eventsEnabled = events;
+        }
+    }], [{
+        key: 'allEvents',
+        value: function allEvents() {
+            return [RecrasEventHelper.EVENT_BOOKING_BOOKING_SUBMITTED, RecrasEventHelper.EVENT_BOOKING_CONTACT_FORM_SHOWN, RecrasEventHelper.EVENT_BOOKING_DATE_SELECTED, RecrasEventHelper.EVENT_BOOKING_PACKAGE_CHANGED, RecrasEventHelper.EVENT_BOOKING_PACKAGES_SHOWN, RecrasEventHelper.EVENT_BOOKING_PRODUCTS_SHOWN, RecrasEventHelper.EVENT_BOOKING_REDIRECT_PAYMENT, RecrasEventHelper.EVENT_BOOKING_RESET, RecrasEventHelper.EVENT_BOOKING_TIME_SELECTED, RecrasEventHelper.EVENT_CONTACT_FORM_SUBMIT, RecrasEventHelper.EVENT_VOUCHER_REDIRECT_PAYMENT, RecrasEventHelper.EVENT_VOUCHER_TEMPLATE_CHANGED, RecrasEventHelper.EVENT_VOUCHER_VOUCHER_SUBMITTED];
         }
     }]);
 
     return RecrasEventHelper;
 }();
+
+RecrasEventHelper.PREFIX_GLOBAL = 'Recras';
+RecrasEventHelper.PREFIX_BOOKING = 'Booking';
+RecrasEventHelper.PREFIX_CONTACT_FORM = 'ContactForm';
+RecrasEventHelper.PREFIX_VOUCHER = 'Voucher';
+RecrasEventHelper.EVENT_BOOKING_BOOKING_SUBMITTED = 'BuyInProgress';
+RecrasEventHelper.EVENT_BOOKING_CONTACT_FORM_SHOWN = 'ContactFormShown';
+RecrasEventHelper.EVENT_BOOKING_DATE_SELECTED = 'DateSelected';
+RecrasEventHelper.EVENT_BOOKING_PACKAGE_CHANGED = 'PackageChanged';
+RecrasEventHelper.EVENT_BOOKING_PACKAGES_SHOWN = 'PackagesShown';
+RecrasEventHelper.EVENT_BOOKING_PRODUCTS_SHOWN = 'ProductsShown';
+RecrasEventHelper.EVENT_BOOKING_REDIRECT_PAYMENT = 'RedirectToPayment';
+RecrasEventHelper.EVENT_BOOKING_RESET = 'Reset';
+RecrasEventHelper.EVENT_BOOKING_TIME_SELECTED = 'TimeSelected';
+RecrasEventHelper.EVENT_CONTACT_FORM_SUBMIT = 'Submit';
+RecrasEventHelper.EVENT_VOUCHER_REDIRECT_PAYMENT = 'RedirectToPayment';
+RecrasEventHelper.EVENT_VOUCHER_TEMPLATE_CHANGED = 'TemplateChanged';
+RecrasEventHelper.EVENT_VOUCHER_VOUCHER_SUBMITTED = 'BuyInProgress';
 
 var RecrasHttpHelper = function () {
     function RecrasHttpHelper() {
@@ -1982,6 +2041,7 @@ var RecrasLanguageHelper = function () {
                 ERR_INVALID_HOSTNAME: 'Option "recras_hostname" ist ungültig.',
                 ERR_INVALID_LOCALE: 'Ungültiges Gebietsschema. Gültige Optionen sind: {LOCALES}',
                 ERR_INVALID_REDIRECT_URL: 'Ungültige redirect URL. Stellen Sie sicher, dass es mit http:// or https:// beginnt',
+                ERR_NO_ANALYTICS: 'Option "analytics" must be set for "analyticsEvents" to work.',
                 ERR_NO_ELEMENT: 'Option "element" nicht eingestellt.',
                 ERR_NO_FORM: 'Option "form_id" nicht eingestellt.',
                 ERR_NO_HOSTNAME: 'Option "recras_hostname" nicht eingestellt.',
@@ -2057,6 +2117,7 @@ var RecrasLanguageHelper = function () {
                 ERR_INVALID_HOSTNAME: 'Option "recras_hostname" is invalid.',
                 ERR_INVALID_LOCALE: 'Invalid locale. Valid options are: {LOCALES}',
                 ERR_INVALID_REDIRECT_URL: 'Invalid redirect URL. Make sure you it starts with http:// or https://',
+                ERR_NO_ANALYTICS: 'Option "analytics" must be set for "analyticsEvents" to work.',
                 ERR_NO_ELEMENT: 'Option "element" not set.',
                 ERR_NO_FORM: 'Option "form_id" not set.',
                 ERR_NO_HOSTNAME: 'Option "recras_hostname" not set.',
@@ -2132,6 +2193,7 @@ var RecrasLanguageHelper = function () {
                 ERR_INVALID_HOSTNAME: 'Optie "recras_hostname" is ongeldig.',
                 ERR_INVALID_LOCALE: 'Ongeldige locale. Geldige opties zijn: {LOCALES}',
                 ERR_INVALID_REDIRECT_URL: 'Ongeldige redirect-URL. Zorg ervoor dat deze begint met http:// of https://',
+                ERR_NO_ANALYTICS: 'Optie "analytics" moet ingesteld zijn om "analyticsEvents" te laten werken.',
                 ERR_NO_ELEMENT: 'Optie "element" niet ingesteld.',
                 ERR_NO_FORM: 'Optie "form_id" niet ingesteld.',
                 ERR_NO_HOSTNAME: 'Optie "recras_hostname" niet ingesteld.',
@@ -2283,6 +2345,34 @@ var RecrasOptions = function () {
     }
 
     _createClass(RecrasOptions, [{
+        key: 'getAnalyticsEvents',
+        value: function getAnalyticsEvents() {
+            /*if (!this.getAnalyticsObject()) {
+                throw new Error(this.languageHelper.translate('ERR_NO_ANALYTICS'));
+            }*/
+            if (!Array.isArray(this.options.analyticsEvents)) {
+                this.options.analyticsEvents = RecrasEventHelper.allEvents();
+            }
+
+            this.options.analyticsEvents = this.options.analyticsEvents.filter(function (event) {
+                var eventExists = RecrasEventHelper.allEvents().includes(event);
+                if (!eventExists) {
+                    console.warn('Invalid event: ' + event);
+                }
+                return eventExists;
+            });
+
+            if (this.options.analyticsEvents.length === 0) {
+                this.options.analyticsEvents = RecrasEventHelper.allEvents();
+            }
+            return this.options.analyticsEvents;
+        }
+    }, {
+        key: 'getAnalyticsObject',
+        value: function getAnalyticsObject() {
+            return this.options.analytics;
+        }
+    }, {
         key: 'getApiBase',
         value: function getApiBase() {
             return this.getHostname() + '/api2/';
@@ -2395,6 +2485,9 @@ var RecrasVoucher = function () {
         }
         this.options = options;
 
+        this.eventHelper = new RecrasEventHelper();
+        this.eventHelper.setEvents(this.options.getAnalyticsEvents());
+
         this.element = this.options.getElement();
         this.element.classList.add('recras-buy-voucher');
 
@@ -2443,7 +2536,7 @@ var RecrasVoucher = function () {
                 return false;
             }
 
-            RecrasEventHelper.sendEvent('Recras:Voucher:BuyInProgress');
+            this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_VOUCHER, RecrasEventHelper.EVENT_VOUCHER_VOUCHER_SUBMITTED);
             this.findElement('.buyTemplate').setAttribute('disabled', 'disabled');
 
             var payload = {
@@ -2458,7 +2551,7 @@ var RecrasVoucher = function () {
                 _this39.findElement('.buyTemplate').removeAttribute('disabled');
 
                 if (json.payment_url) {
-                    RecrasEventHelper.sendEvent('Recras:Voucher:RedirectToPayment');
+                    _this39.eventHelper.sendEvent(RecrasEventHelper.PREFIX_VOUCHER, RecrasEventHelper.EVENT_VOUCHER_REDIRECT_PAYMENT);
                     window.top.location.href = json.payment_url;
                 } else {
                     console.log(json);
@@ -2470,7 +2563,7 @@ var RecrasVoucher = function () {
         value: function changeTemplate(templateID) {
             this.clearAllExceptTemplateSelection();
             this.showContactForm(templateID);
-            RecrasEventHelper.sendEvent('Recras:Voucher:TemplateChanged');
+            this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_VOUCHER, RecrasEventHelper.EVENT_VOUCHER_TEMPLATE_CHANGED);
         }
     }, {
         key: 'clearAll',

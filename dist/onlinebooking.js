@@ -19,7 +19,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /*******************************
 *  Recras integration library  *
-*  v 0.13.2                    *
+*  v 0.13.3                    *
 *******************************/
 
 var RecrasBooking = function () {
@@ -1902,6 +1902,7 @@ var RecrasHttpHelper = function () {
         key: 'fetchJson',
         value: function fetchJson(url, errorHandler) {
             return this.call(url, {
+                credentials: 'omit',
                 method: 'get'
             }, errorHandler);
         }
@@ -1910,6 +1911,7 @@ var RecrasHttpHelper = function () {
         value: function postJson(url, data, errorHandler) {
             return this.call(url, {
                 body: JSON.stringify(data),
+                credentials: 'omit',
                 method: 'post'
             }, errorHandler);
         }

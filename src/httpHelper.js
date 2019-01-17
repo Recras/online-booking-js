@@ -21,6 +21,7 @@ class RecrasHttpHelper {
 
     static fetchJson(url, errorHandler) {
         return this.call(url, {
+            credentials: 'omit',
             method: 'get',
         }, errorHandler);
     }
@@ -28,6 +29,7 @@ class RecrasHttpHelper {
     static postJson(url, data, errorHandler) {
         return this.call(url, {
             body: JSON.stringify(data),
+            credentials: 'omit',
             method: 'post',
         }, errorHandler);
     }

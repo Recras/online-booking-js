@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.13.3 (2019-01-17)
+* Fix required products not working when you are logged in to the Recras being used
+
 ## 0.13.2 (2019-01-16)
 * Fix error message related to default attachments when you are logged in to the Recras being used
 

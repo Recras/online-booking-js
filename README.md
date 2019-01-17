@@ -1,5 +1,5 @@
 # Recras Online Booking JS library
-Version: 0.13.2
+Version: 0.13.3
 
 JS library for easy online booking & voucher integration
 

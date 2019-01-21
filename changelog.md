@@ -1,5 +1,8 @@
 # Changelog
 
+## master
+* Add `recras-input-invalid` class to inputs for products that require an other product
+
 ## 0.13.3 (2019-01-17)
 * Fix required products not working when you are logged in to the Recras being used
 

@@ -287,17 +287,22 @@ var RecrasBooking = function () {
             [].concat(_toConsumableArray(this.findElements('.recras-product-dependency'))).forEach(function (el) {
                 el.parentNode.removeChild(el);
             });
+            [].concat(_toConsumableArray(this.findElements('[data-package-id]'))).forEach(function (el) {
+                el.classList.remove('recras-input-invalid');
+            });
             this.requiresProduct = false;
 
             this.productCounts().forEach(function (line) {
                 if (line.aantal > 0) {
                     var packageLineID = line.arrangementsregel_id;
                     var product = _this7.findProduct(packageLineID).product;
+                    var thisProductRequiresProduct = false;
                     if (!product.vereist_product) {
                         console.warn('You are logged in to this particular Recras. Because of API differences between logged-in and logged-out state, required products do not work as expected.');
                     } else {
                         product.vereist_product.forEach(function (vp) {
                             if (!_this7.dependencySatisfied(line.aantal, vp)) {
+                                thisProductRequiresProduct = true;
                                 _this7.requiresProduct = true;
                                 var requiredAmount = _this7.requiredAmount(line.aantal, vp);
                                 var requiredProductName = _this7.getProductByID(vp.vereist_product_id).weergavenaam;
@@ -310,6 +315,11 @@ var RecrasBooking = function () {
                                 _this7.findElement('.recras-amountsform').insertAdjacentHTML('beforeend', '<span class="recras-product-dependency">' + message + '</span>');
                             }
                         });
+                    }
+
+                    if (thisProductRequiresProduct) {
+                        var productInput = _this7.findElement('[data-package-id="' + packageLineID + '"]');
+                        productInput.classList.add('recras-input-invalid');
                     }
                 }
             });

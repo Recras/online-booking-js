@@ -230,17 +230,22 @@ class RecrasBooking {
         [...this.findElements('.recras-product-dependency')].forEach(el => {
             el.parentNode.removeChild(el);
         });
+        [...this.findElements('[data-package-id]')].forEach(el => {
+            el.classList.remove('recras-input-invalid');
+        });
         this.requiresProduct = false;
 
         this.productCounts().forEach(line => {
             if (line.aantal > 0) {
                 let packageLineID = line.arrangementsregel_id;
                 let product = this.findProduct(packageLineID).product;
+                let thisProductRequiresProduct = false;
                 if (!product.vereist_product) {
                     console.warn('You are logged in to this particular Recras. Because of API differences between logged-in and logged-out state, required products do not work as expected.');
                 } else {
                     product.vereist_product.forEach(vp => {
                         if (!this.dependencySatisfied(line.aantal, vp)) {
+                            thisProductRequiresProduct = true;
                             this.requiresProduct = true;
                             let requiredAmount = this.requiredAmount(line.aantal, vp);
                             let requiredProductName = this.getProductByID(vp.vereist_product_id).weergavenaam;
@@ -253,6 +258,11 @@ class RecrasBooking {
                             this.findElement('.recras-amountsform').insertAdjacentHTML('beforeend', `<span class="recras-product-dependency">${ message }</span>`);
                         }
                     });
+                }
+
+                if (thisProductRequiresProduct) {
+                    let productInput = this.findElement(`[data-package-id="${ packageLineID }"]`);
+                    productInput.classList.add('recras-input-invalid');
                 }
             }
         });

@@ -43,7 +43,7 @@ var RecrasBooking = function () {
         this.options = options;
 
         this.eventHelper = new RecrasEventHelper();
-        this.eventHelper.setAnalytics(this.options.getAnalyticsObject());
+        this.eventHelper.setAnalytics(this.options.getAnalytics());
         this.eventHelper.setEvents(this.options.getAnalyticsEvents());
 
         var optionsPromise = this.languageHelper.setOptions(options);
@@ -1859,7 +1859,7 @@ var RecrasEventHelper = function () {
     function RecrasEventHelper() {
         _classCallCheck(this, RecrasEventHelper);
 
-        this.analyticsObj = null;
+        this.analyticsEnabled = false;
         this.eventsEnabled = RecrasEventHelper.allEvents();
     }
 
@@ -1883,11 +1883,11 @@ var RecrasEventHelper = function () {
                 event.initEvent(action, true, true);
             }
 
-            if (this.analyticsObj && typeof this.analyticsObj === 'function' && this.eventEnabled(action)) {
-                this.analyticsObj('event', action, {
-                    event_category: RecrasEventHelper.PREFIX_GLOBAL + ':' + cat,
-                    event_label: 'method', //TODO: can we make this more specific?
-                    value: value
+            if (this.analyticsEnabled && typeof ga === 'function' && this.eventEnabled(action)) {
+                ga('send', 'event', {
+                    eventCategory: RecrasEventHelper.PREFIX_GLOBAL + ':' + cat,
+                    eventAction: action,
+                    eventValue: value
                 });
             }
 
@@ -1895,8 +1895,8 @@ var RecrasEventHelper = function () {
         }
     }, {
         key: 'setAnalytics',
-        value: function setAnalytics(analyticsObj) {
-            this.analyticsObj = analyticsObj;
+        value: function setAnalytics(bool) {
+            this.analyticsEnabled = bool;
         }
     }, {
         key: 'setEvents',
@@ -2041,7 +2041,6 @@ var RecrasLanguageHelper = function () {
                 ERR_INVALID_HOSTNAME: 'Option "recras_hostname" ist ungültig.',
                 ERR_INVALID_LOCALE: 'Ungültiges Gebietsschema. Gültige Optionen sind: {LOCALES}',
                 ERR_INVALID_REDIRECT_URL: 'Ungültige redirect URL. Stellen Sie sicher, dass es mit http:// or https:// beginnt',
-                ERR_NO_ANALYTICS: 'Option "analytics" must be set for "analyticsEvents" to work.',
                 ERR_NO_ELEMENT: 'Option "element" nicht eingestellt.',
                 ERR_NO_FORM: 'Option "form_id" nicht eingestellt.',
                 ERR_NO_HOSTNAME: 'Option "recras_hostname" nicht eingestellt.',
@@ -2117,7 +2116,6 @@ var RecrasLanguageHelper = function () {
                 ERR_INVALID_HOSTNAME: 'Option "recras_hostname" is invalid.',
                 ERR_INVALID_LOCALE: 'Invalid locale. Valid options are: {LOCALES}',
                 ERR_INVALID_REDIRECT_URL: 'Invalid redirect URL. Make sure you it starts with http:// or https://',
-                ERR_NO_ANALYTICS: 'Option "analytics" must be set for "analyticsEvents" to work.',
                 ERR_NO_ELEMENT: 'Option "element" not set.',
                 ERR_NO_FORM: 'Option "form_id" not set.',
                 ERR_NO_HOSTNAME: 'Option "recras_hostname" not set.',
@@ -2193,7 +2191,6 @@ var RecrasLanguageHelper = function () {
                 ERR_INVALID_HOSTNAME: 'Optie "recras_hostname" is ongeldig.',
                 ERR_INVALID_LOCALE: 'Ongeldige locale. Geldige opties zijn: {LOCALES}',
                 ERR_INVALID_REDIRECT_URL: 'Ongeldige redirect-URL. Zorg ervoor dat deze begint met http:// of https://',
-                ERR_NO_ANALYTICS: 'Optie "analytics" moet ingesteld zijn om "analyticsEvents" te laten werken.',
                 ERR_NO_ELEMENT: 'Optie "element" niet ingesteld.',
                 ERR_NO_FORM: 'Optie "form_id" niet ingesteld.',
                 ERR_NO_HOSTNAME: 'Optie "recras_hostname" niet ingesteld.',
@@ -2347,9 +2344,6 @@ var RecrasOptions = function () {
     _createClass(RecrasOptions, [{
         key: 'getAnalyticsEvents',
         value: function getAnalyticsEvents() {
-            /*if (!this.getAnalyticsObject()) {
-                throw new Error(this.languageHelper.translate('ERR_NO_ANALYTICS'));
-            }*/
             if (!Array.isArray(this.options.analyticsEvents)) {
                 this.options.analyticsEvents = RecrasEventHelper.allEvents();
             }
@@ -2368,8 +2362,8 @@ var RecrasOptions = function () {
             return this.options.analyticsEvents;
         }
     }, {
-        key: 'getAnalyticsObject',
-        value: function getAnalyticsObject() {
+        key: 'getAnalytics',
+        value: function getAnalytics() {
             return this.options.analytics;
         }
     }, {

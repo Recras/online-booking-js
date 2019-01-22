@@ -60,7 +60,7 @@ See `/demo/index.html` for integration demos
 * `recras_hostname` - **required** - the name of your Recras, i.e. `demo.recras.nl`
 * `element` - **required** - a single HTML element, using `getElementById` or `querySelector`
 * `locale` - optional, defaults to nl_NL - a valid locale (de_DE, en_GB, and nl_NL). This is used for country names, error messages, etc. Package names from Recras are not affected.
-* `analytics` - optional - a reference to a Google Tag Manager `gtag` object, i.e. if you normally use `gtag('config', 'UA-12345678-1');` then you set this to `gtag`.
+* `analytics` - optional, defaults to `false` - set to `true` if you want to enable Google Analytics integration.
 * `analyticsEvents` - optional - a list of events to track. `analytics` must be set for this to 
 work. If omitted, all events will be sent. For a list of events, refer to the section Events at 
 the end of this document. 

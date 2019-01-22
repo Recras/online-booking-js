@@ -18,7 +18,7 @@ class RecrasBooking {
         this.options = options;
 
         this.eventHelper = new RecrasEventHelper();
-        this.eventHelper.setAnalytics(this.options.getAnalyticsObject());
+        this.eventHelper.setAnalytics(this.options.getAnalytics());
         this.eventHelper.setEvents(this.options.getAnalyticsEvents());
 
         let optionsPromise = this.languageHelper.setOptions(options);

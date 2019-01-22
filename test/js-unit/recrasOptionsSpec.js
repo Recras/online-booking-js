@@ -67,16 +67,6 @@ describe('RecrasOptions', () => {
     });
 
     describe('getAnalyticsEvents', () => {
-        it('throws when "analytics" is not set', () => {
-            expect(() => {
-                new RecrasOptions({
-                    element: document.createElement('div'),
-                    recras_hostname: 'demo.recras.nl',
-                    analyticsEvents: [],
-                });
-            }).toThrow(new Error('Optie "analytics" moet ingesteld zijn om "analyticsEvents" te laten werken.'));
-        });
-
         it('defaults to all events when an invalid option is passed', () => {
             let options = new RecrasOptions({
                 element: document.createElement('div'),

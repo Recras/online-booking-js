@@ -21,7 +21,7 @@ class RecrasEventHelper {
     static EVENT_VOUCHER_VOUCHER_SUBMITTED = 'BuyInProgress';
 
     constructor() {
-        this.analyticsObj = null;
+        this.analyticsEnabled = false;
         this.eventsEnabled = RecrasEventHelper.allEvents();
     }
 
@@ -59,19 +59,19 @@ class RecrasEventHelper {
             event.initEvent(action, true, true);
         }
 
-        if (this.analyticsObj && typeof this.analyticsObj === 'function' && this.eventEnabled(action)) {
-            this.analyticsObj('event', action, {
-                event_category: RecrasEventHelper.PREFIX_GLOBAL + ':' + cat,
-                event_label: 'method', //TODO: can we make this more specific?
-                value: value,
+        if (this.analyticsEnabled && typeof ga === 'function' && this.eventEnabled(action)) {
+            ga('send', 'event', {
+                eventCategory: RecrasEventHelper.PREFIX_GLOBAL + ':' + cat,
+                eventAction: action,
+                eventValue: value,
             });
         }
 
         return document.dispatchEvent(event);
     }
 
-    setAnalytics(analyticsObj) {
-        this.analyticsObj = analyticsObj;
+    setAnalytics(bool) {
+        this.analyticsEnabled = bool;
     }
 
     setEvents(events) {

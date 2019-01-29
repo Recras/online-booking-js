@@ -19,7 +19,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /*******************************
 *  Recras integration library  *
-*  v 0.13.3                    *
+*  v 0.13.4                    *
 *******************************/
 
 var RecrasBooking = function () {
@@ -156,7 +156,11 @@ var RecrasBooking = function () {
             if (!bookingSizeEl) {
                 return 0;
             }
-            return parseInt(bookingSizeEl.value, 10);
+            var bookingSizeValue = parseInt(bookingSizeEl.value, 10);
+            if (isNaN(bookingSizeValue)) {
+                return 0;
+            }
+            return bookingSizeValue;
         }
     }, {
         key: 'bookingSizeLines',
@@ -265,10 +269,11 @@ var RecrasBooking = function () {
     }, {
         key: 'checkBookingSize',
         value: function checkBookingSize(pack) {
-            var bookingSize = this.bookingSize();
-            if (bookingSize === 0) {
+            if (!this.shouldShowBookingSize(pack)) {
                 return;
             }
+
+            var bookingSize = this.bookingSize();
             var bsMaximum = this.bookingSizeMaximum(pack);
             var bsMinimum = this.bookingSizeMinimum(pack);
 
@@ -1139,7 +1144,7 @@ var RecrasBooking = function () {
                 if (_this25.shouldShowBookingSize(pack)) {
                     html += '<div>';
                     html += '<div><label for="bookingsize">' + (pack.weergavenaam || pack.arrangement) + '</label></div>';
-                    html += '<input type="number" id="bookingsize" class="bookingsize" min="0" data-price="' + _this25.bookingSizePrice(pack) + '">';
+                    html += '<input type="number" id="bookingsize" class="bookingsize" min="' + _this25.bookingSizeMinimum(pack) + '" data-price="' + _this25.bookingSizePrice(pack) + '">';
                     html += '<div class="recras-price recrasUnitPrice">' + _this25.formatPrice(_this25.bookingSizePrice(pack)) + '</div>';
                     html += '</div>';
                 }

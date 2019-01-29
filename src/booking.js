@@ -1,6 +1,6 @@
 /*******************************
 *  Recras integration library  *
-*  v 0.13.3                    *
+*  v 0.13.4                    *
 *******************************/
 
 class RecrasBooking {
@@ -117,7 +117,11 @@ class RecrasBooking {
         if (!bookingSizeEl) {
             return 0;
         }
-        return parseInt(bookingSizeEl.value, 10);
+        let bookingSizeValue = parseInt(bookingSizeEl.value, 10);
+        if (isNaN(bookingSizeValue)) {
+            return 0;
+        }
+        return bookingSizeValue;
     }
 
     bookingSizeLines(pack) {
@@ -211,10 +215,11 @@ class RecrasBooking {
     }
 
     checkBookingSize(pack) {
-        let bookingSize = this.bookingSize();
-        if (bookingSize === 0) {
+        if (!this.shouldShowBookingSize(pack)) {
             return;
         }
+
+        let bookingSize = this.bookingSize();
         let bsMaximum = this.bookingSizeMaximum(pack);
         let bsMinimum = this.bookingSizeMinimum(pack);
 
@@ -1013,7 +1018,7 @@ ${ msgs[1] }</p></div>`);
             if (this.shouldShowBookingSize(pack)) {
                 html += `<div>`;
                 html += `<div><label for="bookingsize">${ (pack.weergavenaam || pack.arrangement) }</label></div>`;
-                html += `<input type="number" id="bookingsize" class="bookingsize" min="0" data-price="${ this.bookingSizePrice(pack) }">`;
+                html += `<input type="number" id="bookingsize" class="bookingsize" min="${ this.bookingSizeMinimum(pack) }" data-price="${ this.bookingSizePrice(pack) }">`;
                 html += `<div class="recras-price recrasUnitPrice">${ this.formatPrice(this.bookingSizePrice(pack)) }</div>`;
                 html += `</div>`;
             }

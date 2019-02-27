@@ -1,6 +1,6 @@
 # Changelog
 
-## branch tag-manager
+## 0.14.0 (2019-02-27)
 * Add Google Analytics integration
 
 ## 0.13.4 (2019-01-29)

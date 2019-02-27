@@ -19,7 +19,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /*******************************
 *  Recras integration library  *
-*  v 0.13.2                    *
+*  v 0.14.0                    *
 *******************************/
 
 var RecrasBooking = function () {
@@ -160,7 +160,11 @@ var RecrasBooking = function () {
             if (!bookingSizeEl) {
                 return 0;
             }
-            return parseInt(bookingSizeEl.value, 10);
+            var bookingSizeValue = parseInt(bookingSizeEl.value, 10);
+            if (isNaN(bookingSizeValue)) {
+                return 0;
+            }
+            return bookingSizeValue;
         }
     }, {
         key: 'bookingSizeLines',
@@ -269,10 +273,11 @@ var RecrasBooking = function () {
     }, {
         key: 'checkBookingSize',
         value: function checkBookingSize(pack) {
-            var bookingSize = this.bookingSize();
-            if (bookingSize === 0) {
+            if (!this.shouldShowBookingSize(pack)) {
                 return;
             }
+
+            var bookingSize = this.bookingSize();
             var bsMaximum = this.bookingSizeMaximum(pack);
             var bsMinimum = this.bookingSizeMinimum(pack);
 
@@ -291,17 +296,22 @@ var RecrasBooking = function () {
             [].concat(_toConsumableArray(this.findElements('.recras-product-dependency'))).forEach(function (el) {
                 el.parentNode.removeChild(el);
             });
+            [].concat(_toConsumableArray(this.findElements('[data-package-id]'))).forEach(function (el) {
+                el.classList.remove('recras-input-invalid');
+            });
             this.requiresProduct = false;
 
             this.productCounts().forEach(function (line) {
                 if (line.aantal > 0) {
                     var packageLineID = line.arrangementsregel_id;
                     var product = _this7.findProduct(packageLineID).product;
+                    var thisProductRequiresProduct = false;
                     if (!product.vereist_product) {
                         console.warn('You are logged in to this particular Recras. Because of API differences between logged-in and logged-out state, required products do not work as expected.');
                     } else {
                         product.vereist_product.forEach(function (vp) {
                             if (!_this7.dependencySatisfied(line.aantal, vp)) {
+                                thisProductRequiresProduct = true;
                                 _this7.requiresProduct = true;
                                 var requiredAmount = _this7.requiredAmount(line.aantal, vp);
                                 var requiredProductName = _this7.getProductByID(vp.vereist_product_id).weergavenaam;
@@ -314,6 +324,11 @@ var RecrasBooking = function () {
                                 _this7.findElement('.recras-amountsform').insertAdjacentHTML('beforeend', '<span class="recras-product-dependency">' + message + '</span>');
                             }
                         });
+                    }
+
+                    if (thisProductRequiresProduct) {
+                        var productInput = _this7.findElement('[data-package-id="' + packageLineID + '"]');
+                        productInput.classList.add('recras-input-invalid');
                     }
                 }
             });
@@ -1133,7 +1148,7 @@ var RecrasBooking = function () {
                 if (_this25.shouldShowBookingSize(pack)) {
                     html += '<div>';
                     html += '<div><label for="bookingsize">' + (pack.weergavenaam || pack.arrangement) + '</label></div>';
-                    html += '<input type="number" id="bookingsize" class="bookingsize" min="0" data-price="' + _this25.bookingSizePrice(pack) + '">';
+                    html += '<input type="number" id="bookingsize" class="bookingsize" min="' + _this25.bookingSizeMinimum(pack) + '" data-price="' + _this25.bookingSizePrice(pack) + '">';
                     html += '<div class="recras-price recrasUnitPrice">' + _this25.formatPrice(_this25.bookingSizePrice(pack)) + '</div>';
                     html += '</div>';
                 }
@@ -1961,6 +1976,7 @@ var RecrasHttpHelper = function () {
         key: 'fetchJson',
         value: function fetchJson(url, errorHandler) {
             return this.call(url, {
+                credentials: 'omit',
                 method: 'get'
             }, errorHandler);
         }
@@ -1969,6 +1985,7 @@ var RecrasHttpHelper = function () {
         value: function postJson(url, data, errorHandler) {
             return this.call(url, {
                 body: JSON.stringify(data),
+                credentials: 'omit',
                 method: 'post'
             }, errorHandler);
         }

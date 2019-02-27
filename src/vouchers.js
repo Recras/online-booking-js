@@ -7,6 +7,9 @@ class RecrasVoucher {
         }
         this.options = options;
 
+        this.eventHelper = new RecrasEventHelper();
+        this.eventHelper.setEvents(this.options.getAnalyticsEvents());
+
         this.element = this.options.getElement();
         this.element.classList.add('recras-buy-voucher');
 
@@ -46,7 +49,7 @@ class RecrasVoucher {
             return false;
         }
 
-        RecrasEventHelper.sendEvent('Recras:Voucher:BuyInProgress');
+        this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_VOUCHER, RecrasEventHelper.EVENT_VOUCHER_VOUCHER_SUBMITTED);
         this.findElement('.buyTemplate').setAttribute('disabled', 'disabled');
 
         let payload = {
@@ -62,7 +65,7 @@ class RecrasVoucher {
                 this.findElement('.buyTemplate').removeAttribute('disabled');
 
                 if (json.payment_url) {
-                    RecrasEventHelper.sendEvent('Recras:Voucher:RedirectToPayment');
+                    this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_VOUCHER, RecrasEventHelper.EVENT_VOUCHER_REDIRECT_PAYMENT);
                     window.top.location.href = json.payment_url;
                 } else {
                     console.log(json);
@@ -73,7 +76,7 @@ class RecrasVoucher {
     changeTemplate(templateID) {
         this.clearAllExceptTemplateSelection();
         this.showContactForm(templateID);
-        RecrasEventHelper.sendEvent('Recras:Voucher:TemplateChanged');
+        this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_VOUCHER, RecrasEventHelper.EVENT_VOUCHER_TEMPLATE_CHANGED);
     }
 
     clearAll() {

@@ -16,6 +16,9 @@
 </body>
 <script src="onlinebooking.js"></script>
 <script>
+    const fakeAnalytics = function(_send, _event, params) {
+        console.log(params);
+    };
     const recrasOptions = {
         recras_hostname: 'demo.recras.nl', // Required
         element: document.getElementById('onlinebooking'), // Required
@@ -23,6 +26,7 @@
         //package_id: 5, // Optional, this will skip the package selection step for online booking
         previewTimes: false,
         redirect_url: 'https://www.onionbooking.com/', // Optional, but recommended
+        analytics: fakeAnalytics,
     };
 
     let bookingOptions = new RecrasOptions(recrasOptions);

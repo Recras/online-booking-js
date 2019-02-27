@@ -1,5 +1,8 @@
 # Changelog
 
+## branch tag-manager
+* Add Google Analytics integration
+
 ## 0.13.4 (2019-01-29)
 * Add `recras-input-invalid` class to inputs for products that require an other product
 * Fix minimum booking size

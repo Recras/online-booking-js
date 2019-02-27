@@ -52,6 +52,9 @@ class RecrasOptions {
     getPackageId() {
         return this.options.package_id;
     }
+    getPreFilledAmounts() {
+        return this.options.productAmounts;
+    }
     getPreviewTimes() {
         return (this.options.previewTimes !== undefined ? this.options.previewTimes : true);
     }

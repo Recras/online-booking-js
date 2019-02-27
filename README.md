@@ -1,5 +1,5 @@
 # Recras Online Booking JS library
-Version: 0.14.0
+Version: 0.15.0
 
 JS library for easy online booking & voucher integration
 
@@ -70,6 +70,16 @@ work. If omitted, all events will be sent. For a list of events, refer to the se
 * `autoScroll` - optional, defaults to `true` - whether or not to scroll the amounts form into view when changing packages. This is most useful if you select a package by default and don't want to scroll past the intro text, set it to `false` in that case.
 * `previewTimes` - optional, defaults to `true` - whether or not to preview times for each line 
 in the programme after selecting a date and time.
+* `productAmounts` - optional, use in combination with `package_id`. Set this to an object where the keys are the package line ID's and the values are the amounts to enter, i.e. :
+    ```
+    {
+        bookingsize: 16,
+        1: 12,
+        42: 16,
+        43: 16,
+    }
+    ```
+    The package line ID's can be obtained by inspecting the amounts form, or by checking the [packages API specification](https://demo.recras.nl/docs/api/endpoints/arrangementen.html) - use the `id` field for each entry in `regels`.
 
 ### Vouchers only
 * `voucher_template_id` - optional - the ID of a voucher template. This will hide the template selection dropdown and skip this step.

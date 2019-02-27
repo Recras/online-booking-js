@@ -1,6 +1,6 @@
 /*******************************
 *  Recras integration library  *
-*  v 0.14.0                    *
+*  v 0.15.0                    *
 *******************************/
 
 class RecrasBooking {
@@ -36,6 +36,12 @@ class RecrasBooking {
                 }));
             } else {
                 this.languageHelper.setLocale(this.options.getLocale());
+            }
+        }
+
+        if (this.options.getPreFilledAmounts()) {
+            if (!this.options.getPackageId()) {
+                console.warn(this.languageHelper.translate('ERR_AMOUNTS_NO_PACKAGE'));
             }
         }
 
@@ -658,7 +664,10 @@ class RecrasBooking {
         }
 
         //TODO: remove active from all sections? Test with invalid amount
-        this.findElement(activeQuery).classList.add('recras-active');
+
+        if (activeQuery && this.findElement(activeQuery)) {
+            this.findElement(activeQuery).classList.add('recras-active');
+        }
     }
 
     normaliseDate(date, packageStart, bookingStart) {
@@ -676,6 +685,24 @@ class RecrasBooking {
             methods.push(this.PAYMENT_AFTERWARDS);
         }
         return methods;
+    }
+
+    preFillAmounts(amounts) {
+        Object.entries(amounts).forEach(idAmount => {
+            let el;
+            if (idAmount[0] === 'bookingsize') {
+                el = this.findElement('#bookingsize');
+            } else {
+                el = this.findElement(`[data-package-id="${ idAmount[0] }"]`);
+            }
+
+            if (el) {
+                el.value = idAmount[1];
+            }
+            this.updateProductPrice(el);
+        });
+        this.updateProductAmounts();
+
     }
 
     previewTimes() {
@@ -921,6 +948,11 @@ class RecrasBooking {
                 html += `<label for="recras-onlinebooking-time">${ this.languageHelper.translate('TIME') }</label><select id="recras-onlinebooking-time" class="recras-onlinebooking-time" disabled autocomplete="off"></select>`;
                 html += '</form>';
                 this.appendHtml(html);
+
+                if (this.options.getPreFilledAmounts()) {
+                    this.preFillAmounts(this.options.getPreFilledAmounts());
+                }
+
                 let pikadayOptions = Object.assign(
                     RecrasCalendarHelper.defaultOptions(),
                     {

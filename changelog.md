@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.15.1 (2019-02-28)
+* Fix error for invalid pre-filled amounts
+
 ## 0.15.0 (2019-02-27)
 * Add the ability to pre-fill the amounts form
 

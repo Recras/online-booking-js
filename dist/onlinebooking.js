@@ -28,7 +28,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /*******************************
 *  Recras integration library  *
-*  v 0.15.0                    *
+*  v 0.15.1                    *
 *******************************/
 
 var RecrasBooking = function () {
@@ -816,8 +816,8 @@ var RecrasBooking = function () {
 
                 if (el) {
                     el.value = idAmount[1];
+                    _this18.updateProductPrice(el);
                 }
-                _this18.updateProductPrice(el);
             });
             this.updateProductAmounts();
         }

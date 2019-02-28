@@ -1,6 +1,6 @@
 /*******************************
 *  Recras integration library  *
-*  v 0.15.0                    *
+*  v 0.15.1                    *
 *******************************/
 
 class RecrasBooking {
@@ -698,8 +698,8 @@ class RecrasBooking {
 
             if (el) {
                 el.value = idAmount[1];
+                this.updateProductPrice(el);
             }
-            this.updateProductPrice(el);
         });
         this.updateProductAmounts();
 

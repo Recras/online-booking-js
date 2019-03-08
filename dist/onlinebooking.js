@@ -28,7 +28,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /*******************************
 *  Recras integration library  *
-*  v 0.15.1                    *
+*  v 0.16.0                    *
 *******************************/
 
 var RecrasBooking = function () {
@@ -896,6 +896,24 @@ var RecrasBooking = function () {
             this.changePackage(null);
         }
     }, {
+        key: 'selectSingleTime',
+        value: function selectSingleTime() {
+            if (this.findElements('#recras-onlinebooking-time option[value]').length !== 1) {
+                return;
+            }
+            this.findElement('#recras-onlinebooking-time option[value]').selected = true;
+
+            var event = void 0;
+            try {
+                event = new Event('change');
+            } catch (e) {
+                // IE
+                event = document.createEvent('Event');
+                event.initEvent('change', true, true);
+            }
+            this.findElement('#recras-onlinebooking-time').dispatchEvent(event);
+        }
+    }, {
         key: 'setDiscountStatus',
         value: function setDiscountStatus(statusText) {
             var isError = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
@@ -1123,6 +1141,7 @@ var RecrasBooking = function () {
                             });
                             _this24.showTimes(times);
                             _this24.loadingIndicatorHide();
+                            _this24.selectSingleTime();
                         });
                         _this24.maybeDisableBookButton();
                         _this24.showDiscountFields();

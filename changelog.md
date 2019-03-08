@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.16.0 (2019-03-08)
+* If there is only one available timeslot for the selected date, select it automatically
+
 ## 0.15.1 (2019-02-28)
 * Fix error for invalid pre-filled amounts
 

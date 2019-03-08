@@ -1,6 +1,6 @@
 /*******************************
 *  Recras integration library  *
-*  v 0.15.1                    *
+*  v 0.16.0                    *
 *******************************/
 
 class RecrasBooking {
@@ -769,6 +769,23 @@ class RecrasBooking {
         this.changePackage(null);
     }
 
+    selectSingleTime() {
+        if (this.findElements('#recras-onlinebooking-time option[value]').length !== 1) {
+            return;
+        }
+        this.findElement('#recras-onlinebooking-time option[value]').selected = true;
+
+        let event;
+        try {
+            event = new Event('change');
+        } catch (e) {
+            // IE
+            event = document.createEvent('Event');
+            event.initEvent('change', true, true);
+        }
+        this.findElement('#recras-onlinebooking-time').dispatchEvent(event);
+    }
+
     setDiscountStatus(statusText, isError = true) {
         let statusEl = this.findElement('.discount-status');
         if (!statusEl) {
@@ -992,6 +1009,7 @@ class RecrasBooking {
                                 times = times.map(time => RecrasDateHelper.timePartOnly(new Date(time)));
                                 this.showTimes(times);
                                 this.loadingIndicatorHide();
+                                this.selectSingleTime();
                             });
                             this.maybeDisableBookButton();
                             this.showDiscountFields();

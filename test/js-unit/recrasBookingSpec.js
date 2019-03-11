@@ -30,7 +30,32 @@ describe('RecrasBooking', () => {
                 expect(rb.languageHelper.locale).toEqual('nl_NL');
             });
         });
+    });
 
+    describe('selectSingleTime', () => {
+        beforeEach(() => {
+            let mainEl = document.createElement('div');
+            this.rb = new RecrasBooking(new RecrasOptions({
+                element: mainEl,
+                recras_hostname: 'demo.recras.nl',
+            }));
+
+            let timesEl = document.createElement('select');
+            timesEl.id = 'recras-onlinebooking-time';
+            timesEl.classList.add('recras-onlinebooking-time');
+            mainEl.appendChild(timesEl);
+        });
+
+        it('does not select a timeslot when there are multiple', () => {
+            this.rb.showTimes(['10:00', '11:00']);
+            this.rb.selectSingleTime();
+            expect(this.rb.findElements('#recras-onlinebooking-time option[value]:checked').length).toEqual(0);
+        });
+        it('selects the timeslot when there is only one', () => {
+            this.rb.showTimes(['10:00']);
+            this.rb.selectSingleTime();
+            expect(this.rb.findElements('#recras-onlinebooking-time option[value]:checked').length).toEqual(1);
+        });
     });
 
     describe('submitBooking', () => {
@@ -58,8 +83,14 @@ describe('RecrasBooking', () => {
                     resolve();
                 });
             });
+            this.rb.contactForm.generateJson = jasmine.createSpy('generateJson').and.callFake(() => {
+                return new Promise(function(resolve) {
+                    resolve();
+                });
+            });
+
             this.rb.bookingSize = () => 5;
-            this.rb.submitBooking();
+            this.rb.submitBooking();//
             expect(this.rb.postJson).toHaveBeenCalledWith('onlineboeking/reserveer', jasmine.objectContaining({
                 betaalmethode: 'factuur',
             }));

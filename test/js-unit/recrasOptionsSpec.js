@@ -92,9 +92,9 @@ describe('RecrasOptions', () => {
                 element: document.createElement('div'),
                 recras_hostname: 'demo.recras.nl',
                 analytics: function() {},
-                analyticsEvents: ['foo', RecrasEventHelper.BOOKING_DISABLED_INVALID_DATE],
+                analyticsEvents: ['foo', RecrasEventHelper.EVENT_BOOKING_BOOKING_SUBMITTED],
             });
-            expect(options.getAnalyticsEvents()).toBe([RecrasEventHelper.BOOKING_DISABLED_INVALID_DATE]);
+            expect(options.getAnalyticsEvents()).toEqual([RecrasEventHelper.EVENT_BOOKING_BOOKING_SUBMITTED]);
         });
     });
 });

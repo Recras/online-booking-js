@@ -1,7 +1,9 @@
 describe('RecrasEventHelper', () => {
+    let eventHelper = new RecrasEventHelper();
+
     describe('sendEvent', () => {
         it('returns a boolean when sending an event', () => {
-            expect(RecrasEventHelper.sendEvent('Foo', 'Bar')).toBe(true);
+            expect(eventHelper.sendEvent('Foo', 'Bar')).toBe(true);
         });
     });
 });

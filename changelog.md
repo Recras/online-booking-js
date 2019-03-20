@@ -1,5 +1,8 @@
 # Changelog
 
+## branch `auto-fill-package`
+* Add the ability to pre-fill the package in a contact form
+
 ## 0.16.0 (2019-03-08)
 * If there is only one available timeslot for the selected date, select it automatically
 

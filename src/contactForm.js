@@ -256,10 +256,13 @@ class RecrasContactForm {
             case 'boeking.starttijd': //TODO: add optional fallback
                 return label + `<input type="time" ${ fixedAttributes } pattern="(0[0-9]|1[0-9]|2[0-3])(:[0-5][0-9])">`;
             case 'boeking.arrangement':
+                const preFilledPackage = this.options.getPackageId();
+
                 html = `<select ${ fixedAttributes }>`;
                 html += `<option value="">`;
                 Object.values(this.packages).forEach(pack => {
-                    html += `<option value="${ pack.id }">${ pack.arrangement }`;
+                    const selText = preFilledPackage && preFilledPackage === pack.id ? 'selected' : '';
+                    html += `<option value="${ pack.id }" ${ selText }>${ pack.arrangement }`;
                 });
                 html += '</select>';
                 return label + html;

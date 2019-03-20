@@ -1,6 +1,6 @@
 # Changelog
 
-## branch `auto-fill-package`
+## 0.17.0 (2019-03-20)
 * Add the ability to pre-fill the package in a contact form
 
 ## 0.16.0 (2019-03-08)

@@ -28,7 +28,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /*******************************
 *  Recras integration library  *
-*  v 0.16.0                    *
+*  v 0.17.0                    *
 *******************************/
 
 var RecrasBooking = function () {
@@ -1779,10 +1779,13 @@ var RecrasContactForm = function () {
                     //TODO: add optional fallback
                     return label + ('<input type="time" ' + fixedAttributes + ' pattern="(0[0-9]|1[0-9]|2[0-3])(:[0-5][0-9])">');
                 case 'boeking.arrangement':
+                    var preFilledPackage = this.options.getPackageId();
+
                     html = '<select ' + fixedAttributes + '>';
                     html += '<option value="">';
                     _objectValues(this.packages).forEach(function (pack) {
-                        html += '<option value="' + pack.id + '">' + pack.arrangement;
+                        var selText = preFilledPackage && preFilledPackage === pack.id ? 'selected' : '';
+                        html += '<option value="' + pack.id + '" ' + selText + '>' + pack.arrangement;
                     });
                     html += '</select>';
                     return label + html;

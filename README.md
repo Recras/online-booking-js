@@ -87,6 +87,7 @@ in the programme after selecting a date and time.
 
 ### Contact form only
 * `form_id` - **required** - the ID of the form.
+* `package_id` - optional - can be used to programmatically fill a "Booking - Package" field present in the contact form.
 * `redirect_url` - optional - the URL to redirect to after a successful form submission.
 
 

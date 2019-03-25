@@ -32,6 +32,106 @@ describe('RecrasBooking', () => {
         });
     });
 
+    describe('amountsValid', () => {
+        let rb;
+        let inputLessThanMinimum;
+        let inputMoreThanMaximum;
+
+        beforeEach(() => {
+            let mainEl = document.createElement('div');
+            rb = new RecrasBooking(new RecrasOptions({
+                element: mainEl,
+                recras_hostname: 'demo.recras.nl',
+            }));
+
+            inputLessThanMinimum = document.createElement('input');
+            inputLessThanMinimum.value = 1;
+            inputLessThanMinimum.dataset.packageId = '1';
+
+            inputMoreThanMaximum = document.createElement('input');
+            inputMoreThanMaximum.value = 4;
+            inputMoreThanMaximum.dataset.packageId = '2';
+
+            let inputBookingSize = document.createElement('input');
+            inputBookingSize.id = 'bookingsize';
+            inputBookingSize.value = 1;
+
+            mainEl.appendChild(inputLessThanMinimum);
+            mainEl.appendChild(inputMoreThanMaximum);
+            mainEl.appendChild(inputBookingSize);
+        });
+
+        it('handles minimum amount', function() {
+            const pack = {
+                regels: [
+                    {
+                        id: 1,
+                        aantal_personen: 2,
+                        onlineboeking_aantalbepalingsmethode: 'invullen_door_gebruiker',
+                    },
+                ],
+            };
+            expect(rb.amountsValid(pack)).toBe(false);
+        });
+
+        it('handles maximum amount', function() {
+            const pack = {
+                regels: [
+                    {
+                        id: 2,
+                        aantal_personen: 1,
+                        max: 2,
+                        onlineboeking_aantalbepalingsmethode: 'invullen_door_gebruiker',
+                    },
+                ],
+            };
+            expect(rb.amountsValid(pack)).toBe(false);
+        });
+
+        it('handles booking size minimum', function() {
+            const pack = {
+                regels: [
+                    {
+                        id: 3,
+                        aantal_personen: 1,
+                        onlineboeking_aantalbepalingsmethode: 'boekingsgrootte',
+                        product: {
+                            minimum_aantal: 2,
+                        }
+                    },
+                ],
+            };
+            expect(rb.amountsValid(pack)).toBe(false);
+        });
+
+        it('handles zero products', function() {
+            const pack = {
+                regels: [
+                    {
+                        id: 1,
+                        aantal_personen: 0,
+                        onlineboeking_aantalbepalingsmethode: 'invullen_door_gebruiker',
+                    },
+                ],
+            };
+            inputLessThanMinimum.value = '';
+            expect(rb.amountsValid(pack)).toBe(false);
+        });
+
+        it('handles happy path', function() {
+            const pack = {
+                regels: [
+                    {
+                        id: 1,
+                        aantal_personen: 0,
+                        onlineboeking_aantalbepalingsmethode: 'invullen_door_gebruiker',
+                    },
+                ],
+            };
+            expect(rb.amountsValid(pack)).toBe(true);
+        });
+    });
+
     describe('selectSingleTime', () => {
         beforeEach(() => {
             let mainEl = document.createElement('div');

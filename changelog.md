@@ -1,5 +1,8 @@
 # Changelog
 
+## branch `max-amount-invalid`
+* Add message when entering an quantity more than the maximum of a line
+
 ## 0.17.0 (2019-03-20)
 * Add the ability to pre-fill the package in a contact form
 

@@ -1,6 +1,6 @@
 # Changelog
 
-## branch `max-amount-invalid`
+## 0.17.1 (2019-03-26)
 * Add message when entering an quantity more than the maximum of a line
 
 ## 0.17.0 (2019-03-20)

@@ -68,7 +68,7 @@ class RecrasBooking {
 
     amountsValid(pack) {
         let hasAtLeastOneProduct = false;
-        this.getLinesNoBookingSize(pack).forEach(line => {
+        for (const line of this.getLinesNoBookingSize(pack)) {
             let aantal = this.findElement(`[data-package-id="${ line.id }"]`).value;
             if (aantal > 0) {
                 hasAtLeastOneProduct = true;
@@ -76,7 +76,10 @@ class RecrasBooking {
             if (aantal > 0 && aantal < line.aantal_personen) {
                 return false;
             }
-        });
+            if (line.max && aantal > line.max) {
+                return false;
+            }
+        }
         if (this.shouldShowBookingSize(pack) && this.bookingSize() > 0) {
             if (this.bookingSize() < this.bookingSizeMinimum(pack) || this.bookingSize() > this.bookingSizeMaximum(pack)) {
                 return false;
@@ -702,7 +705,6 @@ class RecrasBooking {
             }
         });
         this.updateProductAmounts();
-
     }
 
     previewTimes() {
@@ -905,6 +907,7 @@ class RecrasBooking {
         </div>`;
             this.appendHtml(html);
             this.findElement('.bookPackage').addEventListener('click', this.submitBooking.bind(this));
+            this.maybeDisableBookButton();
         });
     }
 

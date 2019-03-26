@@ -65,7 +65,7 @@ describe('RecrasBooking', () => {
             const pack = {
                 regels: [
                     {
-                        id: 1,
+                        id: inputLessThanMinimum.dataset.packageId,
                         aantal_personen: 2,
                         onlineboeking_aantalbepalingsmethode: 'invullen_door_gebruiker',
                     },
@@ -78,7 +78,7 @@ describe('RecrasBooking', () => {
             const pack = {
                 regels: [
                     {
-                        id: 2,
+                        id: inputMoreThanMaximum.dataset.packageId,
                         aantal_personen: 1,
                         max: 2,
                         onlineboeking_aantalbepalingsmethode: 'invullen_door_gebruiker',
@@ -92,7 +92,6 @@ describe('RecrasBooking', () => {
             const pack = {
                 regels: [
                     {
-                        id: 3,
                         aantal_personen: 1,
                         onlineboeking_aantalbepalingsmethode: 'boekingsgrootte',
                         product: {
@@ -108,7 +107,7 @@ describe('RecrasBooking', () => {
             const pack = {
                 regels: [
                     {
-                        id: 1,
+                        id: inputLessThanMinimum.dataset.packageId,
                         aantal_personen: 0,
                         onlineboeking_aantalbepalingsmethode: 'invullen_door_gebruiker',
                     },
@@ -122,7 +121,7 @@ describe('RecrasBooking', () => {
             const pack = {
                 regels: [
                     {
-                        id: 1,
+                        id: inputLessThanMinimum.dataset.packageId,
                         aantal_personen: 0,
                         onlineboeking_aantalbepalingsmethode: 'invullen_door_gebruiker',
                     },

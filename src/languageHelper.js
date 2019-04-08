@@ -165,7 +165,7 @@ class RecrasLanguageHelper {
                 ATTR_REQUIRED: 'Vereist',
                 BOOKING_DISABLED_AGREEMENT: 'Je bent nog niet akkoord met de voorwaarden',
                 BOOKING_DISABLED_AMOUNTS_INVALID: 'Aantallen in programma zijn ongeldig',
-                BOOKING_DISABLED_CONTACT_FORM_INVALID: 'Contactformuler is niet volledig ingevuld, of bevat ongeldige waardes',
+                BOOKING_DISABLED_CONTACT_FORM_INVALID: 'Contactformulier is niet volledig ingevuld, of bevat ongeldige waardes',
                 BOOKING_DISABLED_INVALID_DATE: 'Geen datum geselecteerd',
                 BOOKING_DISABLED_INVALID_TIME: 'Geen tijd geselecteerd',
                 BOOKING_DISABLED_REQUIRED_PRODUCT: 'Vereist product nog niet geselecteerd',

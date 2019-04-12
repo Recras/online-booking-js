@@ -1,6 +1,6 @@
 /*******************************
 *  Recras integration library  *
-*  v 0.17.2                    *
+*  v 0.17.3                    *
 *******************************/
 
 class RecrasBooking {
@@ -68,7 +68,12 @@ class RecrasBooking {
 
     amountsValid(pack) {
         let hasAtLeastOneProduct = false;
-        for (const line of this.getLinesNoBookingSize(pack)) {
+        // Babel transpiles 'for ... of' as Symbol.iterator, which is not available in IE
+        // so we use a regular for loop instead
+        let lines = this.getLinesNoBookingSize(pack);
+        for (let i = 0; i < lines.length; i++) {
+            let line = lines[i];
+
             let aantal = this.findElement(`[data-package-id="${ line.id }"]`).value;
             if (aantal > 0) {
                 hasAtLeastOneProduct = true;

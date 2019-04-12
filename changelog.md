@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.17.3 (2019-04-12)
+* Fix build in Internet Explorer
+
 ## 0.17.2 (2019-04-12)
 * Fix sending of Google Analytics events
 

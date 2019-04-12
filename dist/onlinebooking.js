@@ -28,7 +28,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /*******************************
 *  Recras integration library  *
-*  v 0.17.2                    *
+*  v 0.17.3                    *
 *******************************/
 
 var RecrasBooking = function () {
@@ -109,40 +109,23 @@ var RecrasBooking = function () {
         key: 'amountsValid',
         value: function amountsValid(pack) {
             var hasAtLeastOneProduct = false;
-            var _iteratorNormalCompletion = true;
-            var _didIteratorError = false;
-            var _iteratorError = undefined;
+            // Babel transpiles 'for ... of' as Symbol.iterator, which is not available in IE
+            // so we use a regular for loop instead
+            var lines = this.getLinesNoBookingSize(pack);
+            for (var i = 0; i < lines.length; i++) {
+                var line = lines[i];
 
-            try {
-                for (var _iterator = this.getLinesNoBookingSize(pack)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                    var line = _step.value;
-
-                    var aantal = this.findElement('[data-package-id="' + line.id + '"]').value;
-                    if (aantal > 0) {
-                        hasAtLeastOneProduct = true;
-                    }
-                    if (aantal > 0 && aantal < line.aantal_personen) {
-                        return false;
-                    }
-                    if (line.max && aantal > line.max) {
-                        return false;
-                    }
+                var aantal = this.findElement('[data-package-id="' + line.id + '"]').value;
+                if (aantal > 0) {
+                    hasAtLeastOneProduct = true;
                 }
-            } catch (err) {
-                _didIteratorError = true;
-                _iteratorError = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion && _iterator.return) {
-                        _iterator.return();
-                    }
-                } finally {
-                    if (_didIteratorError) {
-                        throw _iteratorError;
-                    }
+                if (aantal > 0 && aantal < line.aantal_personen) {
+                    return false;
+                }
+                if (line.max && aantal > line.max) {
+                    return false;
                 }
             }
-
             if (this.shouldShowBookingSize(pack) && this.bookingSize() > 0) {
                 if (this.bookingSize() < this.bookingSizeMinimum(pack) || this.bookingSize() > this.bookingSizeMaximum(pack)) {
                     return false;

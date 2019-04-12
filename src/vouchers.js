@@ -49,7 +49,7 @@ class RecrasVoucher {
             return false;
         }
 
-        this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_VOUCHER, RecrasEventHelper.EVENT_VOUCHER_VOUCHER_SUBMITTED);
+        this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_VOUCHER, RecrasEventHelper.EVENT_VOUCHER_VOUCHER_SUBMITTED, this.selectedTemplate.id);
         this.findElement('.buyTemplate').setAttribute('disabled', 'disabled');
 
         let payload = {
@@ -76,7 +76,7 @@ class RecrasVoucher {
     changeTemplate(templateID) {
         this.clearAllExceptTemplateSelection();
         this.showContactForm(templateID);
-        this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_VOUCHER, RecrasEventHelper.EVENT_VOUCHER_TEMPLATE_CHANGED);
+        this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_VOUCHER, RecrasEventHelper.EVENT_VOUCHER_TEMPLATE_CHANGED, templateID);
     }
 
     clearAll() {

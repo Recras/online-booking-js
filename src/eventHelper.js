@@ -59,12 +59,15 @@ class RecrasEventHelper {
             event.initEvent(action, true, true);
         }
 
-        if (this.analyticsEnabled && typeof ga === 'function' && this.eventEnabled(action)) {
-            ga('send', 'event', {
+        if (this.analyticsEnabled && typeof window.ga === 'function' && this.eventEnabled(action)) {
+            let eventData = {
                 eventCategory: RecrasEventHelper.PREFIX_GLOBAL + ':' + cat,
                 eventAction: action,
-                eventValue: value,
-            });
+            };
+            if (value) {
+                eventData.eventValue = value;
+            }
+            window.ga('send', 'event', eventData);
         }
 
         return document.dispatchEvent(event);

@@ -201,7 +201,7 @@ class RecrasBooking {
             return false;
         } else {
             this.clearAllExceptPackageSelection();
-            this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_PACKAGE_CHANGED);
+            this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_PACKAGE_CHANGED, selectedPackage[0].id);
         }
         this.selectedPackage = selectedPackage[0];
         this.showProducts(this.selectedPackage).then(() => {
@@ -1147,7 +1147,7 @@ ${ msgs[1] }</p></div>`);
             return false;
         }
 
-        this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_BOOKING_SUBMITTED);
+        this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_BOOKING_SUBMITTED, this.selectedPackage.id);
 
         let paymentMethod = this.paymentMethods(this.selectedPackage)[0];
         let paymentMethodEl = this.findElement('[name="paymentMethod"]:checked');

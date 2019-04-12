@@ -43,6 +43,9 @@ button:hover, button:active {
     background: hsl(147, 25%, 67%);
     border-bottom-color: hsl(147, 25%, 50%);
 }
+:invalid {
+    border-color: #a00;
+}
 button:disabled {
     cursor: not-allowed;
 }

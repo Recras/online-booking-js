@@ -28,7 +28,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /*******************************
 *  Recras integration library  *
-*  v 0.17.1                    *
+*  v 0.17.2                    *
 *******************************/
 
 var RecrasBooking = function () {
@@ -283,7 +283,7 @@ var RecrasBooking = function () {
                 return false;
             } else {
                 this.clearAllExceptPackageSelection();
-                this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_PACKAGE_CHANGED);
+                this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_PACKAGE_CHANGED, selectedPackage[0].id);
             }
             this.selectedPackage = selectedPackage[0];
             this.showProducts(this.selectedPackage).then(function () {
@@ -1318,7 +1318,7 @@ var RecrasBooking = function () {
                 return false;
             }
 
-            this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_BOOKING_SUBMITTED);
+            this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_BOOKING_SUBMITTED, this.selectedPackage.id);
 
             var paymentMethod = this.paymentMethods(this.selectedPackage)[0];
             var paymentMethodEl = this.findElement('[name="paymentMethod"]:checked');
@@ -1856,7 +1856,7 @@ var RecrasContactForm = function () {
             var _this36 = this;
 
             e.preventDefault();
-            this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_CONTACT_FORM, RecrasEventHelper.EVENT_CONTACT_FORM_SUBMIT);
+            this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_CONTACT_FORM, RecrasEventHelper.EVENT_CONTACT_FORM_SUBMIT, this.options.getFormId());
             var submitButton = this.findElement('.submitForm');
 
             var status = this.checkRequiredCheckboxes();
@@ -1987,12 +1987,15 @@ var RecrasEventHelper = function () {
                 event.initEvent(action, true, true);
             }
 
-            if (this.analyticsEnabled && typeof ga === 'function' && this.eventEnabled(action)) {
-                ga('send', 'event', {
+            if (this.analyticsEnabled && typeof window.ga === 'function' && this.eventEnabled(action)) {
+                var eventData = {
                     eventCategory: RecrasEventHelper.PREFIX_GLOBAL + ':' + cat,
-                    eventAction: action,
-                    eventValue: value
-                });
+                    eventAction: action
+                };
+                if (value) {
+                    eventData.eventValue = value;
+                }
+                window.ga('send', 'event', eventData);
             }
 
             return document.dispatchEvent(event);
@@ -2250,7 +2253,7 @@ var RecrasLanguageHelper = function () {
                 ATTR_REQUIRED: 'Vereist',
                 BOOKING_DISABLED_AGREEMENT: 'Je bent nog niet akkoord met de voorwaarden',
                 BOOKING_DISABLED_AMOUNTS_INVALID: 'Aantallen in programma zijn ongeldig',
-                BOOKING_DISABLED_CONTACT_FORM_INVALID: 'Contactformuler is niet volledig ingevuld, of bevat ongeldige waardes',
+                BOOKING_DISABLED_CONTACT_FORM_INVALID: 'Contactformulier is niet volledig ingevuld, of bevat ongeldige waardes',
                 BOOKING_DISABLED_INVALID_DATE: 'Geen datum geselecteerd',
                 BOOKING_DISABLED_INVALID_TIME: 'Geen tijd geselecteerd',
                 BOOKING_DISABLED_REQUIRED_PRODUCT: 'Vereist product nog niet geselecteerd',
@@ -2644,7 +2647,7 @@ var RecrasVoucher = function () {
                 return false;
             }
 
-            this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_VOUCHER, RecrasEventHelper.EVENT_VOUCHER_VOUCHER_SUBMITTED);
+            this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_VOUCHER, RecrasEventHelper.EVENT_VOUCHER_VOUCHER_SUBMITTED, this.selectedTemplate.id);
             this.findElement('.buyTemplate').setAttribute('disabled', 'disabled');
 
             var payload = {
@@ -2671,7 +2674,7 @@ var RecrasVoucher = function () {
         value: function changeTemplate(templateID) {
             this.clearAllExceptTemplateSelection();
             this.showContactForm(templateID);
-            this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_VOUCHER, RecrasEventHelper.EVENT_VOUCHER_TEMPLATE_CHANGED);
+            this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_VOUCHER, RecrasEventHelper.EVENT_VOUCHER_TEMPLATE_CHANGED, templateID);
         }
     }, {
         key: 'clearAll',

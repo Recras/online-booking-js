@@ -43,6 +43,7 @@ var RecrasBooking = function () {
 
         this.PAYMENT_DIRECT = 'mollie';
         this.PAYMENT_AFTERWARDS = 'factuur';
+        this.RECRAS_INFINITY = 99999; // This is used instead of "true infinity" because JSON doesn't have infinity
 
         this.languageHelper = new RecrasLanguageHelper();
 
@@ -197,7 +198,16 @@ var RecrasBooking = function () {
     }, {
         key: 'bookingSizeMaximum',
         value: function bookingSizeMaximum(pack) {
-            return Number.POSITIVE_INFINITY; //TODO: this can't currently be done using the public packages API
+            var lines = this.bookingSizeLines(pack).filter(function (line) {
+                return line.max;
+            });
+            if (lines.length === 0) {
+                return this.RECRAS_INFINITY;
+            }
+            var maxes = lines.map(function (line) {
+                return line.max;
+            });
+            return Math.min.apply(Math, _toConsumableArray(maxes));
         }
     }, {
         key: 'bookingSizeLineMinimum',
@@ -1217,7 +1227,7 @@ var RecrasBooking = function () {
                 if (_this25.shouldShowBookingSize(pack)) {
                     html += '<div>';
                     html += '<div><label for="bookingsize">' + (pack.weergavenaam || pack.arrangement) + '</label></div>';
-                    html += '<input type="number" id="bookingsize" class="bookingsize" min="' + _this25.bookingSizeMinimum(pack) + '" data-price="' + _this25.bookingSizePrice(pack) + '">';
+                    html += '<input type="number" id="bookingsize" class="bookingsize" min="' + _this25.bookingSizeMinimum(pack) + '" max="' + _this25.bookingSizeMaximum(pack) + '" data-price="' + _this25.bookingSizePrice(pack) + '">';
                     html += '<div class="recras-price recrasUnitPrice">' + _this25.formatPrice(_this25.bookingSizePrice(pack)) + '</div>';
                     html += '</div>';
                 }

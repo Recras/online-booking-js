@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.17.4 (2019-04-17)
+* Add missing maximum value for the booking size field
+
 ## 0.17.3 (2019-04-12)
 * Fix build in Internet Explorer
 

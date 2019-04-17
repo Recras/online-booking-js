@@ -131,6 +131,60 @@ describe('RecrasBooking', () => {
         });
     });
 
+    describe('bookingSizeMaximum', () => {
+        beforeEach(() => {
+            this.rb = new RecrasBooking(new RecrasOptions({
+                element: document.createElement('div'),
+                recras_hostname: 'demo.recras.nl',
+            }));
+        });
+
+        it('returns lowest value of booking size maximums', () => {
+            let pack = {
+                regels: [
+                    {
+                        onlineboeking_aantalbepalingsmethode: 'boekingsgrootte',
+                        max: 25,
+                    },
+                    {
+                        onlineboeking_aantalbepalingsmethode: 'boekingsgrootte',
+                        max: 42,
+                    },
+                ],
+            };
+            expect(this.rb.bookingSizeMaximum(pack)).toBe(25);
+        });
+
+        it('discards lines without maximum', () => {
+            let pack = {
+                regels: [
+                    {
+                        onlineboeking_aantalbepalingsmethode: 'boekingsgrootte',
+                    },
+                    {
+                        onlineboeking_aantalbepalingsmethode: 'boekingsgrootte',
+                        max: 42,
+                    },
+                ],
+            };
+            expect(this.rb.bookingSizeMaximum(pack)).toBe(42);
+        });
+
+        it('returns infinity when no line has a maximum', () => {
+            let pack = {
+                regels: [
+                    {
+                        onlineboeking_aantalbepalingsmethode: 'boekingsgrootte',
+                    },
+                    {
+                        onlineboeking_aantalbepalingsmethode: 'boekingsgrootte',
+                    },
+                ],
+            };
+            expect(this.rb.bookingSizeMaximum(pack)).toBe(99999);
+        });
+    });
+
     describe('selectSingleTime', () => {
         beforeEach(() => {
             let mainEl = document.createElement('div');

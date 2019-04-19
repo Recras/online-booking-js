@@ -29,6 +29,7 @@ class RecrasCSSHelper {
     margin: 0.25em 0;
 }
 .recras-datetime label {
+    display: block;
     -ms-grid-column: 1;
 }
 .recras-datetime input, .recras-datetime select {

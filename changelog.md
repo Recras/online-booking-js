@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.17.6 (2019-04-23)
+* Add "customer type" field in contact forms
+
 ## 0.17.5 (2019-04-19)
 * Styling fix for Internet Explorer
 

@@ -1644,12 +1644,8 @@ var RecrasContactForm = function () {
         value: function getContactFormFields() {
             var _this31 = this;
 
-            return this.fetchJson(this.options.getApiBase() + 'contactformulieren/' + this.options.getFormId() + '/velden').then(function (fields) {
-                fields = fields.sort(function (a, b) {
-                    return a.sort_order - b.sort_order;
-                });
-
-                _this31.contactFormFields = fields;
+            return this.fetchJson(this.options.getApiBase() + 'contactformulieren/' + this.options.getFormId() + '?embed=Velden').then(function (form) {
+                _this31.contactFormFields = form.Velden;
                 return _this31.contactFormFields;
             });
         }
@@ -1752,6 +1748,7 @@ var RecrasContactForm = function () {
                     html += '</div>';
                     return label + html;
                 case 'keuze_enkel':
+                case 'contact.soort_klant':
                     html = '<div class="radioGroup">';
                     field.mogelijke_keuzes.forEach(function (choice) {
                         html += '<label><input type="radio" name="contactformulier' + idx + '" value="' + choice + '"' + attrRequired + ' data-identifier="' + field.field_identifier + '">' + choice + '</label>';

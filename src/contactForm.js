@@ -121,13 +121,9 @@ class RecrasContactForm {
     }
 
     getContactFormFields() {
-        return this.fetchJson(this.options.getApiBase() + 'contactformulieren/' + this.options.getFormId() + '/velden')
-            .then(fields => {
-                fields = fields.sort((a, b) => {
-                    return a.sort_order - b.sort_order;
-                });
-
-                this.contactFormFields = fields;
+        return this.fetchJson(this.options.getApiBase() + 'contactformulieren/' + this.options.getFormId() + '?embed=Velden')
+            .then(form => {
+                this.contactFormFields = form.Velden;
                 return this.contactFormFields;
             });
     }
@@ -214,6 +210,7 @@ class RecrasContactForm {
                 html += '</div>';
                 return label + html;
             case 'keuze_enkel':
+            case 'contact.soort_klant':
                 html = `<div class="radioGroup">`;
                 field.mogelijke_keuzes.forEach(choice => {
                     html += `<label><input type="radio" name="contactformulier${ idx }" value="${ choice }"${ attrRequired } data-identifier="${ field.field_identifier }">${ choice }</label>`;

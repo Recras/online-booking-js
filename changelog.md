@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.17.7 (2019-05-10)
+* Contact form `showForm` now returns a promise when done
+
 ## 0.17.6 (2019-04-23)
 * Add "customer type" field in contact forms
 

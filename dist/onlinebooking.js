@@ -1816,7 +1816,7 @@ var RecrasContactForm = function () {
             var _this35 = this;
 
             this.loadingIndicatorShow(this.element);
-            this.getContactFormFields().then(function () {
+            return this.getContactFormFields().then(function () {
                 return _this35.generateForm({
                     showSubmit: true
                 });

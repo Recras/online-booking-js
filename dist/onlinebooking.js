@@ -592,12 +592,16 @@ var RecrasBooking = function () {
         value: function getAvailableDays(packageID, begin, end) {
             var _this10 = this;
 
-            return this.postJson('onlineboeking/beschikbaredagen', {
+            var postData = {
                 arrangement_id: packageID,
                 begin: RecrasDateHelper.datePartOnly(begin),
                 eind: RecrasDateHelper.datePartOnly(end),
-                producten: this.productCounts()
-            }).then(function (json) {
+                producten: this.productCountsNoBookingSize()
+            };
+            if (this.shouldShowBookingSize(this.selectedPackage)) {
+                postData.boekingsgrootte = this.bookingSize();
+            }
+            return this.postJson('onlineboeking/beschikbaredagen', postData).then(function (json) {
                 _this10.availableDays = _this10.availableDays.concat(json);
                 return _this10.availableDays;
             });
@@ -863,23 +867,33 @@ var RecrasBooking = function () {
             }
         }
     }, {
-        key: 'productCounts',
-        value: function productCounts() {
+        key: 'productCountsBookingSize',
+        value: function productCountsBookingSize() {
             var _this19 = this;
 
-            var counts = [];
-            [].concat(_toConsumableArray(this.findElements('[id^="packageline"]'))).forEach(function (line) {
-                counts.push({
-                    aantal: isNaN(parseInt(line.value)) ? 0 : parseInt(line.value),
-                    arrangementsregel_id: parseInt(line.dataset.packageId, 10)
-                });
-            });
-            this.getLinesBookingSize(this.selectedPackage).forEach(function (line) {
-                counts.push({
+            return this.getLinesBookingSize(this.selectedPackage).map(function (line) {
+                return {
                     aantal: _this19.bookingSize(),
                     arrangementsregel_id: line.id
-                });
+                };
             });
+        }
+    }, {
+        key: 'productCountsNoBookingSize',
+        value: function productCountsNoBookingSize() {
+            return [].concat(_toConsumableArray(this.findElements('[id^="packageline"]'))).map(function (line) {
+                return {
+                    aantal: isNaN(parseInt(line.value)) ? 0 : parseInt(line.value),
+                    arrangementsregel_id: parseInt(line.dataset.packageId, 10)
+                };
+            });
+        }
+    }, {
+        key: 'productCounts',
+        value: function productCounts() {
+            var counts = [];
+            counts = counts.concat(this.productCountsNoBookingSize());
+            counts = counts.concat(this.productCountsBookingSize());
             return counts;
         }
     }, {

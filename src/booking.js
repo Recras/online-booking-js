@@ -503,12 +503,16 @@ class RecrasBooking {
     }
 
     getAvailableDays(packageID, begin, end) {
-        return this.postJson('onlineboeking/beschikbaredagen', {
+        let postData = {
             arrangement_id: packageID,
             begin: RecrasDateHelper.datePartOnly(begin),
             eind: RecrasDateHelper.datePartOnly(end),
-            producten: this.productCounts(),
-        }).then(json => {
+            producten: this.productCountsNoBookingSize(),
+        };
+        if (this.shouldShowBookingSize(this.selectedPackage)) {
+            postData.boekingsgrootte = this.bookingSize();
+        }
+        return this.postJson('onlineboeking/beschikbaredagen', postData).then(json => {
             this.availableDays = this.availableDays.concat(json);
             return this.availableDays;
         });
@@ -739,20 +743,28 @@ class RecrasBooking {
         }
     }
 
-    productCounts() {
-        let counts = [];
-        [...this.findElements('[id^="packageline"]')].forEach(line => {
-            counts.push({
-                aantal: (isNaN(parseInt(line.value)) ? 0 : parseInt(line.value)),
-                arrangementsregel_id: parseInt(line.dataset.packageId, 10),
-            });
-        });
-        this.getLinesBookingSize(this.selectedPackage).forEach(line => {
-            counts.push({
+    productCountsBookingSize() {
+        return this.getLinesBookingSize(this.selectedPackage).map(line => (
+            {
                 aantal: this.bookingSize(),
                 arrangementsregel_id: line.id,
-            });
-        });
+            }
+        ));
+    }
+
+    productCountsNoBookingSize() {
+        return [...this.findElements('[id^="packageline"]')].map(line => (
+            {
+                aantal: (isNaN(parseInt(line.value)) ? 0 : parseInt(line.value)),
+                arrangementsregel_id: parseInt(line.dataset.packageId, 10),
+            }
+        ));
+    }
+
+    productCounts() {
+        let counts = [];
+        counts = counts.concat(this.productCountsNoBookingSize());
+        counts = counts.concat(this.productCountsBookingSize());
         return counts;
     }
 

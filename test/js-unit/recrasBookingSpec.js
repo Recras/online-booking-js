@@ -185,6 +185,77 @@ describe('RecrasBooking', () => {
         });
     });
 
+    describe('getAvailableDays', () => {
+        beforeEach(() => {
+            this.rb = new RecrasBooking(new RecrasOptions({
+                element: document.createElement('div'),
+                recras_hostname: 'demo.recras.nl',
+            }));
+
+            this.rb.postJson = jasmine.createSpy('postJson').and.callFake(() => new Promise(function(resolve) {
+                resolve();
+            }));
+
+            this.rb.bookingSize = () => 5;
+            this.rb.productCountsBookingSize = () => [
+                {
+                    aantal: this.rb.bookingSize(),
+                    arrangementsregel_id: 42,
+                },
+            ];
+            this.rb.productCountsNoBookingSize = () => [
+                {
+                    aantal: 5,
+                    arrangementsregel_id: 17,
+                },
+                {
+                    aantal: 5,
+                    arrangementsregel_id: 9,
+                },
+                {
+                    aantal: 8,
+                    arrangementsregel_id: 83,
+                },
+            ];
+        });
+
+        it('should add "boekingsgrootte" parameter for packages with fixed programme', () => {
+            this.rb.shouldShowBookingSize = () => true;
+            this.rb.productCountsNoBookingSize = () => [];
+            this.rb.getAvailableDays(1, new Date('2019-05-20 12:00:00Z'), new Date('2019-05-27 12:00:00Z'));
+            expect(this.rb.postJson).toHaveBeenCalledWith('onlineboeking/beschikbaredagen', {
+                arrangement_id: 1,
+                begin: '2019-05-20',
+                eind: '2019-05-27',
+                producten: [],
+                boekingsgrootte: this.rb.bookingSize(),
+            });
+        });
+
+        it('should only include "producten" parameter for packages with choice programme', () => {
+            this.rb.shouldShowBookingSize = () => false;
+            this.rb.getAvailableDays(1, new Date('2019-05-20 12:00:00Z'), new Date('2019-05-27 12:00:00Z'));
+            expect(this.rb.postJson).toHaveBeenCalledWith('onlineboeking/beschikbaredagen', {
+                arrangement_id: 1,
+                begin: '2019-05-20',
+                eind: '2019-05-27',
+                producten: this.rb.productCountsNoBookingSize(),
+            });
+        });
+
+        it('should include both "producten" and "boekingsgrootte" parameters for packages with mixed programme', () => {
+            this.rb.shouldShowBookingSize = () => true;
+            this.rb.getAvailableDays(1, new Date('2019-05-20 12:00:00Z'), new Date('2019-05-27 12:00:00Z'));
+            expect(this.rb.postJson).toHaveBeenCalledWith('onlineboeking/beschikbaredagen', {
+                arrangement_id: 1,
+                begin: '2019-05-20',
+                eind: '2019-05-27',
+                producten: this.rb.productCountsNoBookingSize(),
+                boekingsgrootte: this.rb.bookingSize(),
+            });
+        });
+    });
+
     describe('selectSingleTime', () => {
         beforeEach(() => {
             let mainEl = document.createElement('div');

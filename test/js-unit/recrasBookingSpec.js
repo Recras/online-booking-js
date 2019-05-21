@@ -219,7 +219,7 @@ describe('RecrasBooking', () => {
             ];
         });
 
-        it('should work for packages with fixed programme', () => {
+        it('should add "boekingsgrootte" parameter for packages with fixed programme', () => {
             this.rb.shouldShowBookingSize = () => true;
             this.rb.productCountsNoBookingSize = () => [];
             this.rb.getAvailableDays(1, new Date('2019-05-20 12:00:00Z'), new Date('2019-05-27 12:00:00Z'));
@@ -232,7 +232,7 @@ describe('RecrasBooking', () => {
             });
         });
 
-        it('should work for packages with choice programme', () => {
+        it('should only include "producten" parameter for packages with choice programme', () => {
             this.rb.shouldShowBookingSize = () => false;
             this.rb.getAvailableDays(1, new Date('2019-05-20 12:00:00Z'), new Date('2019-05-27 12:00:00Z'));
             expect(this.rb.postJson).toHaveBeenCalledWith('onlineboeking/beschikbaredagen', {
@@ -243,7 +243,7 @@ describe('RecrasBooking', () => {
             });
         });
 
-        it('should work for packages with mixed programme', () => {
+        it('should include both "producten" and "boekingsgrootte" parameters for packages with mixed programme', () => {
             this.rb.shouldShowBookingSize = () => true;
             this.rb.getAvailableDays(1, new Date('2019-05-20 12:00:00Z'), new Date('2019-05-27 12:00:00Z'));
             expect(this.rb.postJson).toHaveBeenCalledWith('onlineboeking/beschikbaredagen', {

@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.17.8 (2019-05-22)
+* Fix availability check for packages with "booking size" in some edge cases
+
 ## 0.17.7 (2019-05-10)
 * Contact form `showForm` now returns a promise when done
 

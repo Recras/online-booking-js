@@ -245,8 +245,8 @@ class RecrasLanguageHelper {
 
     extractTags(msg) {
         const alphanumericWithUnderscore = '[a-zA-Z0-9_]';
-        const regexPartMulticolumn = '((?:\\((?:\\w+)(?::[^)]*)?\\))';
-        const regex = new RegExp('{' + alphanumericWithUnderscore + '+' + regexPartMulticolumn + '*)(,\\w+' + regexPartMulticolumn + '*))*}', 'g');
+        const regexPartMulticolumn = '((?:\\((?:\\w+)(?::[^)]*)?\\))*)';
+        const regex = new RegExp('{' + alphanumericWithUnderscore + '+' + regexPartMulticolumn + '}', 'g');
 
         let tags = msg.match(regex);
         if (!Array.isArray(tags)) {

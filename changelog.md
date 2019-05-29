@@ -1,6 +1,6 @@
 # Changelog
 
-## branch `regex-invalid-tags`
+## 0.17.9 (2019-05-29)
 * Fix filtering of invalid tags. For IE compatibility, a polyfill for `RegExp` flags should be loaded (i.e. https://cdn.polyfill.io/v2/polyfill.min.js?features=RegExp.prototype.flags)
 
 ## 0.17.8 (2019-05-22)

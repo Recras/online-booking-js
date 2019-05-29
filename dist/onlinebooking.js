@@ -2339,7 +2339,11 @@ var RecrasLanguageHelper = function () {
     }, {
         key: 'extractTags',
         value: function extractTags(msg) {
-            var tags = msg.match(/{(.+?)}/g);
+            var alphanumericWithUnderscore = '[a-zA-Z0-9_]';
+            var regexPartMulticolumn = '((?:\\((?:\\w+)(?::[^)]*)?\\))*)';
+            var regex = new RegExp('{' + alphanumericWithUnderscore + '+' + regexPartMulticolumn + '}', 'g');
+
+            var tags = msg.match(regex);
             if (!Array.isArray(tags)) {
                 return [];
             }

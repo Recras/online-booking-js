@@ -24,6 +24,12 @@ describe('RecrasLanguageHelper', () => {
             let lng = new RecrasLanguageHelper();
             expect(lng.extractTags(msg)).toEqual(['booking_date', 'invoice_number']);
         });
+
+        it('Filters invalid tags', () => {
+            let msg = "Tagfilter used to think {'allowLinker': true} was a valid tag";
+            let lng = new RecrasLanguageHelper();
+            expect(lng.extractTags(msg)).toEqual([]);
+        });
     });
 
     describe('formatPrice', () => {

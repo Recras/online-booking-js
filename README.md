@@ -98,9 +98,7 @@ The library provides a bit of styling to make it look okay straight from the box
 
 
 ## Browser support
-This library uses `promises` and `fetch`. Fetch is [unsupported in Internet Explorer, old Edge versions (12 & 13), and old Safari (up to 10.2)](https://caniuse.com/#feat=fetch) and promises are unsupported in Internet Explorer.
-
-If you care about supporting these old browsers, a polyfill should be loaded into your website. We recommend [Polyfill.io](https://polyfill.io/v2/docs/), i.e. `https://cdn.polyfill.io/v2/polyfill.min.js?features=default,fetch,Promise`
+This library uses various modern techniques that are unsupported in Internet Explorer, and/or old Edge, and/or old Safari. If you care about supporting old browsers, a polyfill should be loaded into your website. We recommend loading the following [Polyfill.io](https://polyfill.io/v2/docs/) script: `https://cdn.polyfill.io/v2/polyfill.min.js?features=default,fetch,Promise,RegExp.prototype.flags`
 
 In modern browsers, this is only a very small file causing little overhead.
 

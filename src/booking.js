@@ -733,12 +733,14 @@ class RecrasBooking {
 
             let linesNoBookingSize = this.getLinesNoBookingSize(this.selectedPackage);
             linesNoBookingSize.forEach((line, idx) => {
-                let normalisedStart = this.normaliseDate(new Date(line.begin), packageStart, this.selectedDate);
-                let normalisedEnd = this.normaliseDate(new Date(line.eind), packageStart, this.selectedDate);
-                this.findElement(`label[for="packageline${ idx }"]`).insertAdjacentHTML(
-                    'afterbegin',
-                    `<span class="time-preview">${ RecrasDateHelper.timePartOnly(normalisedStart) } – ${ RecrasDateHelper.timePartOnly(normalisedEnd) }</span>`
-                );
+                if (line.begin !== null || line.eind !== null) {
+                    let normalisedStart = this.normaliseDate(new Date(line.begin), packageStart, this.selectedDate);
+                    let normalisedEnd = this.normaliseDate(new Date(line.eind), packageStart, this.selectedDate);
+                    this.findElement(`label[for="packageline${ idx }"]`).insertAdjacentHTML(
+                        'afterbegin',
+                        `<span class="time-preview">${ RecrasDateHelper.timePartOnly(normalisedStart) } – ${ RecrasDateHelper.timePartOnly(normalisedEnd) }</span>`
+                    );
+                }
             });
         }
     }

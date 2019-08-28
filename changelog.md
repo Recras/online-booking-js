@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.18.0 (2019-09-28)
+* Add heading to quantity form
+* Add placeholders to quantity form inputs
+
 ## 0.17.10 (2019-07-09)
 * Remove the time-preview for lines that have no specified time in the programme
 

@@ -50,18 +50,22 @@ button:disabled {
     cursor: not-allowed;
 }
 .recras-amountsform > div > div:first-child {
-    flex-basis: 50%;
+    flex-basis: 75%;
 }
 .recras-amountsform > div > div:nth-child(2) {
-    flex-basis: calc(50% - 8em);
+    flex-basis: calc(25% - 8em);
 }
 .recras-price, .priceSubtotal {
     flex-basis: 8em;
     text-align: right;
 }
-input:not([type="checkbox"]):not([type="radio"]), select, textarea, .radioGroup {
+input:not([type="checkbox"]):not([type="radio"]):not(input[type="number"]), select, textarea, .radioGroup {
     font: inherit;
     width: 300px;
+}
+input[type="number"] {
+    font: inherit;
+    width: 6em;
 }
 .radioGroup {
     line-height: 1.5;

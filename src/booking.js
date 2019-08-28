@@ -1,6 +1,6 @@
 /*******************************
 *  Recras integration library  *
-*  v 0.17.10                   *
+*  v 0.18.0                    *
 *******************************/
 
 class RecrasBooking {
@@ -1096,11 +1096,16 @@ ${ msgs[1] }</p></div>`);
         return Promise.all(promises).then(msgs => {
             let html = '<form class="recras-amountsform">';
             html += `<p>${ msgs[0] }</p>`;
+            html += `<div>
+                <div>&nbsp;</div>
+                <div>${ this.languageHelper.translate('HEADING_QUANTITY') }</div>
+                <div class="recras-price">${ this.languageHelper.translate('HEADING_PRICE') }</div>
+            </div>`;
 
             if (this.shouldShowBookingSize(pack)) {
                 html += `<div>`;
                 html += `<div><label for="bookingsize">${ (pack.weergavenaam || pack.arrangement) }</label></div>`;
-                html += `<input type="number" id="bookingsize" class="bookingsize" min="${ this.bookingSizeMinimum(pack) }" max="${ this.bookingSizeMaximum(pack) }" data-price="${ this.bookingSizePrice(pack) }">`;
+                html += `<input type="number" id="bookingsize" class="bookingsize" min="${ this.bookingSizeMinimum(pack) }" max="${ this.bookingSizeMaximum(pack) }" placeholder="0" data-price="${ this.bookingSizePrice(pack) }">`;
                 html += `<div class="recras-price recrasUnitPrice">${ this.formatPrice(this.bookingSizePrice(pack)) }</div>`;
                 html += `</div>`;
             }
@@ -1110,7 +1115,7 @@ ${ msgs[1] }</p></div>`);
                 html += '<div><div>';
                 html += `<label for="packageline${ idx }">${ line.beschrijving_templated }</label>`;
                 let maxAttr = line.max ? `max="${ line.max }"` : '';
-                html += `</div><input id="packageline${ idx }" type="number" min="0" ${ maxAttr } data-package-id="${ line.id }" data-price="${ line.product.verkoop }">`;
+                html += `</div><input id="packageline${ idx }" type="number" min="0" ${ maxAttr } placeholder="0" data-package-id="${ line.id }" data-price="${ line.product.verkoop }">`;
                 html += `<div class="recras-price recrasUnitPrice">${ this.formatPrice(line.product.verkoop) }</div>`;
                 html += '</div>';
             });

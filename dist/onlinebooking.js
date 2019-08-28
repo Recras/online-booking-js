@@ -28,7 +28,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /*******************************
 *  Recras integration library  *
-*  v 0.17.10                   *
+*  v 0.18.0                    *
 *******************************/
 
 var RecrasBooking = function () {
@@ -1239,11 +1239,12 @@ var RecrasBooking = function () {
             return Promise.all(promises).then(function (msgs) {
                 var html = '<form class="recras-amountsform">';
                 html += '<p>' + msgs[0] + '</p>';
+                html += '<div>\n                <div>&nbsp;</div>\n                <div>' + _this25.languageHelper.translate('HEADING_QUANTITY') + '</div>\n                <div class="recras-price">' + _this25.languageHelper.translate('HEADING_PRICE') + '</div>\n            </div>';
 
                 if (_this25.shouldShowBookingSize(pack)) {
                     html += '<div>';
                     html += '<div><label for="bookingsize">' + (pack.weergavenaam || pack.arrangement) + '</label></div>';
-                    html += '<input type="number" id="bookingsize" class="bookingsize" min="' + _this25.bookingSizeMinimum(pack) + '" max="' + _this25.bookingSizeMaximum(pack) + '" data-price="' + _this25.bookingSizePrice(pack) + '">';
+                    html += '<input type="number" id="bookingsize" class="bookingsize" min="' + _this25.bookingSizeMinimum(pack) + '" max="' + _this25.bookingSizeMaximum(pack) + '" placeholder="0" data-price="' + _this25.bookingSizePrice(pack) + '">';
                     html += '<div class="recras-price recrasUnitPrice">' + _this25.formatPrice(_this25.bookingSizePrice(pack)) + '</div>';
                     html += '</div>';
                 }
@@ -1253,7 +1254,7 @@ var RecrasBooking = function () {
                     html += '<div><div>';
                     html += '<label for="packageline' + idx + '">' + line.beschrijving_templated + '</label>';
                     var maxAttr = line.max ? 'max="' + line.max + '"' : '';
-                    html += '</div><input id="packageline' + idx + '" type="number" min="0" ' + maxAttr + ' data-package-id="' + line.id + '" data-price="' + line.product.verkoop + '">';
+                    html += '</div><input id="packageline' + idx + '" type="number" min="0" ' + maxAttr + ' placeholder="0" data-package-id="' + line.id + '" data-price="' + line.product.verkoop + '">';
                     html += '<div class="recras-price recrasUnitPrice">' + _this25.formatPrice(line.product.verkoop) + '</div>';
                     html += '</div>';
                 });
@@ -2164,6 +2165,8 @@ var RecrasLanguageHelper = function () {
                 GENDER_UNKNOWN: 'Unbekannte',
                 GENDER_MALE: 'Mann',
                 GENDER_FEMALE: 'Frau',
+                HEADING_PRICE: 'Preis',
+                HEADING_QUANTITY: 'Anzahl',
                 LOADING: 'Wird geladen...',
                 NO_PRODUCTS: 'Kein Produkt ausgewählt',
                 PRICE_TOTAL: 'Insgesamt',
@@ -2240,6 +2243,8 @@ var RecrasLanguageHelper = function () {
                 GENDER_UNKNOWN: 'Unknown',
                 GENDER_MALE: 'Male',
                 GENDER_FEMALE: 'Female',
+                HEADING_PRICE: 'Price',
+                HEADING_QUANTITY: 'Quantity',
                 LOADING: 'Loading...',
                 NO_PRODUCTS: 'No product selected',
                 PRICE_TOTAL: 'Total',
@@ -2316,6 +2321,8 @@ var RecrasLanguageHelper = function () {
                 GENDER_UNKNOWN: 'Onbekend',
                 GENDER_MALE: 'Man',
                 GENDER_FEMALE: 'Vrouw',
+                HEADING_PRICE: 'Prijs',
+                HEADING_QUANTITY: 'Aantal',
                 LOADING: 'Laden...',
                 NO_PRODUCTS: 'Geen product gekozen',
                 PRICE_TOTAL: 'Totaal',

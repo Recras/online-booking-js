@@ -55,7 +55,7 @@ class RecrasContactForm {
             }
             [...group.querySelectorAll('input')].forEach(el => {
                 el.addEventListener('change', this.checkRequiredCheckboxes.bind(this));
-            })
+            });
         });
         return isOkay;
     }

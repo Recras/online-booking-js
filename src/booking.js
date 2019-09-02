@@ -943,11 +943,13 @@ class RecrasBooking {
         }
 
         let html = `
-            <div class="recras-discounts">
-                <label for="discountcode">${ this.languageHelper.translate('DISCOUNT_TITLE') }</label>
-                <input type="text" id="discountcode" class="discountcode" maxlength="50">
-                <button>${ this.languageHelper.translate('DISCOUNT_CHECK') }</button>
-            </div>
+            <form class="recras-discounts">
+                <div>
+                    <label for="discountcode">${ this.languageHelper.translate('DISCOUNT_TITLE') }</label>
+                    <input type="text" id="discountcode" class="discountcode" maxlength="50">
+                </div>
+                <button class="button-secondary">${ this.languageHelper.translate('DISCOUNT_CHECK') }</button>
+            </form>
         `;
         this.findElement('.recras-datetime').insertAdjacentHTML('afterend', html);
 
@@ -1105,7 +1107,7 @@ ${ msgs[1] }</p></div>`);
         return Promise.all(promises).then(msgs => {
             let html = '<form class="recras-amountsform">';
             html += `<p>${ msgs[0] }</p>`;
-            html += `<div>
+            html += `<div class="recras-heading">
                 <div>&nbsp;</div>
                 <div>${ this.languageHelper.translate('HEADING_QUANTITY') }</div>
                 <div class="recras-price">${ this.languageHelper.translate('HEADING_PRICE') }</div>

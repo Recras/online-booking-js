@@ -1080,7 +1080,7 @@ var RecrasBooking = function () {
                 existingEl.parentNode.removeChild(existingEl);
             }
 
-            var html = '\n            <div class="recras-discounts">\n                <label for="discountcode">' + this.languageHelper.translate('DISCOUNT_TITLE') + '</label>\n                <input type="text" id="discountcode" class="discountcode" maxlength="50">\n                <button>' + this.languageHelper.translate('DISCOUNT_CHECK') + '</button>\n            </div>\n        ';
+            var html = '\n            <form class="recras-discounts">\n                <div>\n                    <label for="discountcode">' + this.languageHelper.translate('DISCOUNT_TITLE') + '</label>\n                    <input type="text" id="discountcode" class="discountcode" maxlength="50">\n                </div>\n                <button class="button-secondary">' + this.languageHelper.translate('DISCOUNT_CHECK') + '</button>\n            </form>\n        ';
             this.findElement('.recras-datetime').insertAdjacentHTML('afterend', html);
 
             this.findElement('.recras-discounts input').addEventListener('keydown', function (e) {
@@ -1241,7 +1241,7 @@ var RecrasBooking = function () {
             return Promise.all(promises).then(function (msgs) {
                 var html = '<form class="recras-amountsform">';
                 html += '<p>' + msgs[0] + '</p>';
-                html += '<div>\n                <div>&nbsp;</div>\n                <div>' + _this25.languageHelper.translate('HEADING_QUANTITY') + '</div>\n                <div class="recras-price">' + _this25.languageHelper.translate('HEADING_PRICE') + '</div>\n            </div>';
+                html += '<div class="recras-heading">\n                <div>&nbsp;</div>\n                <div>' + _this25.languageHelper.translate('HEADING_QUANTITY') + '</div>\n                <div class="recras-price">' + _this25.languageHelper.translate('HEADING_PRICE') + '</div>\n            </div>';
 
                 if (_this25.shouldShowBookingSize(pack)) {
                     html += '<div>';

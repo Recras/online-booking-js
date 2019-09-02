@@ -1081,7 +1081,7 @@ var RecrasBooking = function () {
             }
 
             var html = '\n            <div class="recras-discounts">\n                <label for="discountcode">' + this.languageHelper.translate('DISCOUNT_TITLE') + '</label>\n                <input type="text" id="discountcode" class="discountcode" maxlength="50">\n                <button>' + this.languageHelper.translate('DISCOUNT_CHECK') + '</button>\n            </div>\n        ';
-            this.findElement('.recras-contactform').insertAdjacentHTML('beforebegin', html);
+            this.findElement('.recras-datetime').insertAdjacentHTML('afterend', html);
 
             this.findElement('.recras-discounts input').addEventListener('keydown', function (e) {
                 if (e.key === 'Enter') {
@@ -1115,6 +1115,13 @@ var RecrasBooking = function () {
             });
         }
     }, {
+        key: 'addDateTimeSelectionHtml',
+        value: function addDateTimeSelectionHtml() {
+            var today = RecrasDateHelper.datePartOnly(new Date());
+            var html = '<form class="recras-datetime">\n            <label for="recras-onlinebooking-date">\n                ' + this.languageHelper.translate('DATE') + '\n            </label>\n            <input type="text" id="recras-onlinebooking-date" class="recras-onlinebooking-date" min="' + today + '" disabled autocomplete="off">\n            <label for="recras-onlinebooking-time">\n                ' + this.languageHelper.translate('TIME') + '\n            </label>\n            <select id="recras-onlinebooking-time" class="recras-onlinebooking-time" disabled autocomplete="off"></select>\n        </form>';
+            this.appendHtml(html);
+        }
+    }, {
         key: 'showDateTimeSelection',
         value: function showDateTimeSelection(pack) {
             var _this23 = this;
@@ -1124,12 +1131,8 @@ var RecrasBooking = function () {
             endDate.setMonth(endDate.getMonth() + 3);
 
             return this.getAvailableDays(pack.id, startDate, endDate).then(function () {
-                var today = RecrasDateHelper.datePartOnly(new Date());
-                var html = '<form class="recras-datetime">';
-                html += '<label for="recras-onlinebooking-date">' + _this23.languageHelper.translate('DATE') + '</label><input type="text" id="recras-onlinebooking-date" class="recras-onlinebooking-date" min="' + today + '" disabled autocomplete="off">';
-                html += '<label for="recras-onlinebooking-time">' + _this23.languageHelper.translate('TIME') + '</label><select id="recras-onlinebooking-time" class="recras-onlinebooking-time" disabled autocomplete="off"></select>';
-                html += '</form>';
-                _this23.appendHtml(html);
+                _this23.addDateTimeSelectionHtml();
+                _this23.showDiscountFields();
 
                 if (_this23.options.getPreFilledAmounts()) {
                     _this23.preFillAmounts(_this23.options.getPreFilledAmounts());
@@ -1177,7 +1180,6 @@ var RecrasBooking = function () {
                             _this23.selectSingleTime();
                         });
                         _this23.maybeDisableBookButton();
-                        _this23.showDiscountFields();
                     }
                 });
 

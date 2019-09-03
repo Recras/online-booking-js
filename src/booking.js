@@ -366,7 +366,7 @@ class RecrasBooking {
                     }
 
                     if (input) {
-                        let warningEl = document.createElement('span');
+                        let warningEl = document.createElement('div');
                         warningEl.classList.add('maximum-amount');
                         warningEl.classList.add('recras-full-width');
                         warningEl.innerHTML = msg;
@@ -1130,7 +1130,11 @@ ${ msgs[1] }</p></div>`);
                 html += `<div class="recras-price recrasUnitPrice">${ this.formatPrice(line.product.verkoop) }</div>`;
                 html += '</div>';
             });
-            html += `<div class="priceWithoutDiscount"><div>${ this.languageHelper.translate('PRICE_TOTAL') }</div><div class="priceSubtotal"></div></div>`;
+            html += `<div class="priceWithoutDiscount">
+                <div>${ this.languageHelper.translate('PRICE_TOTAL') }</div>
+                <div></div>
+                <div class="priceSubtotal"></div>
+            </div>`;
 
             html += `<p>${ msgs[1] }</p>`;
             html += '</form>';

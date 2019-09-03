@@ -63,17 +63,26 @@ class RecrasCSSHelper {
 .recras-onlinebooking > *:not(.latestError):not(.recrasLoadingIndicator) {
     padding: 1em 0;
 }
-.recras-contactform > div, .recras-amountsform > div {
-    align-items: start;
-    display: flex;
-    justify-content: space-between;
+.recras-amountsform > div {
+    display: -ms-grid;
+    display: grid;
+    -ms-grid-columns: 1fr 5em 7em;
+    grid-template-columns: 1fr 5em 7em;
+}
+.recras-datetime, .recras-discounts > div, .recras-contactform > div {
+    display: -ms-grid;
+    display: grid;
+    -ms-grid-columns: 1fr 12em;
+    grid-template-columns: 1fr 12em;
+}
+.recras-contactform > div {
     padding: 0.25em 0;
 }
 .recras-contactform label {
     display: block;
 }
-.recras-full-width {
-    flex: 0 0 100%;
+.recras-amountsform .recras-full-width {
+    display: block;
 }
 
 .recrasLoadingIndicator {
@@ -95,11 +104,13 @@ class RecrasCSSHelper {
         transform: rotate(360deg);
     }
 }
-button .recrasLoadingIndicator {
+button .recrasLoadingIndicator, label .recrasLoadingIndicator {
     height: 1em;
-    margin-left: 0.5em;
     vertical-align: middle;
     width: 1em;
+}
+button .recrasLoadingIndicator {
+    margin-left: 0.5em;
 }
 `;
     }

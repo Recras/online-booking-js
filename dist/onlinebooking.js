@@ -436,7 +436,7 @@ var RecrasBooking = function () {
                         }
 
                         if (input) {
-                            var warningEl = document.createElement('span');
+                            var warningEl = document.createElement('div');
                             warningEl.classList.add('maximum-amount');
                             warningEl.classList.add('recras-full-width');
                             warningEl.innerHTML = msg;
@@ -1080,8 +1080,8 @@ var RecrasBooking = function () {
                 existingEl.parentNode.removeChild(existingEl);
             }
 
-            var html = '\n            <div class="recras-discounts">\n                <label for="discountcode">' + this.languageHelper.translate('DISCOUNT_TITLE') + '</label>\n                <input type="text" id="discountcode" class="discountcode" maxlength="50">\n                <button>' + this.languageHelper.translate('DISCOUNT_CHECK') + '</button>\n            </div>\n        ';
-            this.findElement('.recras-contactform').insertAdjacentHTML('beforebegin', html);
+            var html = '\n            <form class="recras-discounts">\n                <div>\n                    <label for="discountcode">' + this.languageHelper.translate('DISCOUNT_TITLE') + '</label>\n                    <input type="text" id="discountcode" class="discountcode" maxlength="50">\n                </div>\n                <button class="button-secondary">' + this.languageHelper.translate('DISCOUNT_CHECK') + '</button>\n            </form>\n        ';
+            this.findElement('.recras-datetime').insertAdjacentHTML('afterend', html);
 
             this.findElement('.recras-discounts input').addEventListener('keydown', function (e) {
                 if (e.key === 'Enter') {
@@ -1115,6 +1115,13 @@ var RecrasBooking = function () {
             });
         }
     }, {
+        key: 'addDateTimeSelectionHtml',
+        value: function addDateTimeSelectionHtml() {
+            var today = RecrasDateHelper.datePartOnly(new Date());
+            var html = '<form class="recras-datetime">\n            <label for="recras-onlinebooking-date">\n                ' + this.languageHelper.translate('DATE') + '\n            </label>\n            <input type="text" id="recras-onlinebooking-date" class="recras-onlinebooking-date" min="' + today + '" disabled autocomplete="off">\n            <label for="recras-onlinebooking-time">\n                ' + this.languageHelper.translate('TIME') + '\n            </label>\n            <select id="recras-onlinebooking-time" class="recras-onlinebooking-time" disabled autocomplete="off"></select>\n        </form>';
+            this.appendHtml(html);
+        }
+    }, {
         key: 'showDateTimeSelection',
         value: function showDateTimeSelection(pack) {
             var _this23 = this;
@@ -1124,12 +1131,8 @@ var RecrasBooking = function () {
             endDate.setMonth(endDate.getMonth() + 3);
 
             return this.getAvailableDays(pack.id, startDate, endDate).then(function () {
-                var today = RecrasDateHelper.datePartOnly(new Date());
-                var html = '<form class="recras-datetime">';
-                html += '<label for="recras-onlinebooking-date">' + _this23.languageHelper.translate('DATE') + '</label><input type="text" id="recras-onlinebooking-date" class="recras-onlinebooking-date" min="' + today + '" disabled autocomplete="off">';
-                html += '<label for="recras-onlinebooking-time">' + _this23.languageHelper.translate('TIME') + '</label><select id="recras-onlinebooking-time" class="recras-onlinebooking-time" disabled autocomplete="off"></select>';
-                html += '</form>';
-                _this23.appendHtml(html);
+                _this23.addDateTimeSelectionHtml();
+                _this23.showDiscountFields();
 
                 if (_this23.options.getPreFilledAmounts()) {
                     _this23.preFillAmounts(_this23.options.getPreFilledAmounts());
@@ -1177,7 +1180,6 @@ var RecrasBooking = function () {
                             _this23.selectSingleTime();
                         });
                         _this23.maybeDisableBookButton();
-                        _this23.showDiscountFields();
                     }
                 });
 
@@ -1239,7 +1241,7 @@ var RecrasBooking = function () {
             return Promise.all(promises).then(function (msgs) {
                 var html = '<form class="recras-amountsform">';
                 html += '<p>' + msgs[0] + '</p>';
-                html += '<div>\n                <div>&nbsp;</div>\n                <div>' + _this25.languageHelper.translate('HEADING_QUANTITY') + '</div>\n                <div class="recras-price">' + _this25.languageHelper.translate('HEADING_PRICE') + '</div>\n            </div>';
+                html += '<div class="recras-heading">\n                <div>&nbsp;</div>\n                <div>' + _this25.languageHelper.translate('HEADING_QUANTITY') + '</div>\n                <div class="recras-price">' + _this25.languageHelper.translate('HEADING_PRICE') + '</div>\n            </div>';
 
                 if (_this25.shouldShowBookingSize(pack)) {
                     html += '<div>';
@@ -1258,7 +1260,7 @@ var RecrasBooking = function () {
                     html += '<div class="recras-price recrasUnitPrice">' + _this25.formatPrice(line.product.verkoop) + '</div>';
                     html += '</div>';
                 });
-                html += '<div class="priceWithoutDiscount"><div>' + _this25.languageHelper.translate('PRICE_TOTAL') + '</div><div class="priceSubtotal"></div></div>';
+                html += '<div class="priceWithoutDiscount">\n                <div>' + _this25.languageHelper.translate('PRICE_TOTAL') + '</div>\n                <div></div>\n                <div class="priceSubtotal"></div>\n            </div>';
 
                 html += '<p>' + msgs[1] + '</p>';
                 html += '</form>';
@@ -1911,7 +1913,7 @@ var RecrasCSSHelper = function () {
     }, {
         key: 'cssGlobal',
         value: function cssGlobal() {
-            return '\n.latestError, .recrasError {\n    color: hsl(0, 50%, 50%);\n}\n.recras-onlinebooking > *:not(.latestError):not(.recrasLoadingIndicator) {\n    padding: 1em 0;\n}\n.recras-contactform > div, .recras-amountsform > div {\n    align-items: start;\n    display: flex;\n    justify-content: space-between;\n    padding: 0.25em 0;\n}\n.recras-contactform label {\n    display: block;\n}\n.recras-full-width {\n    flex: 0 0 100%;\n}\n\n.recrasLoadingIndicator {\n    animation: recrasSpinner 1.1s infinite linear;\n    border: 0.2em solid rgba(0, 0, 0, 0.2);\n    border-left-color: rgba(0, 0, 0, 0.5);\n    border-radius: 50%;\n    display: inline-block;\n    height: 2em;\n    overflow: hidden;\n    text-indent: -100vw;\n    width: 2em;\n}\n@keyframes recrasSpinner {\n    0% {\n        transform: rotate(0deg);\n    }\n    100% {\n        transform: rotate(360deg);\n    }\n}\nbutton .recrasLoadingIndicator {\n    height: 1em;\n    margin-left: 0.5em;\n    vertical-align: middle;\n    width: 1em;\n}\n';
+            return '\n.latestError, .recrasError {\n    color: hsl(0, 50%, 50%);\n}\n.recras-onlinebooking > *:not(.latestError):not(.recrasLoadingIndicator) {\n    padding: 1em 0;\n}\n.recras-amountsform > div {\n    display: -ms-grid;\n    display: grid;\n    -ms-grid-columns: 1fr 5em 7em;\n    grid-template-columns: 1fr 5em 7em;\n}\n.recras-datetime, .recras-discounts > div, .recras-contactform > div {\n    display: -ms-grid;\n    display: grid;\n    -ms-grid-columns: 1fr 12em;\n    grid-template-columns: 1fr 12em;\n}\n.recras-contactform > div {\n    padding: 0.25em 0;\n}\n.recras-contactform label {\n    display: block;\n}\n.recras-amountsform .recras-full-width {\n    display: block;\n}\n\n.recrasLoadingIndicator {\n    animation: recrasSpinner 1.1s infinite linear;\n    border: 0.2em solid rgba(0, 0, 0, 0.2);\n    border-left-color: rgba(0, 0, 0, 0.5);\n    border-radius: 50%;\n    display: inline-block;\n    height: 2em;\n    overflow: hidden;\n    text-indent: -100vw;\n    width: 2em;\n}\n@keyframes recrasSpinner {\n    0% {\n        transform: rotate(0deg);\n    }\n    100% {\n        transform: rotate(360deg);\n    }\n}\nbutton .recrasLoadingIndicator, label .recrasLoadingIndicator {\n    height: 1em;\n    vertical-align: middle;\n    width: 1em;\n}\nbutton .recrasLoadingIndicator {\n    margin-left: 0.5em;\n}\n';
         }
     }, {
         key: 'loadCSS',

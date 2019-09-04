@@ -366,7 +366,7 @@ class RecrasBooking {
                     }
 
                     if (input) {
-                        let warningEl = document.createElement('span');
+                        let warningEl = document.createElement('div');
                         warningEl.classList.add('maximum-amount');
                         warningEl.classList.add('recras-full-width');
                         warningEl.innerHTML = msg;
@@ -943,13 +943,15 @@ class RecrasBooking {
         }
 
         let html = `
-            <div class="recras-discounts">
-                <label for="discountcode">${ this.languageHelper.translate('DISCOUNT_TITLE') }</label>
-                <input type="text" id="discountcode" class="discountcode" maxlength="50">
-                <button>${ this.languageHelper.translate('DISCOUNT_CHECK') }</button>
-            </div>
+            <form class="recras-discounts">
+                <div>
+                    <label for="discountcode">${ this.languageHelper.translate('DISCOUNT_TITLE') }</label>
+                    <input type="text" id="discountcode" class="discountcode" maxlength="50">
+                </div>
+                <button class="button-secondary">${ this.languageHelper.translate('DISCOUNT_CHECK') }</button>
+            </form>
         `;
-        this.findElement('.recras-contactform').insertAdjacentHTML('beforebegin', html);
+        this.findElement('.recras-datetime').insertAdjacentHTML('afterend', html);
 
         this.findElement('.recras-discounts input').addEventListener('keydown', e => {
             if (e.key === 'Enter') {
@@ -980,6 +982,20 @@ class RecrasBooking {
         });
     }
 
+    addDateTimeSelectionHtml() {
+        let today = RecrasDateHelper.datePartOnly(new Date());
+        let html = `<form class="recras-datetime">
+            <label for="recras-onlinebooking-date">
+                ${ this.languageHelper.translate('DATE') }
+            </label>
+            <input type="text" id="recras-onlinebooking-date" class="recras-onlinebooking-date" min="${ today }" disabled autocomplete="off">
+            <label for="recras-onlinebooking-time">
+                ${ this.languageHelper.translate('TIME') }
+            </label>
+            <select id="recras-onlinebooking-time" class="recras-onlinebooking-time" disabled autocomplete="off"></select>
+        </form>`;
+        this.appendHtml(html);
+    }
     showDateTimeSelection(pack) {
         let startDate = new Date();
         let endDate = new Date();
@@ -987,12 +1003,8 @@ class RecrasBooking {
 
         return this.getAvailableDays(pack.id, startDate, endDate)
             .then(() => {
-                let today = RecrasDateHelper.datePartOnly(new Date());
-                let html = `<form class="recras-datetime">`;
-                html += `<label for="recras-onlinebooking-date">${ this.languageHelper.translate('DATE') }</label><input type="text" id="recras-onlinebooking-date" class="recras-onlinebooking-date" min="${ today }" disabled autocomplete="off">`;
-                html += `<label for="recras-onlinebooking-time">${ this.languageHelper.translate('TIME') }</label><select id="recras-onlinebooking-time" class="recras-onlinebooking-time" disabled autocomplete="off"></select>`;
-                html += '</form>';
-                this.appendHtml(html);
+                this.addDateTimeSelectionHtml();
+                this.showDiscountFields();
 
                 if (this.options.getPreFilledAmounts()) {
                     this.preFillAmounts(this.options.getPreFilledAmounts());
@@ -1040,7 +1052,6 @@ class RecrasBooking {
                                 this.selectSingleTime();
                             });
                             this.maybeDisableBookButton();
-                            this.showDiscountFields();
                         },
                     }
                 );
@@ -1096,7 +1107,7 @@ ${ msgs[1] }</p></div>`);
         return Promise.all(promises).then(msgs => {
             let html = '<form class="recras-amountsform">';
             html += `<p>${ msgs[0] }</p>`;
-            html += `<div>
+            html += `<div class="recras-heading">
                 <div>&nbsp;</div>
                 <div>${ this.languageHelper.translate('HEADING_QUANTITY') }</div>
                 <div class="recras-price">${ this.languageHelper.translate('HEADING_PRICE') }</div>
@@ -1119,7 +1130,11 @@ ${ msgs[1] }</p></div>`);
                 html += `<div class="recras-price recrasUnitPrice">${ this.formatPrice(line.product.verkoop) }</div>`;
                 html += '</div>';
             });
-            html += `<div class="priceWithoutDiscount"><div>${ this.languageHelper.translate('PRICE_TOTAL') }</div><div class="priceSubtotal"></div></div>`;
+            html += `<div class="priceWithoutDiscount">
+                <div>${ this.languageHelper.translate('PRICE_TOTAL') }</div>
+                <div></div>
+                <div class="priceSubtotal"></div>
+            </div>`;
 
             html += `<p>${ msgs[1] }</p>`;
             html += '</form>';

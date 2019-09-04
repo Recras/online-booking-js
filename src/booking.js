@@ -46,8 +46,8 @@ class RecrasBooking {
             }
         }
 
-        RecrasCSSHelper.loadCSS(RecrasCSSHelper.cssGlobal());
-        RecrasCSSHelper.loadCSS(RecrasCSSHelper.cssBooking());
+        RecrasCSSHelper.loadCSS('global');
+        RecrasCSSHelper.loadCSS('booking');
         this.clearAll();
 
         this.loadingIndicatorShow(this.element);

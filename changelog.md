@@ -1,6 +1,6 @@
 # Changelog
 
-## master (unreleased)
+## master (unreleased, breaking changes)
 * Show discount fields straight from the start, not after entering date
 * Make Discounts section a `form` and add a wrapper to be able to align label and input without affecting the button and message
 * Update default CSS

@@ -55,6 +55,7 @@ class RecrasCSSHelper {
 }
 `;
     }
+
     static cssGlobal() {
         return `
 .latestError, .recrasError {
@@ -115,8 +116,24 @@ button .recrasLoadingIndicator {
 `;
     }
 
-    static loadCSS(css) {
+    static loadCSS(cssName) {
+        let css;
+        switch (cssName) {
+            case 'booking':
+                css = this.cssBooking();
+                break;
+            case 'global':
+                css = this.cssGlobal();
+                break;
+            default:
+                console.warn('Unknown CSS');
+                break;
+        }
+        if (document.getElementById('recras-css-' + cssName)) {
+            return;
+        }
         let styleEl = document.createElement('style');
+        styleEl.id = 'recras-css-' + cssName;
         styleEl.innerHTML = css;
 
         let refNode = document.head;

@@ -16,7 +16,7 @@ class RecrasVoucher {
         this.fetchJson = url => RecrasHttpHelper.fetchJson(url, this.error);
         this.postJson = (url, data) => RecrasHttpHelper.postJson(this.options.getApiBase() + url, data, this.error);
 
-        RecrasCSSHelper.loadCSS(RecrasCSSHelper.cssGlobal());
+        RecrasCSSHelper.loadCSS('global');
 
         if (this.options.getLocale()) {
             if (!RecrasLanguageHelper.isValid(this.options.getLocale())) {

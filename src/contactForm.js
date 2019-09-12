@@ -139,7 +139,24 @@ class RecrasContactForm {
     getPackages(contactFormID) {
         return this.fetchJson(this.options.getApiBase() + 'contactformulieren/' + contactFormID)
             .then(json => {
-                this.packages = json.Arrangementen;
+                this.packages = json.Arrangementen.sort((a, b) => {
+                    // Prioritise package name
+                    if (a.arrangement < b.arrangement) {
+                        return -1;
+                    }
+                    if (a.arrangement > b.arrangement) {
+                        return 1;
+                    }
+                    // Sort by ID in the off chance that two packages are named the same
+                    if (a.id < b.id) {
+                        return -1;
+                    }
+                    if (a.id > b.id) {
+                        return 1;
+                    }
+                    // This cannot happen
+                    return 0;
+                });
                 return this.packages;
             });
     }
@@ -257,7 +274,7 @@ class RecrasContactForm {
 
                 html = `<select ${ fixedAttributes }>`;
                 html += `<option value="">`;
-                Object.values(this.packages).forEach(pack => {
+                this.packages.forEach(pack => {
                     const selText = preFilledPackage && preFilledPackage === pack.id ? 'selected' : '';
                     html += `<option value="${ pack.id }" ${ selText }>${ pack.arrangement }`;
                 });

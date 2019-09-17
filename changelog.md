@@ -1,6 +1,7 @@
 # Changelog
 
-## master (unreleased, breaking changes)
+## 1.0.0 (2019-09-17)
+**CONTAINS BREAKING CHANGES - please see [upgrading.md](upgrading.md)**
 * Show discount fields straight from the start, not after entering date
 * Make Discounts section a `form` and add a wrapper to be able to align label and input without affecting the button and message
 * Update default CSS

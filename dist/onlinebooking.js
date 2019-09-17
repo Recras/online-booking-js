@@ -28,7 +28,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /*******************************
 *  Recras integration library  *
-*  v 0.18.0                    *
+*  v 1.0.0                     *
 *******************************/
 
 var RecrasBooking = function () {
@@ -84,8 +84,8 @@ var RecrasBooking = function () {
             }
         }
 
-        RecrasCSSHelper.loadCSS(RecrasCSSHelper.cssGlobal());
-        RecrasCSSHelper.loadCSS(RecrasCSSHelper.cssBooking());
+        RecrasCSSHelper.loadCSS('global');
+        RecrasCSSHelper.loadCSS('booking');
         this.clearAll();
 
         this.loadingIndicatorShow(this.element);
@@ -1550,7 +1550,7 @@ var RecrasContactForm = function () {
             return RecrasHttpHelper.postJson(_this28.options.getApiBase() + url, data, _this28.error);
         };
 
-        RecrasCSSHelper.loadCSS(RecrasCSSHelper.cssGlobal());
+        RecrasCSSHelper.loadCSS('global');
 
         this.GENDERS = {
             onbekend: 'GENDER_UNKNOWN',
@@ -1684,7 +1684,24 @@ var RecrasContactForm = function () {
             var _this33 = this;
 
             return this.fetchJson(this.options.getApiBase() + 'contactformulieren/' + contactFormID).then(function (json) {
-                _this33.packages = json.Arrangementen;
+                _this33.packages = json.Arrangementen.sort(function (a, b) {
+                    // Prioritise package name
+                    if (a.arrangement < b.arrangement) {
+                        return -1;
+                    }
+                    if (a.arrangement > b.arrangement) {
+                        return 1;
+                    }
+                    // Sort by ID in the off chance that two packages are named the same
+                    if (a.id < b.id) {
+                        return -1;
+                    }
+                    if (a.id > b.id) {
+                        return 1;
+                    }
+                    // This cannot happen
+                    return 0;
+                });
                 return _this33.packages;
             });
         }
@@ -1816,7 +1833,7 @@ var RecrasContactForm = function () {
 
                     html = '<select ' + fixedAttributes + '>';
                     html += '<option value="">';
-                    _objectValues(this.packages).forEach(function (pack) {
+                    this.packages.forEach(function (pack) {
                         var selText = preFilledPackage && preFilledPackage === pack.id ? 'selected' : '';
                         html += '<option value="' + pack.id + '" ' + selText + '>' + pack.arrangement;
                     });
@@ -1917,8 +1934,24 @@ var RecrasCSSHelper = function () {
         }
     }, {
         key: 'loadCSS',
-        value: function loadCSS(css) {
+        value: function loadCSS(cssName) {
+            var css = void 0;
+            switch (cssName) {
+                case 'booking':
+                    css = this.cssBooking();
+                    break;
+                case 'global':
+                    css = this.cssGlobal();
+                    break;
+                default:
+                    console.warn('Unknown CSS');
+                    break;
+            }
+            if (document.getElementById('recras-css-' + cssName)) {
+                return;
+            }
             var styleEl = document.createElement('style');
+            styleEl.id = 'recras-css-' + cssName;
             styleEl.innerHTML = css;
 
             var refNode = document.head;
@@ -2628,7 +2661,7 @@ var RecrasVoucher = function () {
             return RecrasHttpHelper.postJson(_this38.options.getApiBase() + url, data, _this38.error);
         };
 
-        RecrasCSSHelper.loadCSS(RecrasCSSHelper.cssGlobal());
+        RecrasCSSHelper.loadCSS('global');
 
         if (this.options.getLocale()) {
             if (!RecrasLanguageHelper.isValid(this.options.getLocale())) {

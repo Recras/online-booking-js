@@ -1,8 +1,9 @@
 class RecrasContactForm {
     constructor(options = {}) {
+        this.datePicker = null;
         this.languageHelper = new RecrasLanguageHelper();
 
-        if ((options instanceof RecrasOptions) === false) {
+        if (!(options instanceof RecrasOptions)) {
             throw new Error(this.languageHelper.translate('ERR_OPTIONS_INVALID'));
         }
         this.options = options;
@@ -82,6 +83,10 @@ class RecrasContactForm {
         if (this.hasCountryField()) {
             waitFor.push(this.getCountryList());
         }
+        if (this.hasDateField()) {
+            waitFor.push(RecrasCalendarHelper.loadScript());
+            RecrasCSSHelper.loadCSS('pikaday');
+        }
         return Promise.all(waitFor).then(() => {
             let html = '<form class="recras-contactform">';
             if (extraOptions.voucherQuantitySelector) {
@@ -159,6 +164,9 @@ class RecrasContactForm {
         return this.contactFormFields.filter(field => {
             return field.field_identifier === identifier;
         }).length > 0;
+    }
+    hasDateField() {
+        return this.hasFieldOfType('boeking.datum');
     }
     hasCountryField() {
         return this.hasFieldOfType('contact.landcode');
@@ -263,12 +271,12 @@ class RecrasContactForm {
                 return label + html;
             case 'boeking.datum':
                 placeholder = this.languageHelper.translate('DATE_FORMAT');
-                return label + `<input type="date" ${ fixedAttributes } min="${ today }" placeholder="${ placeholder }" pattern="${ datePattern }">`;
+                return label + `<input type="text" ${ fixedAttributes } min="${ today }" placeholder="${ placeholder }" pattern="${ datePattern }" autocomplete="off">`;
             case 'boeking.groepsgrootte':
                 return label + `<input type="number" ${ fixedAttributes } min="1">`;
             case 'boeking.starttijd':
                 placeholder = this.languageHelper.translate('TIME_FORMAT');
-                return label + `<input type="time" ${ fixedAttributes } placeholder="${ placeholder }" pattern="${ timePattern }">`;
+                return label + `<input type="time" ${ fixedAttributes } placeholder="${ placeholder }" pattern="${ timePattern }" step="300">`;
             case 'boeking.arrangement':
                 const preFilledPackage = this.options.getPackageId();
 
@@ -297,6 +305,21 @@ class RecrasContactForm {
             .then(html => {
                 this.appendHtml(html);
                 this.findElement('.recras-contactform').addEventListener('submit', this.submitForm.bind(this));
+                if (this.hasDateField()) {
+                    let pikadayOptions = Object.assign(
+                        RecrasCalendarHelper.defaultOptions(),
+                        {
+                            field: this.findElement('[data-identifier="boeking.datum"]'),
+                            i18n: RecrasCalendarHelper.i18n(this.languageHelper),
+                            numberOfMonths: 1,
+                            toString(date, _format) {
+                                return RecrasDateHelper.datePartOnly(date);
+                            },
+                        }
+                    );
+
+                    this.datePicker = new Pikaday(pikadayOptions);
+                }
                 this.loadingIndicatorHide();
             });
     }

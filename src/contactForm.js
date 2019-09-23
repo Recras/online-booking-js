@@ -82,9 +82,6 @@ class RecrasContactForm {
         if (this.hasCountryField()) {
             waitFor.push(this.getCountryList());
         }
-        if (this.hasPackageField()) {
-            waitFor.push(this.getPackages(this.options.getFormId()));
-        }
         return Promise.all(waitFor).then(() => {
             let html = '<form class="recras-contactform">';
             if (extraOptions.voucherQuantitySelector) {
@@ -124,6 +121,7 @@ class RecrasContactForm {
         return this.fetchJson(this.options.getApiBase() + 'contactformulieren/' + this.options.getFormId() + '?embed=Velden')
             .then(form => {
                 this.contactFormFields = form.Velden;
+                this.packages = this.sortPackages(form.Arrangementen);
                 return this.contactFormFields;
             });
     }
@@ -136,29 +134,25 @@ class RecrasContactForm {
             });
     }
 
-    getPackages(contactFormID) {
-        return this.fetchJson(this.options.getApiBase() + 'contactformulieren/' + contactFormID)
-            .then(json => {
-                this.packages = json.Arrangementen.sort((a, b) => {
-                    // Prioritise package name
-                    if (a.arrangement < b.arrangement) {
-                        return -1;
-                    }
-                    if (a.arrangement > b.arrangement) {
-                        return 1;
-                    }
-                    // Sort by ID in the off chance that two packages are named the same
-                    if (a.id < b.id) {
-                        return -1;
-                    }
-                    if (a.id > b.id) {
-                        return 1;
-                    }
-                    // This cannot happen
-                    return 0;
-                });
-                return this.packages;
-            });
+    sortPackages(packs) {
+        return packs.sort((a, b) => {
+            // Prioritise package name
+            if (a.arrangement < b.arrangement) {
+                return -1;
+            }
+            if (a.arrangement > b.arrangement) {
+                return 1;
+            }
+            // Sort by ID in the off chance that two packages are named the same
+            if (a.id < b.id) {
+                return -1;
+            }
+            if (a.id > b.id) {
+                return 1;
+            }
+            // This cannot happen
+            return 0;
+        });
     }
 
     hasFieldOfType(identifier) {

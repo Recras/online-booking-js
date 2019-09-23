@@ -195,10 +195,15 @@ class RecrasContactForm {
             return `<h3>${ field.naam }</h3>`;
         }
 
+        const today = RecrasDateHelper.toString(new Date());
+        const datePattern = '[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])';
+        const timePattern = '(0[0-9]|1[0-9]|2[0-3])(:[0-5][0-9])';
+
         let label = this.showLabel(field, idx);
         let attrRequired = field.verplicht ? 'required' : '';
         let classes;
         let html;
+        let placeholder;
         let fixedAttributes = `id="contactformulier-${ idx }" name="contactformulier${ idx }" ${ attrRequired } data-identifier="${ field.field_identifier }"`;
         switch (field.soort_invoer) {
             case 'contactpersoon.geslacht':
@@ -224,7 +229,7 @@ class RecrasContactForm {
             case 'contact.soort_klant':
                 html = `<div class="radioGroup">`;
                 field.mogelijke_keuzes.forEach(choice => {
-                    html += `<label><input type="radio" name="contactformulier${ idx }" value="${ choice }"${ attrRequired } data-identifier="${ field.field_identifier }">${ choice }</label>`;
+                    html += `<label><input type="radio" name="contactformulier${ idx }" value="${ choice }" ${ attrRequired } data-identifier="${ field.field_identifier }">${ choice }</label>`;
                 });
                 html += `</div>`;
                 return label + html;
@@ -251,18 +256,19 @@ class RecrasContactForm {
             case 'contact.landcode':
                 html = `<select ${ fixedAttributes } autocomplete="country">`;
                 Object.keys(this.countries).forEach(code => {
-                    let selectedText = code.toUpperCase() === this.languageHelper.getCountry() ? ' selected' : '';
-                    html += `<option value="${ code }"${ selectedText }>${ this.countries[code] }`;
+                    let selectedText = code.toUpperCase() === this.languageHelper.getCountry() ? 'selected' : '';
+                    html += `<option value="${ code }" ${ selectedText }>${ this.countries[code] }`;
                 });
                 html += '</select>';
                 return label + html;
-            case 'boeking.datum': //TODO: add optional fallback
-                const today = RecrasDateHelper.toString(new Date());
-                return label + `<input type="date" ${ fixedAttributes } min="${ today }" pattern="[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])">`;
+            case 'boeking.datum':
+                placeholder = this.languageHelper.translate('DATE_FORMAT');
+                return label + `<input type="date" ${ fixedAttributes } min="${ today }" placeholder="${ placeholder }" pattern="${ datePattern }">`;
             case 'boeking.groepsgrootte':
                 return label + `<input type="number" ${ fixedAttributes } min="1">`;
-            case 'boeking.starttijd': //TODO: add optional fallback
-                return label + `<input type="time" ${ fixedAttributes } pattern="(0[0-9]|1[0-9]|2[0-3])(:[0-5][0-9])">`;
+            case 'boeking.starttijd':
+                placeholder = this.languageHelper.translate('TIME_FORMAT');
+                return label + `<input type="time" ${ fixedAttributes } placeholder="${ placeholder }" pattern="${ timePattern }">`;
             case 'boeking.arrangement':
                 const preFilledPackage = this.options.getPackageId();
 

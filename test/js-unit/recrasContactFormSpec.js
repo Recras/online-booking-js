@@ -83,5 +83,58 @@ describe('RecrasContactForm', () => {
                 expect(html.indexOf('Kids party')).not.toBe(-1);
             });
         });
+
+        describe('sortPackages', () => {
+            let rc;
+            beforeEach(() => {
+                rc = new RecrasContactForm(new RecrasOptions({
+                    element: this.mainEl,
+                    form_id: 1,
+                    package_id: 7,
+                    recras_hostname: 'demo.recras.nl',
+                }));
+            });
+
+            it('sorts by package name first', () => {
+                let packs = [
+                    {
+                        arrangement: 'BBB',
+                    },
+                    {
+                        arrangement: 'AAA',
+                    },
+                    {
+                        arrangement: 'CCC',
+                    },
+                ];
+                let unsorted = JSON.parse(JSON.stringify(packs));
+                let sorted = rc.sortPackages(unsorted);
+                expect(sorted[0]).toEqual(packs[1]);
+                expect(sorted[1]).toEqual(packs[0]);
+                expect(sorted[2]).toEqual(packs[2]);
+            });
+
+            it('sorts by ID second', () => {
+                let packs = [
+                    {
+                        arrangement: 'Same',
+                        id: 42,
+                    },
+                    {
+                        arrangement: 'Zzz',
+                        id: 9,
+                    },
+                    {
+                        arrangement: 'Same',
+                        id: 17,
+                    },
+                ];
+                let unsorted = JSON.parse(JSON.stringify(packs));
+                let sorted = rc.sortPackages(unsorted);
+                expect(sorted[0]).toEqual(packs[2]);
+                expect(sorted[1]).toEqual(packs[0]);
+                expect(sorted[2]).toEqual(packs[1]);
+            });
+        })
     });
 });

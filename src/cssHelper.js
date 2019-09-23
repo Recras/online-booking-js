@@ -2,8 +2,6 @@ class RecrasCSSHelper {
 
     static cssBooking() {
         return `
-@import url('https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.8.0/css/pikaday.min.css');
-
 .recras-onlinebooking {
     max-width: 800px;
 }
@@ -116,14 +114,36 @@ button .recrasLoadingIndicator {
 `;
     }
 
+    static loadInlineCss(cssName, inlineCss) {
+        let styleEl = document.createElement('style');
+        styleEl.id = 'recras-css-' + cssName;
+        styleEl.innerHTML = inlineCss;
+
+        document.head.appendChild(styleEl);
+    }
+
+    static loadExternalCss(cssName, url) {
+        let linkEl = document.createElement('link');
+        linkEl.id = 'recras-css-' + cssName;
+        linkEl.setAttribute('rel', 'stylesheet');
+        linkEl.setAttribute('type', 'text/css');
+        linkEl.setAttribute('href', url);
+
+        document.head.appendChild(linkEl);
+    }
+
     static loadCSS(cssName) {
-        let css;
+        let inlineCss;
+        let url;
         switch (cssName) {
             case 'booking':
-                css = this.cssBooking();
+                inlineCss = this.cssBooking();
                 break;
             case 'global':
-                css = this.cssGlobal();
+                inlineCss = this.cssGlobal();
+                break;
+            case 'pikaday':
+                url = 'https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.8.0/css/pikaday.min.css';
                 break;
             default:
                 console.warn('Unknown CSS');
@@ -132,11 +152,12 @@ button .recrasLoadingIndicator {
         if (document.getElementById('recras-css-' + cssName)) {
             return;
         }
-        let styleEl = document.createElement('style');
-        styleEl.id = 'recras-css-' + cssName;
-        styleEl.innerHTML = css;
 
-        let refNode = document.head;
-        refNode.parentNode.insertBefore(styleEl, refNode);
+        if (inlineCss) {
+            RecrasCSSHelper.loadInlineCss(cssName, inlineCss);
+        }
+        if (url) {
+            RecrasCSSHelper.loadExternalCss(cssName, url);
+        }
     }
 }

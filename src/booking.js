@@ -48,6 +48,7 @@ class RecrasBooking {
 
         RecrasCSSHelper.loadCSS('global');
         RecrasCSSHelper.loadCSS('booking');
+        RecrasCSSHelper.loadCSS('pikaday');
         this.clearAll();
 
         this.loadingIndicatorShow(this.element);

@@ -1,5 +1,9 @@
 # Changelog
 
+## branch 21
+* Optimise loading of contact form that contains a "package" field
+* Add datepicker to date field in contact forms
+
 ## 1.0.0 (2019-09-17)
 **CONTAINS BREAKING CHANGES - please see [upgrading.md](upgrading.md)**
 * Show discount fields straight from the start, not after entering date

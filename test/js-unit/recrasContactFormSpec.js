@@ -84,6 +84,54 @@ describe('RecrasContactForm', () => {
             });
         });
 
+        describe('hasFieldOfType', () => {
+            let rc;
+            beforeEach(() => {
+                rc = new RecrasContactForm(new RecrasOptions({
+                    element: this.mainEl,
+                    form_id: 1,
+                    package_id: 7,
+                    recras_hostname: 'demo.recras.nl',
+                }));
+                rc.contactFormFields = [];
+            });
+
+            it('works on empty set', () => {
+                expect(rc.hasFieldOfType('foo')).toBe(false);
+            });
+
+            it('works for general field', () => {
+                rc.contactFormFields.push({
+                    field_identifier: 'foo',
+                });
+                expect(rc.hasFieldOfType('foo')).toBe(true);
+            });
+
+            it('works for date field', () => {
+                expect(rc.hasDateField()).toBe(false);
+                rc.contactFormFields.push({
+                    field_identifier: 'boeking.datum',
+                });
+                expect(rc.hasDateField()).toBe(true);
+            });
+
+            it('works for country field', () => {
+                expect(rc.hasCountryField()).toBe(false);
+                rc.contactFormFields.push({
+                    field_identifier: 'contact.landcode',
+                });
+                expect(rc.hasCountryField()).toBe(true);
+            });
+
+            it('works for package field', () => {
+                expect(rc.hasPackageField()).toBe(false);
+                rc.contactFormFields.push({
+                    field_identifier: 'boeking.arrangement',
+                });
+                expect(rc.hasPackageField()).toBe(true);
+            });
+        });
+
         describe('sortPackages', () => {
             let rc;
             beforeEach(() => {

@@ -32,6 +32,11 @@ class RecrasCSSHelper {
 .booking-error, .minimum-amount {
     color: hsl(0, 50%, 50%);
 }
+.booking-error {
+    -ms-grid-column: 1;
+    -ms-grid-column-span: 2;
+    grid-column: 1 / 3;
+}
 .minimum-amount {
     padding-left: 0.5em;
 }

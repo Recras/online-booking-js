@@ -368,9 +368,11 @@ describe('RecrasBooking', () => {
                     resolve();
                 });
             });
+            this.rb.bookingHasErrors = () => false;
+            this.rb.findElement = () => document.createElement('div');
 
             this.rb.bookingSize = () => 5;
-            this.rb.submitBooking();//
+            this.rb.submitBooking();
             expect(this.rb.postJson).toHaveBeenCalledWith('onlineboeking/reserveer', jasmine.objectContaining({
                 betaalmethode: 'factuur',
             }));

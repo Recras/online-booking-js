@@ -50,6 +50,11 @@ input:invalid, select:invalid, textarea:invalid {
     color: #a00;
     padding: calc(0.25em - 1px);
 }
+.booking-error {
+    background: hsl(0, 25%, 96%);
+    border: 1px solid #a00;
+    padding: 0.5em;
+}
 button:disabled {
     cursor: not-allowed;
 }

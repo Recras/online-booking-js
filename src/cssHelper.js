@@ -75,7 +75,8 @@ class RecrasCSSHelper {
     grid-template-columns: 1fr 12em;
 }
 .recras-contactform > div {
-    padding: 0.25em 0;
+    padding-bottom: 0.25em;
+    padding-top: 0.25em;
 }
 .recras-contactform label {
     display: block;

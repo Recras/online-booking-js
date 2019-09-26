@@ -31,6 +31,7 @@ img {
 input, select, textarea {
     background: #fff;
     border: 1px solid hsl(147, 25%, 50%);
+    padding: 0.25em;
 }
 button {
     background: hsl(147, 25%, 50%);
@@ -43,8 +44,11 @@ button:hover, button:active {
     background: hsl(147, 25%, 67%);
     border-bottom-color: hsl(147, 25%, 50%);
 }
-:invalid {
-    border-color: #a00;
+input:invalid, select:invalid, textarea:invalid {
+    background: rgb(255, 250, 250);
+    border: 2px solid currentColor;
+    color: #a00;
+    padding: calc(0.25em - 1px);
 }
 button:disabled {
     cursor: not-allowed;

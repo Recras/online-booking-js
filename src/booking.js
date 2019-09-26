@@ -13,7 +13,7 @@ class RecrasBooking {
 
         this.languageHelper = new RecrasLanguageHelper();
 
-        if ((options instanceof RecrasOptions) === false) {
+        if (!(options instanceof RecrasOptions)) {
             throw new Error(this.languageHelper.translate('ERR_OPTIONS_INVALID'));
         }
         this.options = options;
@@ -68,13 +68,30 @@ class RecrasBooking {
             });
     }
 
-    amountsValid(pack) {
+    hasAtLeastOneProduct(pack) {
+        if (this.shouldShowBookingSize(pack) && this.bookingSize() > 0) {
+            return true;
+        }
+
         let hasAtLeastOneProduct = false;
         for (let line of this.getLinesNoBookingSize(pack)) {
             let aantal = this.findElement(`[data-package-id="${ line.id }"]`).value;
             if (aantal > 0) {
                 hasAtLeastOneProduct = true;
             }
+        }
+
+        return hasAtLeastOneProduct;
+    }
+
+    amountsValid(pack) {
+        // Babel transpiles 'for ... of' as Symbol.iterator, which is not available in IE
+        // so we use a regular for loop instead
+        let lines = this.getLinesNoBookingSize(pack);
+        for (let i = 0; i < lines.length; i++) {
+            let line = lines[i];
+
+            let aantal = this.findElement(`[data-package-id="${ line.id }"]`).value;
             if (aantal > 0 && aantal < line.aantal_personen) {
                 return false;
             }
@@ -86,9 +103,8 @@ class RecrasBooking {
             if (this.bookingSize() < this.bookingSizeMinimum(pack) || this.bookingSize() > this.bookingSizeMaximum(pack)) {
                 return false;
             }
-            hasAtLeastOneProduct = true;
         }
-        return hasAtLeastOneProduct;
+        return this.hasAtLeastOneProduct(pack);
     }
 
     appendHtml(msg) {

@@ -46,11 +46,6 @@ class RecrasCSSHelper {
 .recrasUnitPrice {
     opacity: 0.5;
 }
-.bookPackage, .submitForm, .buyTemplate {
-    font: inherit;
-    font-weight: bold;
-    padding: 0.5em 2em;
-}
 `;
     }
 
@@ -111,6 +106,11 @@ button .recrasLoadingIndicator, label .recrasLoadingIndicator {
 }
 button .recrasLoadingIndicator {
     margin-left: 0.5em;
+}
+.bookPackage, .submitForm, .buyTemplate {
+    font: inherit;
+    font-weight: bold;
+    padding: 0.5em 2em;
 }
 `;
     }

@@ -1,7 +1,7 @@
 # Changelog
 
 ## master
-* Small styling improvement
+* Small styling improvement/fix
 
 ## 1.1.1 (2019-10-03)
 * Technical: Upgrade to Babel 7

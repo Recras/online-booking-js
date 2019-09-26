@@ -85,12 +85,7 @@ class RecrasBooking {
     }
 
     amountsValid(pack) {
-        // Babel transpiles 'for ... of' as Symbol.iterator, which is not available in IE
-        // so we use a regular for loop instead
-        let lines = this.getLinesNoBookingSize(pack);
-        for (let i = 0; i < lines.length; i++) {
-            let line = lines[i];
-
+        for (let line of this.getLinesNoBookingSize(pack)) {
             let aantal = this.findElement(`[data-package-id="${ line.id }"]`).value;
             if (aantal > 0 && aantal < line.aantal_personen) {
                 return false;
@@ -727,7 +722,7 @@ class RecrasBooking {
     bookingHasErrors() {
         let bookingDisabledReasons = this.bookingErrors();
         return Object.keys(bookingDisabledReasons).length > 0;
-        }
+    }
 
     maybeShowInlineErrors() {
         if (this.bookingHasErrors()) {
@@ -1039,7 +1034,7 @@ class RecrasBooking {
 
                 [...this.findElements('[name^="contactformulier"]')].forEach(el => {
                     el.addEventListener('input', () => {
-                        this.removeErrors('.recras-contactform');
+                        this.removeErrors('.recras-contactform ');
                         this.maybeShowInlineErrors();
                         if (this.contactFormValid()) {
                             this.removeErrors();

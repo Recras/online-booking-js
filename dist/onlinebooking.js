@@ -20,6 +20,14 @@ function _objectEntries(obj) {
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { if (!(Symbol.iterator in Object(arr) || Object.prototype.toString.call(arr) === "[object Arguments]")) { return; } var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
@@ -57,7 +65,7 @@ function () {
 
     this.languageHelper = new RecrasLanguageHelper();
 
-    if (options instanceof RecrasOptions === false) {
+    if (!(options instanceof RecrasOptions)) {
       throw new Error(this.languageHelper.translate('ERR_OPTIONS_INVALID'));
     }
 
@@ -117,8 +125,12 @@ function () {
   }
 
   _createClass(RecrasBooking, [{
-    key: "amountsValid",
-    value: function amountsValid(pack) {
+    key: "hasAtLeastOneProduct",
+    value: function hasAtLeastOneProduct(pack) {
+      if (this.shouldShowBookingSize(pack) && this.bookingSize() > 0) {
+        return true;
+      }
+
       var hasAtLeastOneProduct = false;
 
       for (var _i2 = 0, _this$getLinesNoBooki2 = this.getLinesNoBookingSize(pack); _i2 < _this$getLinesNoBooki2.length; _i2++) {
@@ -128,6 +140,16 @@ function () {
         if (aantal > 0) {
           hasAtLeastOneProduct = true;
         }
+      }
+
+      return hasAtLeastOneProduct;
+    }
+  }, {
+    key: "amountsValid",
+    value: function amountsValid(pack) {
+      for (var _i4 = 0, _this$getLinesNoBooki4 = this.getLinesNoBookingSize(pack); _i4 < _this$getLinesNoBooki4.length; _i4++) {
+        var line = _this$getLinesNoBooki4[_i4];
+        var aantal = this.findElement("[data-package-id=\"".concat(line.id, "\"]")).value;
 
         if (aantal > 0 && aantal < line.aantal_personen) {
           return false;
@@ -142,11 +164,9 @@ function () {
         if (this.bookingSize() < this.bookingSizeMinimum(pack) || this.bookingSize() > this.bookingSizeMaximum(pack)) {
           return false;
         }
-
-        hasAtLeastOneProduct = true;
       }
 
-      return hasAtLeastOneProduct;
+      return this.hasAtLeastOneProduct(pack);
     }
   }, {
     key: "appendHtml",
@@ -319,8 +339,6 @@ function () {
           _this5.findElement('.recras-amountsform').scrollIntoView(scrollOptions);
         }
 
-        _this5.checkDependencies();
-
         _this5.loadingIndicatorShow(_this5.findElement('.recras-amountsform'));
 
         return _this5.showDateTimeSelection(_this5.selectedPackage);
@@ -347,7 +365,7 @@ function () {
         this.setMinMaxAmountWarning('bookingsize', bsMaximum, 'maximum');
       }
 
-      this.maybeDisableBookButton();
+      this.maybeShowInlineErrors();
     }
   }, {
     key: "checkDependencies",
@@ -402,7 +420,7 @@ function () {
           }
         }
       });
-      this.maybeDisableBookButton();
+      this.maybeShowInlineErrors();
     }
   }, {
     key: "checkDiscountAndVoucher",
@@ -495,6 +513,64 @@ function () {
       });
     }
   }, {
+    key: "contactFormIsEmpty",
+    value: function contactFormIsEmpty() {
+      var isEmpty = true;
+      var els = this.findElements('.recras-contactform input, .recras-contactform select, .recras-contactform textarea');
+
+      var formValues = _toConsumableArray(els).map(function (el) {
+        return el.value;
+      });
+
+      for (var _i6 = 0; _i6 < formValues.length; _i6++) {
+        var val = formValues[_i6];
+
+        if (val !== '') {
+          isEmpty = false;
+        }
+      }
+
+      return isEmpty;
+    }
+  }, {
+    key: "contactFormInvalidFields",
+    value: function contactFormInvalidFields() {
+      var invalid = [];
+      var required = this.contactFormRequiredFields();
+      var els = this.findElements('.recras-contactform :invalid');
+
+      for (var _i8 = 0; _i8 < els.length; _i8++) {
+        var el = els[_i8];
+
+        if (!required.includes(el)) {
+          invalid.push(el);
+        }
+      }
+
+      return invalid;
+    }
+  }, {
+    key: "contactFormRequiredFields",
+    value: function contactFormRequiredFields() {
+      var isEmpty = [];
+      var els = this.findElements('.recras-contactform :required');
+
+      for (var _i10 = 0; _i10 < els.length; _i10++) {
+        var el = els[_i10];
+
+        if (el.value === undefined || el.value === '') {
+          isEmpty.push(el);
+        }
+      }
+
+      return isEmpty;
+    }
+  }, {
+    key: "contactFormRequiredIsEmpty",
+    value: function contactFormRequiredIsEmpty() {
+      return this.contactFormRequiredFields().length > 0;
+    }
+  }, {
     key: "contactFormValid",
     value: function contactFormValid() {
       var contactFormIsValid = this.findElement('.recras-contactform').checkValidity();
@@ -527,8 +603,8 @@ function () {
   }, {
     key: "checkMinimumAmounts",
     value: function checkMinimumAmounts() {
-      for (var _i4 = 0, _this$productCounts2 = this.productCounts(); _i4 < _this$productCounts2.length; _i4++) {
-        var product = _this$productCounts2[_i4];
+      for (var _i12 = 0, _this$productCounts2 = this.productCounts(); _i12 < _this$productCounts2.length; _i12++) {
+        var product = _this$productCounts2[_i12];
 
         if (product.aantal < 1) {
           continue;
@@ -587,8 +663,8 @@ function () {
   }, {
     key: "dependencySatisfied",
     value: function dependencySatisfied(hasNow, requiredProduct) {
-      for (var _i6 = 0, _this$productCounts4 = this.productCounts(); _i6 < _this$productCounts4.length; _i6++) {
-        var line = _this$productCounts4[_i6];
+      for (var _i14 = 0, _this$productCounts4 = this.productCounts(); _i14 < _this$productCounts4.length; _i14++) {
+        var line = _this$productCounts4[_i14];
 
         if (line.aantal === 0) {
           continue;
@@ -805,53 +881,61 @@ function () {
       afterEl.insertAdjacentHTML('beforeend', "<span class=\"recrasLoadingIndicator\">".concat(this.languageHelper.translate('LOADING'), "</span>"));
     }
   }, {
-    key: "maybeDisableBookButton",
-    value: function maybeDisableBookButton() {
-      var _this16 = this;
+    key: "bookingErrors",
+    value: function bookingErrors() {
+      var bookingDisabledReasons = {};
 
-      var button = this.findElement('.bookPackage');
-
-      if (!button) {
-        return false;
-      }
-
-      var bookingDisabledReasons = [];
-
-      if (this.requiresProduct) {
-        bookingDisabledReasons.push('BOOKING_DISABLED_REQUIRED_PRODUCT');
+      if (!this.hasAtLeastOneProduct(this.selectedPackage)) {
+        bookingDisabledReasons.amountsInvalid = 'BOOKING_DISABLED_NO_PRODUCTS';
+        return bookingDisabledReasons;
       }
 
       if (!this.amountsValid(this.selectedPackage)) {
-        bookingDisabledReasons.push('BOOKING_DISABLED_AMOUNTS_INVALID');
+        bookingDisabledReasons.amountsInvalid = 'BOOKING_DISABLED_AMOUNTS_INVALID';
+        return bookingDisabledReasons;
+      }
+
+      if (this.requiresProduct) {
+        bookingDisabledReasons.requiresProduct = 'BOOKING_DISABLED_REQUIRED_PRODUCT';
       }
 
       if (!this.findElement('.recras-onlinebooking-date').value) {
-        bookingDisabledReasons.push('BOOKING_DISABLED_INVALID_DATE');
+        bookingDisabledReasons.dateInvalid = 'BOOKING_DISABLED_INVALID_DATE';
+        return bookingDisabledReasons;
       }
 
       if (!this.findElement('.recras-onlinebooking-time').value) {
-        bookingDisabledReasons.push('BOOKING_DISABLED_INVALID_TIME');
+        bookingDisabledReasons.timeInvalid = 'BOOKING_DISABLED_INVALID_TIME';
+        return bookingDisabledReasons;
       }
 
-      if (!this.contactFormValid()) {
-        bookingDisabledReasons.push('BOOKING_DISABLED_CONTACT_FORM_INVALID');
+      if (this.contactFormIsEmpty()) {
+        bookingDisabledReasons.contactFormInvalid = 'BOOKING_DISABLED_CONTACT_FORM_EMPTY';
+      } else if (this.contactFormRequiredIsEmpty() || !this.contactFormValid()) {
+        // Special case
+        bookingDisabledReasons.contactFormRequired = true;
+        return bookingDisabledReasons;
       }
 
       var agreeEl = this.findElement('#recrasAgreeToAttachments');
 
       if (agreeEl && !agreeEl.checked) {
-        bookingDisabledReasons.push('BOOKING_DISABLED_AGREEMENT');
+        bookingDisabledReasons.notAgreed = 'BOOKING_DISABLED_AGREEMENT';
       }
 
-      if (bookingDisabledReasons.length > 0) {
-        var reasonsList = bookingDisabledReasons.map(function (reason) {
-          return _this16.languageHelper.translate(reason);
-        }).join('<li>');
-        this.findElement('#bookingErrors').innerHTML = "<ul><li>".concat(reasonsList, "</ul>");
-        button.setAttribute('disabled', 'disabled');
-      } else {
-        this.findElement('#bookingErrors').innerHTML = '';
-        button.removeAttribute('disabled');
+      return bookingDisabledReasons;
+    }
+  }, {
+    key: "bookingHasErrors",
+    value: function bookingHasErrors() {
+      var bookingDisabledReasons = this.bookingErrors();
+      return Object.keys(bookingDisabledReasons).length > 0;
+    }
+  }, {
+    key: "maybeShowInlineErrors",
+    value: function maybeShowInlineErrors() {
+      if (this.bookingHasErrors()) {
+        this.showInlineErrors();
       }
     }
   }, {
@@ -892,21 +976,21 @@ function () {
   }, {
     key: "preFillAmounts",
     value: function preFillAmounts(amounts) {
-      var _this17 = this;
+      var _this16 = this;
 
       _objectEntries(amounts).forEach(function (idAmount) {
         var el;
 
         if (idAmount[0] === 'bookingsize') {
-          el = _this17.findElement('#bookingsize');
+          el = _this16.findElement('#bookingsize');
         } else {
-          el = _this17.findElement("[data-package-id=\"".concat(idAmount[0], "\"]"));
+          el = _this16.findElement("[data-package-id=\"".concat(idAmount[0], "\"]"));
         }
 
         if (el) {
           el.value = idAmount[1];
 
-          _this17.updateProductPrice(el);
+          _this16.updateProductPrice(el);
         }
       });
 
@@ -915,7 +999,7 @@ function () {
   }, {
     key: "previewTimes",
     value: function previewTimes() {
-      var _this18 = this;
+      var _this17 = this;
 
       _toConsumableArray(this.findElements('.time-preview')).forEach(function (el) {
         el.parentNode.removeChild(el);
@@ -933,11 +1017,11 @@ function () {
         var linesNoBookingSize = this.getLinesNoBookingSize(this.selectedPackage);
         linesNoBookingSize.forEach(function (line, idx) {
           if (line.begin !== null || line.eind !== null) {
-            var normalisedStart = _this18.normaliseDate(new Date(line.begin), packageStart, _this18.selectedDate);
+            var normalisedStart = _this17.normaliseDate(new Date(line.begin), packageStart, _this17.selectedDate);
 
-            var normalisedEnd = _this18.normaliseDate(new Date(line.eind), packageStart, _this18.selectedDate);
+            var normalisedEnd = _this17.normaliseDate(new Date(line.eind), packageStart, _this17.selectedDate);
 
-            _this18.findElement("label[for=\"packageline".concat(idx, "\"]")).insertAdjacentHTML('afterbegin', "<span class=\"time-preview\">".concat(RecrasDateHelper.timePartOnly(normalisedStart), " \u2013 ").concat(RecrasDateHelper.timePartOnly(normalisedEnd), "</span>"));
+            _this17.findElement("label[for=\"packageline".concat(idx, "\"]")).insertAdjacentHTML('afterbegin', "<span class=\"time-preview\">".concat(RecrasDateHelper.timePartOnly(normalisedStart), " \u2013 ").concat(RecrasDateHelper.timePartOnly(normalisedEnd), "</span>"));
           }
         });
       }
@@ -945,11 +1029,11 @@ function () {
   }, {
     key: "productCountsBookingSize",
     value: function productCountsBookingSize() {
-      var _this19 = this;
+      var _this18 = this;
 
       return this.getLinesBookingSize(this.selectedPackage).map(function (line) {
         return {
-          aantal: _this19.bookingSize(),
+          aantal: _this18.bookingSize(),
           arrangementsregel_id: line.id
         };
       });
@@ -971,6 +1055,15 @@ function () {
       counts = counts.concat(this.productCountsNoBookingSize());
       counts = counts.concat(this.productCountsBookingSize());
       return counts;
+    }
+  }, {
+    key: "removeErrors",
+    value: function removeErrors() {
+      var parentQS = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+
+      _toConsumableArray(this.findElements(parentQS + '.booking-error')).forEach(function (el) {
+        el.parentNode.removeChild(el);
+      });
     }
   }, {
     key: "removeWarnings",
@@ -1052,6 +1145,8 @@ function () {
   }, {
     key: "showStandardAttachments",
     value: function showStandardAttachments() {
+      var _this19 = this;
+
       if (!this.selectedPackage || !this.findElement('.standard-attachments')) {
         return true;
       }
@@ -1074,7 +1169,11 @@ function () {
       var agreeEl = this.findElement('#recrasAgreeToAttachments');
 
       if (agreeEl) {
-        agreeEl.addEventListener('change', this.maybeDisableBookButton.bind(this));
+        agreeEl.addEventListener('change', function () {
+          _this19.removeErrors('.standard-attachments ');
+
+          _this19.maybeShowInlineErrors();
+        });
       }
     }
   }, {
@@ -1155,13 +1254,11 @@ function () {
         textPostBooking = msg;
       }));
       Promise.all(promises).then(function () {
-        var html = "<div class=\"recras-finalise\">\n            <p>".concat(textPostBooking, "</p>\n            <div class=\"standard-attachments\"></div>\n            ").concat(paymentText, "\n            <button type=\"submit\" class=\"bookPackage\" disabled>").concat(_this20.languageHelper.translate('BUTTON_BOOK_NOW'), "</button>\n            <div class=\"booking-error\" id=\"bookingErrors\"></div>\n        </div>");
+        var html = "<div class=\"recras-finalise\">\n            <p>".concat(textPostBooking, "</p>\n            <div class=\"standard-attachments\"></div>\n            ").concat(paymentText, "\n            <button type=\"submit\" class=\"bookPackage\">").concat(_this20.languageHelper.translate('BUTTON_BOOK_NOW'), "</button>\n        </div>");
 
         _this20.appendHtml(html);
 
         _this20.findElement('.bookPackage').addEventListener('click', _this20.submitBooking.bind(_this20));
-
-        _this20.maybeDisableBookButton();
       });
     }
   }, {
@@ -1203,9 +1300,14 @@ function () {
         _this22.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_CONTACT_FORM_SHOWN);
 
         _toConsumableArray(_this22.findElements('[name^="contactformulier"]')).forEach(function (el) {
-          el.addEventListener('input', _this22.maybeDisableBookButton.bind(_this22));
           el.addEventListener('input', function () {
+            _this22.removeErrors('.recras-contactform ');
+
+            _this22.maybeShowInlineErrors();
+
             if (_this22.contactFormValid()) {
+              _this22.removeErrors();
+
               _this22.nextSectionActive('.recras-contactform', '.recras-finalise');
             }
           });
@@ -1224,91 +1326,98 @@ function () {
     value: function showDateTimeSelection(pack) {
       var _this23 = this;
 
-      var startDate = new Date();
-      var endDate = new Date();
-      endDate.setMonth(endDate.getMonth() + 3);
-      return this.getAvailableDays(pack.id, startDate, endDate).then(function () {
-        _this23.addDateTimeSelectionHtml();
+      this.addDateTimeSelectionHtml();
+      this.showDiscountFields();
 
-        _this23.showDiscountFields();
+      if (this.options.getPreFilledAmounts()) {
+        this.preFillAmounts(this.options.getPreFilledAmounts());
+      }
 
-        if (_this23.options.getPreFilledAmounts()) {
-          _this23.preFillAmounts(_this23.options.getPreFilledAmounts());
-        }
+      var dateEl = this.findElement('.recras-onlinebooking-date');
 
-        var pikadayOptions = _extends(RecrasCalendarHelper.defaultOptions(), {
-          disableDayFn: function disableDayFn(day) {
-            var dateFmt = RecrasDateHelper.datePartOnly(day);
-            return _this23.availableDays.indexOf(dateFmt) === -1;
-          },
-          field: _this23.findElement('.recras-onlinebooking-date'),
-          i18n: RecrasCalendarHelper.i18n(_this23.languageHelper),
-          onDraw: function onDraw(pika) {
-            var lastMonthYear = pika.calendars[pika.calendars.length - 1];
-            var lastDay = new Date(lastMonthYear.year, lastMonthYear.month, 31);
+      var pikadayOptions = _extends(RecrasCalendarHelper.defaultOptions(), {
+        disableDayFn: function disableDayFn(day) {
+          var dateFmt = RecrasDateHelper.datePartOnly(day);
+          return _this23.availableDays.indexOf(dateFmt) === -1;
+        },
+        field: dateEl,
+        i18n: RecrasCalendarHelper.i18n(this.languageHelper),
+        onDraw: function onDraw(pika) {
+          if (!_this23.hasAtLeastOneProduct(_this23.selectedPackage) || !_this23.amountsValid(_this23.selectedPackage) || _this23.requiresProduct) {
+            var errorMsg = _this23.languageHelper.translate('BOOKING_DISABLED_PRODUCTS_BEFORE_DATE');
 
-            var lastAvailableDay = _this23.availableDays.reduce(function (acc, curVal) {
-              return curVal > acc ? curVal : acc;
-            }, '');
+            _this23.removeErrors('.recras-datetime ');
 
-            if (!lastAvailableDay) {
-              lastAvailableDay = new Date();
-            } else {
-              lastAvailableDay = new Date(lastAvailableDay);
-            }
+            dateEl.insertAdjacentHTML('afterend', "<div class=\"booking-error\">".concat(errorMsg, "</div>"));
+            dateEl.blur();
+            return false;
+          }
 
-            if (lastAvailableDay > lastDay) {
-              return;
-            }
+          var lastMonthYear = pika.calendars[pika.calendars.length - 1];
+          var lastDay = new Date(lastMonthYear.year, lastMonthYear.month, 31);
 
-            var newEndDate = RecrasDateHelper.clone(lastAvailableDay);
-            newEndDate.setFullYear(lastMonthYear.year);
-            newEndDate.setMonth(lastMonthYear.month + 2);
+          var lastAvailableDay = _this23.availableDays.reduce(function (acc, curVal) {
+            return curVal > acc ? curVal : acc;
+          }, '');
 
-            _this23.getAvailableDays(pack.id, lastAvailableDay, newEndDate);
-          },
-          onSelect: function onSelect(date) {
-            _this23.loadingIndicatorShow(_this23.findElement('label[for="recras-onlinebooking-time"]'));
+          if (!lastAvailableDay) {
+            lastAvailableDay = new Date();
+          } else {
+            lastAvailableDay = new Date(lastAvailableDay);
+          }
 
-            _this23.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_DATE_SELECTED);
+          if (lastAvailableDay > lastDay) {
+            return;
+          }
 
-            _this23.selectedDate = date;
+          var newEndDate = RecrasDateHelper.clone(lastAvailableDay);
+          newEndDate.setFullYear(lastMonthYear.year);
+          newEndDate.setMonth(lastMonthYear.month + 2);
 
-            _this23.getAvailableTimes(pack.id, date).then(function (times) {
-              times = times.map(function (time) {
-                return RecrasDateHelper.timePartOnly(new Date(time));
-              });
+          _this23.getAvailableDays(pack.id, lastAvailableDay, newEndDate);
+        },
+        onSelect: function onSelect(date) {
+          _this23.loadingIndicatorShow(_this23.findElement('label[for="recras-onlinebooking-time"]'));
 
-              _this23.showTimes(times);
+          _this23.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_DATE_SELECTED);
 
-              _this23.loadingIndicatorHide();
+          _this23.selectedDate = date;
 
-              _this23.selectSingleTime();
+          _this23.getAvailableTimes(pack.id, date).then(function (times) {
+            times = times.map(function (time) {
+              return RecrasDateHelper.timePartOnly(new Date(time));
             });
 
-            _this23.maybeDisableBookButton();
-          }
-        });
+            _this23.showTimes(times);
 
-        _this23.datePicker = new Pikaday(pikadayOptions);
+            _this23.loadingIndicatorHide();
 
-        _this23.findElement('.recras-onlinebooking-time').addEventListener('change', function () {
-          _this23.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_TIME_SELECTED);
+            _this23.selectSingleTime();
+          });
 
-          _this23.selectedTime = _this23.findElement('.recras-onlinebooking-time').value;
+          _this23.maybeShowInlineErrors();
+        }
+      });
 
-          _this23.nextSectionActive('.recras-datetime', '.recras-discounts');
+      this.datePicker = new Pikaday(pikadayOptions);
+      this.findElement('.recras-onlinebooking-time').addEventListener('change', function () {
+        _this23.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_TIME_SELECTED);
 
-          _this23.nextSectionActive(null, '.recras-contactform');
+        _this23.selectedTime = _this23.findElement('.recras-onlinebooking-time').value;
 
-          _this23.selectedDate = RecrasDateHelper.setTimeForDate(_this23.selectedDate, _this23.selectedTime);
+        _this23.nextSectionActive('.recras-datetime', '.recras-discounts');
 
-          if (_this23.options.getPreviewTimes() === true) {
-            _this23.previewTimes();
-          }
+        _this23.nextSectionActive(null, '.recras-contactform');
 
-          _this23.maybeDisableBookButton();
-        });
+        _this23.selectedDate = RecrasDateHelper.setTimeForDate(_this23.selectedDate, _this23.selectedTime);
+
+        if (_this23.options.getPreviewTimes() === true) {
+          _this23.previewTimes();
+        }
+
+        _this23.removeErrors('.recras-datetime ');
+
+        _this23.maybeShowInlineErrors();
       });
     }
   }, {
@@ -1425,9 +1534,103 @@ function () {
       return attachments;
     }
   }, {
+    key: "contactformErrors",
+    value: function contactformErrors() {
+      this.removeErrors('.recras-contactform ');
+
+      for (var _i16 = 0, _this$contactFormRequ2 = this.contactFormRequiredFields(); _i16 < _this$contactFormRequ2.length; _i16++) {
+        var el = _this$contactFormRequ2[_i16];
+        var labelEl = el.parentNode.querySelector('label');
+        var requiredText = this.languageHelper.translate('CONTACT_FORM_FIELD_REQUIRED', {
+          FIELD_NAME: labelEl.innerText
+        });
+        el.parentNode.insertAdjacentHTML('afterend', "<div class=\"booking-error\">".concat(requiredText, "</div>"));
+      }
+
+      for (var _i18 = 0, _this$contactFormInva2 = this.contactFormInvalidFields(); _i18 < _this$contactFormInva2.length; _i18++) {
+        var _el = _this$contactFormInva2[_i18];
+
+        var _labelEl = _el.parentNode.querySelector('label');
+
+        var invalidText = this.languageHelper.translate('CONTACT_FORM_FIELD_INVALID', {
+          FIELD_NAME: _labelEl.innerText
+        });
+
+        _el.parentNode.insertAdjacentHTML('afterend', "<div class=\"booking-error\">".concat(invalidText, "</div>"));
+      }
+    }
+  }, {
+    key: "errorAtPosition",
+    value: function errorAtPosition(key, msg) {
+      var pos;
+      var qs;
+
+      switch (key) {
+        case 'requiresProduct':
+        case 'amountsInvalid':
+          pos = 'beforeend';
+          qs = '.recras-amountsform';
+          break;
+
+        case 'dateInvalid':
+          pos = 'afterend';
+          qs = '.recras-onlinebooking-date';
+          break;
+
+        case 'timeInvalid':
+          pos = 'beforeend';
+          qs = '.recras-datetime';
+          break;
+
+        case 'contactFormInvalid':
+          pos = 'beforeend';
+          qs = '.recras-contactform';
+          break;
+
+        case 'notAgreed':
+          pos = 'beforeend';
+          qs = '.standard-attachments';
+          break;
+
+        case 'contactFormRequired':
+          this.contactformErrors();
+          break;
+
+        default:
+          pos = 'beforeend';
+          qs = '.bookPackage';
+          break;
+      }
+
+      var el = this.findElement(qs);
+
+      if (el) {
+        el.insertAdjacentHTML(pos, "<p class=\"booking-error\">".concat(this.languageHelper.translate(msg), "</p>"));
+      }
+    }
+  }, {
+    key: "showInlineErrors",
+    value: function showInlineErrors() {
+      this.removeErrors();
+      var errorMsgs = this.bookingErrors();
+
+      for (var _i20 = 0, _Object$entries2 = _objectEntries(errorMsgs); _i20 < _Object$entries2.length; _i20++) {
+        var _Object$entries2$_i = _slicedToArray(_Object$entries2[_i20], 2),
+            key = _Object$entries2$_i[0],
+            msg = _Object$entries2$_i[1];
+
+        this.errorAtPosition(key, msg);
+      }
+    }
+  }, {
     key: "submitBooking",
     value: function submitBooking() {
       var _this27 = this;
+
+      if (this.bookingHasErrors()) {
+        this.showInlineErrors();
+        return false;
+      }
 
       var productCounts = this.productCounts().map(function (line) {
         return line.aantal;
@@ -1455,14 +1658,10 @@ function () {
         paymentMethod = paymentMethodEl.value;
       }
 
+      var bookButton = this.findElement('.bookPackage');
       this.loadingIndicatorHide();
-      this.loadingIndicatorShow(this.findElement('.bookPackage'));
-      var elem;
-
-      if (null !== (elem = this.findElement('.bookPackage'))) {
-        elem.setAttribute('disabled', 'disabled');
-      }
-
+      this.loadingIndicatorShow(bookButton);
+      bookButton.setAttribute('disabled', 'disabled');
       var vouchers = Object.keys(this.appliedVouchers).length > 0 ? Object.keys(this.appliedVouchers) : null;
       var bookingParams = {
         arrangement_id: this.selectedPackage.id,
@@ -1516,6 +1715,7 @@ function () {
     value: function updateProductAmounts() {
       this.loadingIndicatorHide();
       this.availableDays = [];
+      this.removeErrors();
       this.removeWarnings();
       this.checkDependencies();
       this.checkMinimumAmounts();
@@ -2106,12 +2306,12 @@ function () {
   _createClass(RecrasCSSHelper, null, [{
     key: "cssBooking",
     value: function cssBooking() {
-      return "\n.recras-onlinebooking {\n    max-width: 800px;\n}\n.recras-onlinebooking > *:not(:first-child) + * {\n    border-top: 2px solid #dedede; /* Any love for Kirby out there? */\n}\n.recras-input-invalid {\n    border: 1px solid hsl(0, 50%, 50%);\n}\n.booking-error, .minimum-amount {\n    color: hsl(0, 50%, 50%);\n}\n.minimum-amount {\n    padding-left: 0.5em;\n}\n.recras-datetime {\n    display: -ms-grid;\n    display: grid;\n    -ms-grid-columns: 30% 70%;\n    grid-template-columns: 30% 70%;\n}\n.recras-datetime > * {\n    margin: 0.25em 0;\n}\n.recras-datetime label {\n    display: block;\n    -ms-grid-column: 1;\n}\n.recras-datetime input, .recras-datetime select {\n    max-width: 12em;\n    -ms-grid-column: 2;\n}\n.recras-datetime > :nth-child(-n + 2) {\n    -ms-grid-row: 1;\n}\n.recras-datetime > :nth-last-child(-n + 2) {\n    -ms-grid-row: 2;\n}\n.time-preview {\n    padding-right: 0.5em;\n}\n.recrasUnitPrice {\n    opacity: 0.5;\n}\n.bookPackage, .submitForm, .buyTemplate {\n    font: inherit;\n    font-weight: bold;\n    padding: 0.5em 2em;\n}\n";
+      return "\n.recras-onlinebooking {\n    max-width: 800px;\n}\n.recras-onlinebooking > *:not(:first-child) + * {\n    border-top: 2px solid #dedede; /* Any love for Kirby out there? */\n}\n.recras-input-invalid {\n    border: 1px solid hsl(0, 50%, 50%);\n}\n.booking-error, .minimum-amount {\n    color: hsl(0, 50%, 50%);\n}\n.booking-error {\n    -ms-grid-column: 1;\n    -ms-grid-column-span: 2;\n    grid-column: 1 / 3;\n}\n.minimum-amount {\n    padding-left: 0.5em;\n}\n.recras-datetime {\n    display: -ms-grid;\n    display: grid;\n    -ms-grid-columns: 30% 70%;\n    grid-template-columns: 30% 70%;\n}\n.recras-datetime > * {\n    margin: 0.25em 0;\n}\n.recras-datetime label {\n    display: block;\n    -ms-grid-column: 1;\n}\n.recras-datetime input, .recras-datetime select {\n    max-width: 12em;\n    -ms-grid-column: 2;\n}\n.recras-datetime > :nth-child(-n + 2) {\n    -ms-grid-row: 1;\n}\n.recras-datetime > :nth-last-child(-n + 2) {\n    -ms-grid-row: 2;\n}\n.time-preview {\n    padding-right: 0.5em;\n}\n.recrasUnitPrice {\n    opacity: 0.5;\n}\n.bookPackage, .submitForm, .buyTemplate {\n    font: inherit;\n    font-weight: bold;\n    padding: 0.5em 2em;\n}\n";
     }
   }, {
     key: "cssGlobal",
     value: function cssGlobal() {
-      return "\n.latestError, .recrasError {\n    color: hsl(0, 50%, 50%);\n}\n.recras-onlinebooking > *:not(.latestError):not(.recrasLoadingIndicator) {\n    padding: 1em 0;\n}\n.recras-amountsform > div {\n    display: -ms-grid;\n    display: grid;\n    -ms-grid-columns: 1fr 5em 7em;\n    grid-template-columns: 1fr 5em 7em;\n}\n.recras-datetime, .recras-discounts > div, .recras-contactform > div {\n    display: -ms-grid;\n    display: grid;\n    -ms-grid-columns: 1fr 12em;\n    grid-template-columns: 1fr 12em;\n}\n.recras-contactform > div {\n    padding: 0.25em 0;\n}\n.recras-contactform label {\n    display: block;\n}\n.recras-amountsform .recras-full-width {\n    display: block;\n}\n\n.recrasLoadingIndicator {\n    animation: recrasSpinner 1.1s infinite linear;\n    border: 0.2em solid rgba(0, 0, 0, 0.2);\n    border-left-color: rgba(0, 0, 0, 0.5);\n    border-radius: 50%;\n    display: inline-block;\n    height: 2em;\n    overflow: hidden;\n    text-indent: -100vw;\n    width: 2em;\n}\n@keyframes recrasSpinner {\n    0% {\n        transform: rotate(0deg);\n    }\n    100% {\n        transform: rotate(360deg);\n    }\n}\nbutton .recrasLoadingIndicator, label .recrasLoadingIndicator {\n    height: 1em;\n    vertical-align: middle;\n    width: 1em;\n}\nbutton .recrasLoadingIndicator {\n    margin-left: 0.5em;\n}\n";
+      return "\n.latestError, .recrasError {\n    color: hsl(0, 50%, 50%);\n}\n.recras-onlinebooking > *:not(.latestError):not(.recrasLoadingIndicator) {\n    padding: 1em 0;\n}\n.recras-amountsform > div {\n    display: -ms-grid;\n    display: grid;\n    -ms-grid-columns: 1fr 5em 7em;\n    grid-template-columns: 1fr 5em 7em;\n}\n.recras-datetime, .recras-discounts > div, .recras-contactform > div {\n    display: -ms-grid;\n    display: grid;\n    -ms-grid-columns: 1fr 12em;\n    grid-template-columns: 1fr 12em;\n}\n.recras-contactform > div {\n    padding-bottom: 0.25em;\n    padding-top: 0.25em;\n}\n.recras-contactform label {\n    display: block;\n}\n.recras-amountsform .recras-full-width {\n    display: block;\n}\n\n.recrasLoadingIndicator {\n    animation: recrasSpinner 1.1s infinite linear;\n    border: 0.2em solid rgba(0, 0, 0, 0.2);\n    border-left-color: rgba(0, 0, 0, 0.5);\n    border-radius: 50%;\n    display: inline-block;\n    height: 2em;\n    overflow: hidden;\n    text-indent: -100vw;\n    width: 2em;\n}\n@keyframes recrasSpinner {\n    0% {\n        transform: rotate(0deg);\n    }\n    100% {\n        transform: rotate(360deg);\n    }\n}\nbutton .recrasLoadingIndicator, label .recrasLoadingIndicator {\n    height: 1em;\n    vertical-align: middle;\n    width: 1em;\n}\nbutton .recrasLoadingIndicator {\n    margin-left: 0.5em;\n}\n";
     }
   }, {
     key: "insertIntoHead",
@@ -2386,14 +2586,20 @@ function () {
         ATTR_REQUIRED: 'Erforderlich',
         BOOKING_DISABLED_AGREEMENT: 'You have not agreed to the terms yet',
         BOOKING_DISABLED_AMOUNTS_INVALID: 'Programme amounts are invalid',
-        BOOKING_DISABLED_CONTACT_FORM_INVALID: 'Contact form is not filled in completely, or contains invalid values',
-        BOOKING_DISABLED_INVALID_DATE: 'No date selected',
-        BOOKING_DISABLED_INVALID_TIME: 'No time selected',
+        BOOKING_DISABLED_CONTACT_FORM_EMPTY: 'Contact form is not filled in',
+        BOOKING_DISABLED_CONTACT_FORM_INVALID: 'Contact form is not filled in correctly',
+        BOOKING_DISABLED_CONTACT_FORM_REQUIRED: 'Contact form is not filled in completely',
+        BOOKING_DISABLED_INVALID_DATE: 'Choose a date',
+        BOOKING_DISABLED_INVALID_TIME: 'Choose a time',
+        BOOKING_DISABLED_NO_PRODUCTS: 'Select at least one product',
+        BOOKING_DISABLED_PRODUCTS_BEFORE_DATE: 'Select at least one product before choosing a date',
         BOOKING_DISABLED_REQUIRED_PRODUCT: 'Required product not yet selected',
         BUTTON_BOOK_NOW: 'Jetzt buchen',
         BUTTON_BUY_NOW: 'Jetzt kaufen',
         BUTTON_SUBMIT_CONTACT_FORM: 'Submit',
         CONTACT_FORM_CHECKBOX_REQUIRED: 'At least one option must be checked',
+        CONTACT_FORM_FIELD_INVALID: '"{FIELD_NAME}" is invalid',
+        CONTACT_FORM_FIELD_REQUIRED: '"{FIELD_NAME}" is a required field',
         CONTACT_FORM_SUBMIT_FAILED: 'The contact form could not be sent. Please try again later.',
         CONTACT_FORM_SUBMIT_SUCCESS: 'The contact form was sent successfully.',
         DATE: 'Datum',
@@ -2466,14 +2672,20 @@ function () {
         ATTR_REQUIRED: 'Required',
         BOOKING_DISABLED_AGREEMENT: 'You have not agreed to the terms yet',
         BOOKING_DISABLED_AMOUNTS_INVALID: 'Programme amounts are invalid',
-        BOOKING_DISABLED_CONTACT_FORM_INVALID: 'Contact form is not filled in completely, or contains invalid values',
-        BOOKING_DISABLED_INVALID_DATE: 'No date selected',
-        BOOKING_DISABLED_INVALID_TIME: 'No time selected',
+        BOOKING_DISABLED_CONTACT_FORM_EMPTY: 'Contact form is not filled in',
+        BOOKING_DISABLED_CONTACT_FORM_INVALID: 'Contact form is not filled in correctly',
+        BOOKING_DISABLED_CONTACT_FORM_REQUIRED: 'Contact form is not filled in completely',
+        BOOKING_DISABLED_INVALID_DATE: 'Choose a date',
+        BOOKING_DISABLED_INVALID_TIME: 'Choose a time',
+        BOOKING_DISABLED_NO_PRODUCTS: 'Select at least one product',
+        BOOKING_DISABLED_PRODUCTS_BEFORE_DATE: 'Select at least one product before choosing a date',
         BOOKING_DISABLED_REQUIRED_PRODUCT: 'Required product not yet selected',
         BUTTON_BOOK_NOW: 'Book now',
         BUTTON_BUY_NOW: 'Buy now',
         BUTTON_SUBMIT_CONTACT_FORM: 'Submit',
         CONTACT_FORM_CHECKBOX_REQUIRED: 'At least one option must be checked',
+        CONTACT_FORM_FIELD_INVALID: '"{FIELD_NAME}" is invalid',
+        CONTACT_FORM_FIELD_REQUIRED: '"{FIELD_NAME}" is a required field',
         CONTACT_FORM_SUBMIT_FAILED: 'The contact form could not be sent. Please try again later.',
         CONTACT_FORM_SUBMIT_SUCCESS: 'The contact form was sent successfully.',
         DATE: 'Date',
@@ -2546,14 +2758,20 @@ function () {
         ATTR_REQUIRED: 'Vereist',
         BOOKING_DISABLED_AGREEMENT: 'Je bent nog niet akkoord met de voorwaarden',
         BOOKING_DISABLED_AMOUNTS_INVALID: 'Aantallen in programma zijn ongeldig',
-        BOOKING_DISABLED_CONTACT_FORM_INVALID: 'Contactformulier is niet volledig ingevuld, of bevat ongeldige waardes',
-        BOOKING_DISABLED_INVALID_DATE: 'Geen datum geselecteerd',
-        BOOKING_DISABLED_INVALID_TIME: 'Geen tijd geselecteerd',
+        BOOKING_DISABLED_CONTACT_FORM_EMPTY: 'Contactformulier is niet ingevuld',
+        BOOKING_DISABLED_CONTACT_FORM_INVALID: 'Contactformulier is niet correct ingevuld',
+        BOOKING_DISABLED_CONTACT_FORM_REQUIRED: 'Contactformulier is niet volledig ingevuld',
+        BOOKING_DISABLED_INVALID_DATE: 'Kies een datum',
+        BOOKING_DISABLED_INVALID_TIME: 'Kies een tijd',
+        BOOKING_DISABLED_NO_PRODUCTS: 'Selecteer ten minste één product',
+        BOOKING_DISABLED_PRODUCTS_BEFORE_DATE: 'Selecteer ten minste één product voor je een datum kiest',
         BOOKING_DISABLED_REQUIRED_PRODUCT: 'Vereist product nog niet geselecteerd',
         BUTTON_BOOK_NOW: 'Nu boeken',
         BUTTON_BUY_NOW: 'Nu kopen',
         BUTTON_SUBMIT_CONTACT_FORM: 'Versturen',
         CONTACT_FORM_CHECKBOX_REQUIRED: 'Ten minste één optie moet aangevinkt worden',
+        CONTACT_FORM_FIELD_INVALID: '"{FIELD_NAME}" is ongeldig',
+        CONTACT_FORM_FIELD_REQUIRED: '"{FIELD_NAME}" is een verplicht veld',
         CONTACT_FORM_SUBMIT_FAILED: 'Het contactformulier kon niet worden verstuurd. Probeer het later nog eens.',
         CONTACT_FORM_SUBMIT_SUCCESS: 'Het contactformulier is succesvol verstuurd.',
         DATE: 'Datum',

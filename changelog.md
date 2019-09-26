@@ -1,5 +1,8 @@
 # Changelog
 
+## master
+* Technical: Upgrade to Babel 7
+
 ## 1.1.0 (2019-09-25)
 * Optimise loading of contact form that contains a "package" field
 * Add datepicker to date field in contact forms

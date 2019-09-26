@@ -70,12 +70,7 @@ class RecrasBooking {
 
     amountsValid(pack) {
         let hasAtLeastOneProduct = false;
-        // Babel transpiles 'for ... of' as Symbol.iterator, which is not available in IE
-        // so we use a regular for loop instead
-        let lines = this.getLinesNoBookingSize(pack);
-        for (let i = 0; i < lines.length; i++) {
-            let line = lines[i];
-
+        for (let line of this.getLinesNoBookingSize(pack)) {
             let aantal = this.findElement(`[data-package-id="${ line.id }"]`).value;
             if (aantal > 0) {
                 hasAtLeastOneProduct = true;
@@ -409,9 +404,7 @@ class RecrasBooking {
     }
 
     checkMinimumAmounts() {
-        let selectedProducts = this.productCounts();
-        for (let i = 0; i < selectedProducts.length; i++) {
-            let product = selectedProducts[i];
+        for (let product of this.productCounts()) {
             if (product.aantal < 1) {
                 continue;
             }
@@ -459,9 +452,7 @@ class RecrasBooking {
     }
 
     dependencySatisfied(hasNow, requiredProduct) {
-        let productLines = this.productCounts();
-        for (let i = 0; i < productLines.length; i++) {
-            let line = productLines[i];
+        for (let line of this.productCounts()) {
             if (line.aantal === 0) {
                 continue;
             }

@@ -160,17 +160,17 @@ function () {
 
       if (!voucherCode) {
         this.setDiscountStatus(this.languageHelper.translate('VOUCHER_EMPTY'));
-        return false;
+        return Promise.resolve(false);
       }
 
       if (this.appliedVouchers[voucherCode]) {
         this.setDiscountStatus(this.languageHelper.translate('VOUCHER_ALREADY_APPLIED'));
-        return false;
+        return Promise.resolve(false);
       }
 
       if (!this.selectedDate) {
         this.setDiscountStatus(this.languageHelper.translate('DATE_INVALID'));
-        return false;
+        return Promise.resolve(false);
       }
 
       return this.postJson('onlineboeking/controleervoucher', {
@@ -182,7 +182,7 @@ function () {
         var result = json[voucherCode];
 
         if (!result.valid) {
-          return false;
+          return Promise.resolve(false);
         }
 
         _this2.appliedVouchers[voucherCode] = result.processed;
@@ -1180,7 +1180,7 @@ function () {
       this.findElement('.recras-discounts').addEventListener('submit', function (e) {
         e.preventDefault();
 
-        _this21.checkDiscountAndVoucher().bind(_this21);
+        _this21.checkDiscountAndVoucher();
 
         return false;
       });

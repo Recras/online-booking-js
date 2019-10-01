@@ -1175,14 +1175,15 @@ function () {
         existingEl.parentNode.removeChild(existingEl);
       }
 
-      var html = "\n            <form class=\"recras-discounts\">\n                <div>\n                    <label for=\"discountcode\">".concat(this.languageHelper.translate('DISCOUNT_TITLE'), "</label>\n                    <input type=\"text\" id=\"discountcode\" class=\"discountcode\" maxlength=\"50\">\n                </div>\n                <button class=\"button-secondary\">").concat(this.languageHelper.translate('DISCOUNT_CHECK'), "</button>\n            </form>\n        ");
+      var html = "\n            <form class=\"recras-discounts\">\n                <div>\n                    <label for=\"discountcode\">".concat(this.languageHelper.translate('DISCOUNT_TITLE'), "</label>\n                    <input type=\"text\" id=\"discountcode\" class=\"discountcode\" maxlength=\"50\">\n                </div>\n                <button type=\"submit\" class=\"button-secondary\">").concat(this.languageHelper.translate('DISCOUNT_CHECK'), "</button>\n            </form>\n        ");
       this.findElement('.recras-datetime').insertAdjacentHTML('afterend', html);
-      this.findElement('.recras-discounts input').addEventListener('keydown', function (e) {
-        if (e.key === 'Enter') {
-          _this21.checkDiscountAndVoucher().bind(_this21);
-        }
+      this.findElement('.recras-discounts').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        _this21.checkDiscountAndVoucher().bind(_this21);
+
+        return false;
       });
-      this.findElement('.recras-discounts button').addEventListener('click', this.checkDiscountAndVoucher.bind(this));
     }
   }, {
     key: "showContactForm",

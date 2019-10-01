@@ -940,17 +940,17 @@ class RecrasBooking {
                     <label for="discountcode">${ this.languageHelper.translate('DISCOUNT_TITLE') }</label>
                     <input type="text" id="discountcode" class="discountcode" maxlength="50">
                 </div>
-                <button class="button-secondary">${ this.languageHelper.translate('DISCOUNT_CHECK') }</button>
+                <button type="submit" class="button-secondary">${ this.languageHelper.translate('DISCOUNT_CHECK') }</button>
             </form>
         `;
         this.findElement('.recras-datetime').insertAdjacentHTML('afterend', html);
 
-        this.findElement('.recras-discounts input').addEventListener('keydown', e => {
-            if (e.key === 'Enter') {
-                this.checkDiscountAndVoucher().bind(this);
-            }
+        this.findElement('.recras-discounts').addEventListener('submit', e => {
+            e.preventDefault();
+            this.checkDiscountAndVoucher().bind(this);
+
+            return false;
         });
-        this.findElement('.recras-discounts button').addEventListener('click', this.checkDiscountAndVoucher.bind(this));
     }
 
     showContactForm(pack) {

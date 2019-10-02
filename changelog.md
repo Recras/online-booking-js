@@ -2,6 +2,7 @@
 
 ## master
 * Technical: Upgrade to Babel 7
+* Fix position of styling in the `head`, making overriding styles easier
 
 ## 1.1.0 (2019-09-25)
 * Optimise loading of contact form that contains a "package" field

@@ -1,6 +1,6 @@
 # Changelog
 
-## master
+## 1.1.1 (2019-10-03)
 * Technical: Upgrade to Babel 7
 * Fix position of styling in the `head`, making overriding styles easier
 * Fix checking discount codes/vouchers

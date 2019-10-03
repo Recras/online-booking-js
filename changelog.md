@@ -2,6 +2,7 @@
 
 ## master
 * Technical: Upgrade to Babel 7
+* Fix position of styling in the `head`, making overriding styles easier
 * Fix checking discount codes/vouchers
 
 ## 1.1.0 (2019-09-25)

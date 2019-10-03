@@ -114,12 +114,16 @@ button .recrasLoadingIndicator {
 `;
     }
 
+    static insertIntoHead(el) {
+        document.head.insertAdjacentElement('afterbegin', el);
+    }
+
     static loadInlineCss(cssName, inlineCss) {
         let styleEl = document.createElement('style');
         styleEl.id = 'recras-css-' + cssName;
         styleEl.innerHTML = inlineCss;
 
-        document.head.appendChild(styleEl);
+        RecrasCSSHelper.insertIntoHead(styleEl);
     }
 
     static loadExternalCss(cssName, url) {
@@ -129,7 +133,7 @@ button .recrasLoadingIndicator {
         linkEl.setAttribute('type', 'text/css');
         linkEl.setAttribute('href', url);
 
-        document.head.appendChild(linkEl);
+        RecrasCSSHelper.insertIntoHead(linkEl);
     }
 
     static loadCSS(cssName) {

@@ -98,15 +98,15 @@ class RecrasBooking {
     applyVoucher(packageID, voucherCode) {
         if (!voucherCode) {
             this.setDiscountStatus(this.languageHelper.translate('VOUCHER_EMPTY'));
-            return false;
+            return Promise.resolve(false);
         }
         if (this.appliedVouchers[voucherCode]) {
             this.setDiscountStatus(this.languageHelper.translate('VOUCHER_ALREADY_APPLIED'));
-            return false;
+            return Promise.resolve(false);
         }
         if (!this.selectedDate) {
             this.setDiscountStatus(this.languageHelper.translate('DATE_INVALID'));
-            return false;
+            return Promise.resolve(false);
         }
 
         return this.postJson('onlineboeking/controleervoucher', {
@@ -117,7 +117,7 @@ class RecrasBooking {
         }).then(json => {
             let result = json[voucherCode];
             if (!result.valid) {
-                return false;
+                return Promise.resolve(false);
             }
 
             this.appliedVouchers[voucherCode] = result.processed;
@@ -940,17 +940,17 @@ class RecrasBooking {
                     <label for="discountcode">${ this.languageHelper.translate('DISCOUNT_TITLE') }</label>
                     <input type="text" id="discountcode" class="discountcode" maxlength="50">
                 </div>
-                <button class="button-secondary">${ this.languageHelper.translate('DISCOUNT_CHECK') }</button>
+                <button type="submit" class="button-secondary">${ this.languageHelper.translate('DISCOUNT_CHECK') }</button>
             </form>
         `;
         this.findElement('.recras-datetime').insertAdjacentHTML('afterend', html);
 
-        this.findElement('.recras-discounts input').addEventListener('keydown', e => {
-            if (e.key === 'Enter') {
-                this.checkDiscountAndVoucher().bind(this);
-            }
+        this.findElement('.recras-discounts').addEventListener('submit', e => {
+            e.preventDefault();
+            this.checkDiscountAndVoucher();
+
+            return false;
         });
-        this.findElement('.recras-discounts button').addEventListener('click', this.checkDiscountAndVoucher.bind(this));
     }
 
     showContactForm(pack) {

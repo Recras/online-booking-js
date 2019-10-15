@@ -77,6 +77,16 @@ class RecrasContactForm {
         return this.element.querySelectorAll(querystring);
     }
 
+    isStandalone(options) {
+        if (options.standalone) {
+            return true;
+        }
+        if (options.showSubmit) {
+            console.warn('Option "showSubmit" was renamed to "standalone". Please update your code.')
+        }
+        return false;
+    }
+
     generateForm(extraOptions = {}) {
         let waitFor = [];
 
@@ -88,14 +98,16 @@ class RecrasContactForm {
             RecrasCSSHelper.loadCSS('pikaday');
         }
         return Promise.all(waitFor).then(() => {
-            let html = '<form class="recras-contactform">';
+            const standalone = this.isStandalone(extraOptions);
+            const validateText = standalone ? 'novalidate' : '';
+            let html = `<form class="recras-contactform" ${ validateText }>`;
             if (extraOptions.voucherQuantitySelector) {
                 html += this.quantitySelector();
             }
             this.contactFormFields.forEach((field, idx) => {
                 html += '<div>' + this.showField(field, idx) + '</div>';
             });
-            if (extraOptions.showSubmit) {
+            if (standalone) {
                 html += this.submitButtonHtml();
             }
             html += '</form>';
@@ -163,6 +175,30 @@ class RecrasContactForm {
         });
     }
 
+    getInvalidFields() {
+        let invalid = [];
+        let required = this.getRequiredFields();
+
+        let els = this.findElements('.recras-contactform :invalid');
+        for (let el of els) {
+            if (!required.includes(el)) {
+                invalid.push(el);
+            }
+        }
+        return invalid;
+    }
+
+    getRequiredFields() {
+        let isEmpty = [];
+        let els = this.findElements('.recras-contactform :required');
+        for (let el of els) {
+            if (el.value === undefined || el.value === '') {
+                isEmpty.push(el);
+            }
+        }
+        return isEmpty;
+    }
+
     hasFieldOfType(identifier) {
         return this.contactFormFields.filter(field => {
             return field.field_identifier === identifier;
@@ -176,6 +212,22 @@ class RecrasContactForm {
     }
     hasPackageField() {
         return this.hasFieldOfType('boeking.arrangement');
+    }
+
+    isEmpty() {
+        let isEmpty = true;
+        let els = this.findElements('.recras-contactform input, .recras-contactform select, .recras-contactform textarea');
+        let formValues = [...els].map(el => el.value);
+        for (let val of formValues) {
+            if (val !== '') {
+                isEmpty = false;
+            }
+        }
+        return isEmpty;
+    }
+
+    isValid() {
+        return this.findElement('.recras-contactform').checkValidity();
     }
 
     loadingIndicatorHide() {
@@ -195,10 +247,20 @@ class RecrasContactForm {
         return `<div><label for="number-of-vouchers">${ this.languageHelper.translate('VOUCHER_QUANTITY') }</label><input type="number" id="number-of-vouchers" class="number-of-vouchers" min="1" value="1" required></div>`;
     }
 
+    removeErrors(parentQuery = '') {
+        [...this.findElements(parentQuery + ' .booking-error')].forEach(el => {
+            el.parentNode.removeChild(el);
+        });
+    }
+
     removeWarnings() {
         [...this.findElements('.recrasError')].forEach(el => {
             el.parentNode.removeChild(el);
         });
+    }
+
+    requiredIsEmpty() {
+        return this.getRequiredFields().length > 0;
     }
 
     showField(field, idx) {
@@ -309,7 +371,7 @@ class RecrasContactForm {
         this.loadingIndicatorShow(this.element);
         return this.getContactFormFields()
             .then(() => this.generateForm({
-                showSubmit: true,
+                standalone: true,
             }))
             .then(html => {
                 this.appendHtml(html);
@@ -330,6 +392,29 @@ class RecrasContactForm {
             });
     }
 
+    showInlineErrors() {
+        for (let el of this.getRequiredFields()) {
+            const labelEl = el.parentNode.querySelector('label');
+            const requiredText = this.languageHelper.translate('CONTACT_FORM_FIELD_REQUIRED', {
+                FIELD_NAME: labelEl.innerText,
+            });
+            el.parentNode.insertAdjacentHTML(
+                'afterend',
+                `<div class="booking-error">${ requiredText }</div>`
+            );
+        }
+        for (let el of this.getInvalidFields()) {
+            const labelEl = el.parentNode.querySelector('label');
+            const invalidText = this.languageHelper.translate('CONTACT_FORM_FIELD_INVALID', {
+                FIELD_NAME: labelEl.innerText,
+            });
+            el.parentNode.insertAdjacentHTML(
+                'afterend',
+                `<div class="booking-error">${ invalidText }</div>`
+            );
+        }
+    }
+
     showLabel(field, idx) {
         let labelText = field.naam;
         if (field.verplicht) {
@@ -344,13 +429,26 @@ class RecrasContactForm {
 
     submitForm(e) {
         e.preventDefault();
-        this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_CONTACT_FORM, RecrasEventHelper.EVENT_CONTACT_FORM_SUBMIT, this.options.getFormId());
+
         let submitButton = this.findElement('.submitForm');
 
-        let status = this.checkRequiredCheckboxes();
-        if (!status) {
+        this.removeErrors('.recras-contactform');
+        if (this.isEmpty()) {
+            submitButton.parentNode.insertAdjacentHTML(
+                'afterend',
+                `<div class="booking-error">${ this.languageHelper.translate('ERR_CONTACT_FORM_EMPTY') }</div>`
+            );
+            return false;
+        } else if (this.requiredIsEmpty() || !this.isValid()) {
+            this.showInlineErrors();
             return false;
         }
+
+        if (!this.checkRequiredCheckboxes()) {
+            return false;
+        }
+
+        this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_CONTACT_FORM, RecrasEventHelper.EVENT_CONTACT_FORM_SUBMIT, this.options.getFormId());
 
         this.loadingIndicatorHide();
         this.loadingIndicatorShow(submitButton);

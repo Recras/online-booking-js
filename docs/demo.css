@@ -78,6 +78,11 @@ input[type="number"] {
     color: #a00;
     padding-left: 0.25em;
 }
+.booking-error {
+    background: hsl(0, 25%, 96%);
+    border: 1px solid #a00;
+    padding: 0.5em;
+}
 
 .recras-onlinebooking > *:not(:first-child) + * {
     border-top: 2px solid hsla(147, 25%, 25%, 0.25);

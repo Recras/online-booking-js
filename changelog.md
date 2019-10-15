@@ -1,5 +1,8 @@
 # Changelog
 
+## master
+* Small styling improvement
+
 ## 1.1.1 (2019-10-03)
 * Technical: Upgrade to Babel 7
 * Fix position of styling in the `head`, making overriding styles easier

@@ -9,6 +9,12 @@ describe('RecrasContactForm', () => {
                 verplicht: false,
                 field_identifier: 'boeking.arrangement',
             };
+            this.fieldPackageRequired = {
+                naam: 'Package required',
+                soort_invoer: 'boeking.arrangement',
+                verplicht: true,
+                field_identifier: 'boeking.arrangement',
+            };
             this.fieldCustomerType = {
                 naam: 'Customer type',
                 soort_invoer: 'contact.soort_klant',
@@ -24,6 +30,10 @@ describe('RecrasContactForm', () => {
                 {
                     id: 7,
                     arrangement: 'Package',
+                },
+                {
+                    id: 10,
+                    arrangement: 'Other package',
                 },
             ];
         });
@@ -65,6 +75,32 @@ describe('RecrasContactForm', () => {
 
                 let html = rc.showField(this.fieldPackage, 0);
                 expect(html.indexOf('selected')).toBe(-1);
+            });
+
+            it('selects package if there is only one and field is required', () => {
+                let rc = new RecrasContactForm(new RecrasOptions({
+                    element: this.mainEl,
+                    form_id: 1,
+                    recras_hostname: 'demo.recras.nl',
+                }));
+                rc.packages = this.packages.slice(0, 1);
+
+                let html = rc.showField(this.fieldPackageRequired, 0);
+                expect(html.includes('selected')).toBe(true);
+                expect((html.match(/<option/g) || []).length).toBe(1);
+            });
+
+            it('includes empty option and does not select package if there is only one but field is not required', () => {
+                let rc = new RecrasContactForm(new RecrasOptions({
+                    element: this.mainEl,
+                    form_id: 1,
+                    recras_hostname: 'demo.recras.nl',
+                }));
+                rc.packages = this.packages.slice(0, 1);
+
+                let html = rc.showField(this.fieldPackage, 0);
+                expect(html.includes('selected')).toBe(false);
+                expect((html.match(/<option/g) || []).length).toBe(2);
             });
         });
 

@@ -1993,6 +1993,13 @@ function () {
 
         case 'boeking.arrangement':
           var preFilledPackage = this.options.getPackageId();
+
+          if (field.verplicht && this.packages.length === 1) {
+            var pack = this.packages[0];
+            html = "<select ".concat(fixedAttributes, ">\n                        <option value=\"").concat(pack.id, "\" selected>").concat(pack.arrangement, "\n                    </select>");
+            return label + html;
+          }
+
           html = "<select ".concat(fixedAttributes, ">");
           html += "<option value=\"\">";
           this.packages.forEach(function (pack) {
@@ -2106,12 +2113,12 @@ function () {
   _createClass(RecrasCSSHelper, null, [{
     key: "cssBooking",
     value: function cssBooking() {
-      return "\n.recras-onlinebooking {\n    max-width: 800px;\n}\n.recras-onlinebooking > *:not(:first-child) + * {\n    border-top: 2px solid #dedede; /* Any love for Kirby out there? */\n}\n.recras-input-invalid {\n    border: 1px solid hsl(0, 50%, 50%);\n}\n.booking-error, .minimum-amount {\n    color: hsl(0, 50%, 50%);\n}\n.minimum-amount {\n    padding-left: 0.5em;\n}\n.recras-datetime {\n    display: -ms-grid;\n    display: grid;\n    -ms-grid-columns: 30% 70%;\n    grid-template-columns: 30% 70%;\n}\n.recras-datetime > * {\n    margin: 0.25em 0;\n}\n.recras-datetime label {\n    display: block;\n    -ms-grid-column: 1;\n}\n.recras-datetime input, .recras-datetime select {\n    max-width: 12em;\n    -ms-grid-column: 2;\n}\n.recras-datetime > :nth-child(-n + 2) {\n    -ms-grid-row: 1;\n}\n.recras-datetime > :nth-last-child(-n + 2) {\n    -ms-grid-row: 2;\n}\n.time-preview {\n    padding-right: 0.5em;\n}\n.recrasUnitPrice {\n    opacity: 0.5;\n}\n.bookPackage, .submitForm, .buyTemplate {\n    font: inherit;\n    font-weight: bold;\n    padding: 0.5em 2em;\n}\n";
+      return "\n.recras-onlinebooking {\n    max-width: 800px;\n}\n.recras-onlinebooking > *:not(:first-child) + * {\n    border-top: 2px solid #dedede; /* Any love for Kirby out there? */\n}\n.recras-input-invalid {\n    border: 1px solid hsl(0, 50%, 50%);\n}\n.booking-error, .minimum-amount {\n    color: hsl(0, 50%, 50%);\n}\n.minimum-amount {\n    padding-left: 0.5em;\n}\n.recras-datetime {\n    display: -ms-grid;\n    display: grid;\n    -ms-grid-columns: 30% 70%;\n    grid-template-columns: 30% 70%;\n}\n.recras-datetime > * {\n    margin: 0.25em 0;\n}\n.recras-datetime label {\n    display: block;\n    -ms-grid-column: 1;\n}\n.recras-datetime input, .recras-datetime select {\n    max-width: 12em;\n    -ms-grid-column: 2;\n}\n.recras-datetime > :nth-child(-n + 2) {\n    -ms-grid-row: 1;\n}\n.recras-datetime > :nth-last-child(-n + 2) {\n    -ms-grid-row: 2;\n}\n.time-preview {\n    padding-right: 0.5em;\n}\n.recrasUnitPrice {\n    opacity: 0.5;\n}\n";
     }
   }, {
     key: "cssGlobal",
     value: function cssGlobal() {
-      return "\n.latestError, .recrasError {\n    color: hsl(0, 50%, 50%);\n}\n.recras-onlinebooking > *:not(.latestError):not(.recrasLoadingIndicator) {\n    padding: 1em 0;\n}\n.recras-amountsform > div {\n    display: -ms-grid;\n    display: grid;\n    -ms-grid-columns: 1fr 5em 7em;\n    grid-template-columns: 1fr 5em 7em;\n}\n.recras-datetime, .recras-discounts > div, .recras-contactform > div {\n    display: -ms-grid;\n    display: grid;\n    -ms-grid-columns: 1fr 12em;\n    grid-template-columns: 1fr 12em;\n}\n.recras-contactform > div {\n    padding: 0.25em 0;\n}\n.recras-contactform label {\n    display: block;\n}\n.recras-amountsform .recras-full-width {\n    display: block;\n}\n\n.recrasLoadingIndicator {\n    animation: recrasSpinner 1.1s infinite linear;\n    border: 0.2em solid rgba(0, 0, 0, 0.2);\n    border-left-color: rgba(0, 0, 0, 0.5);\n    border-radius: 50%;\n    display: inline-block;\n    height: 2em;\n    overflow: hidden;\n    text-indent: -100vw;\n    width: 2em;\n}\n@keyframes recrasSpinner {\n    0% {\n        transform: rotate(0deg);\n    }\n    100% {\n        transform: rotate(360deg);\n    }\n}\nbutton .recrasLoadingIndicator, label .recrasLoadingIndicator {\n    height: 1em;\n    vertical-align: middle;\n    width: 1em;\n}\nbutton .recrasLoadingIndicator {\n    margin-left: 0.5em;\n}\n";
+      return "\n.latestError, .recrasError {\n    color: hsl(0, 50%, 50%);\n}\n.recras-onlinebooking > *:not(.latestError):not(.recrasLoadingIndicator) {\n    padding: 1em 0;\n}\n.recras-amountsform > div {\n    display: -ms-grid;\n    display: grid;\n    -ms-grid-columns: 1fr 5em 7em;\n    grid-template-columns: 1fr 5em 7em;\n}\n.recras-datetime, .recras-discounts > div, .recras-contactform > div {\n    display: -ms-grid;\n    display: grid;\n    -ms-grid-columns: 1fr 12em;\n    grid-template-columns: 1fr 12em;\n}\n.recras-contactform > div {\n    padding-bottom: 0.25em;\n    padding-top: 0.25em;\n}\n.recras-contactform label {\n    display: block;\n}\n.recras-amountsform .recras-full-width {\n    display: block;\n}\n\n.recrasLoadingIndicator {\n    animation: recrasSpinner 1.1s infinite linear;\n    border: 0.2em solid rgba(0, 0, 0, 0.2);\n    border-left-color: rgba(0, 0, 0, 0.5);\n    border-radius: 50%;\n    display: inline-block;\n    height: 2em;\n    overflow: hidden;\n    text-indent: -100vw;\n    width: 2em;\n}\n@keyframes recrasSpinner {\n    0% {\n        transform: rotate(0deg);\n    }\n    100% {\n        transform: rotate(360deg);\n    }\n}\nbutton .recrasLoadingIndicator, label .recrasLoadingIndicator {\n    height: 1em;\n    vertical-align: middle;\n    width: 1em;\n}\nbutton .recrasLoadingIndicator {\n    margin-left: 0.5em;\n}\n.bookPackage, .submitForm, .buyTemplate {\n    font: inherit;\n    font-weight: bold;\n    padding: 0.5em 2em;\n}\n";
     }
   }, {
     key: "insertIntoHead",

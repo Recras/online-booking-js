@@ -279,6 +279,13 @@ class RecrasContactForm {
                 return label + `<input type="time" ${ fixedAttributes } placeholder="${ placeholder }" pattern="${ timePattern }" step="300">`;
             case 'boeking.arrangement':
                 const preFilledPackage = this.options.getPackageId();
+                if (field.verplicht && this.packages.length === 1) {
+                    let pack = this.packages[0];
+                    html = `<select ${ fixedAttributes }>
+                        <option value="${ pack.id }" selected>${ pack.arrangement }
+                    </select>`;
+                    return label + html;
+                }
 
                 html = `<select ${ fixedAttributes }>`;
                 html += `<option value="">`;

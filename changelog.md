@@ -1,7 +1,8 @@
 # Changelog
 
-## master
+## 1.1.2 (2019-11-11)
 * Small styling improvement/fix
+* Contact form: if there is only 1 package and the field is required, fill it automatically
 
 ## 1.1.1 (2019-10-03)
 * Technical: Upgrade to Babel 7

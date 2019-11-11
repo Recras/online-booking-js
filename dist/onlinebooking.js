@@ -38,7 +38,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 /*******************************
 *  Recras integration library  *
-*  v 1.1.1                     *
+*  v 1.1.2                     *
 *******************************/
 var RecrasBooking =
 /*#__PURE__*/

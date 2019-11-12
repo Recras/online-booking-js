@@ -25,7 +25,7 @@
 * Optimise loading of CSS
 * Fix sorting of packages in a contact form
 
-## 0.18.0 (2019-09-28)
+## 0.18.0 (2019-08-28)
 * Add heading to quantity form
 * Add placeholders to quantity form inputs
 

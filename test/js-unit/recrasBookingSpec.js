@@ -320,4 +320,30 @@ describe('RecrasBooking', () => {
             }));
         });
     });
+
+    describe('requiredAmount', () => {
+        let rb;
+        beforeEach(() => {
+            rb = new RecrasBooking(new RecrasOptions({
+                element: document.createElement('div'),
+                recras_hostname: 'demo.recras.nl',
+            }));
+        });
+
+        it('should calculate "needs 3 per 2, rounded up"', () =>
+            expect(rb.requiredAmount(1, {
+                aantal: 3,
+                per_x_aantal: 2,
+                afronding: 'boven',
+            })).toEqual(3)
+        );
+
+        it('should calculate "needs 4 per 2, rounded down"', () =>
+            expect(rb.requiredAmount(3, {
+                aantal: 4,
+                per_x_aantal: 2,
+                afronding: 'beneden',
+            })).toEqual(4)
+        );
+    })
 });

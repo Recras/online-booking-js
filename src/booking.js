@@ -774,14 +774,24 @@ class RecrasBooking {
         });
     }
 
+    /**
+     * requiredAmount calculates the amount N needed of Y in the sentence 'product X requires N times product Y'
+     * 
+     * @param {number} hasNow The amount of product X selected
+     * @param {object} requiredProduct 
+     * @param {number} requiredProduct.aantal The base amount of Y required
+     * @param {number} requiredProduct.per_x_aantal The quantum of X that will require product Y
+     * @param {"boven"|"beneden"} requiredProduct.afronding Indication of how hasNow / per_x_aantal should be rounded ("boven" will round up, "beneden" will round down)
+     * @return {number} The amount of product Y needed
+     */
     requiredAmount(hasNow, requiredProduct) {
-        let requiredAmount = hasNow / requiredProduct.per_x_aantal;
+        let requiredFraction = hasNow / requiredProduct.per_x_aantal;
         if (requiredProduct.afronding === 'boven') {
-            requiredAmount = Math.ceil(requiredAmount);
+            requiredFraction = Math.ceil(requiredFraction);
         } else {
-            requiredAmount = Math.floor(requiredAmount);
+            requiredFraction = Math.floor(requiredFraction);
         }
-        return requiredAmount;
+        return requiredProduct.aantal * requiredFraction;
     }
 
     resetForm() {

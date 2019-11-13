@@ -118,6 +118,9 @@ class RecrasContactForm {
             }
             contactForm[field.dataset.identifier].push(field.value);
         });
+        if (contactForm['boeking.datum']) {
+            contactForm['boeking.datum'] = RecrasDateHelper.datePartOnly(this.selectedDate);
+        }
 
         return contactForm;
     }
@@ -271,7 +274,7 @@ class RecrasContactForm {
                 return label + html;
             case 'boeking.datum':
                 placeholder = this.languageHelper.translate('DATE_FORMAT');
-                return label + `<input type="text" ${ fixedAttributes } min="${ today }" placeholder="${ placeholder }" pattern="${ datePattern }" autocomplete="off">`;
+                return label + `<input type="text" ${ fixedAttributes } min="${ today }" placeholder="${ placeholder }" autocomplete="off">`;
             case 'boeking.groepsgrootte':
                 return label + `<input type="number" ${ fixedAttributes } min="1">`;
             case 'boeking.starttijd':
@@ -319,8 +322,8 @@ class RecrasContactForm {
                             field: this.findElement('[data-identifier="boeking.datum"]'),
                             i18n: RecrasCalendarHelper.i18n(this.languageHelper),
                             numberOfMonths: 1,
-                            toString(date, _format) {
-                                return RecrasDateHelper.datePartOnly(date);
+                            onSelect: (date) => {
+                                this.selectedDate = date;
                             },
                         }
                     );

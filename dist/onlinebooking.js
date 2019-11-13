@@ -1807,6 +1807,10 @@ function () {
         contactForm[field.dataset.identifier].push(field.value);
       });
 
+      if (contactForm['boeking.datum']) {
+        contactForm['boeking.datum'] = RecrasDateHelper.datePartOnly(this.selectedDate);
+      }
+
       return contactForm;
     }
   }, {
@@ -1993,7 +1997,7 @@ function () {
 
         case 'boeking.datum':
           placeholder = this.languageHelper.translate('DATE_FORMAT');
-          return label + "<input type=\"text\" ".concat(fixedAttributes, " min=\"").concat(today, "\" placeholder=\"").concat(placeholder, "\" pattern=\"").concat(datePattern, "\" autocomplete=\"off\">");
+          return label + "<input type=\"text\" ".concat(fixedAttributes, " min=\"").concat(today, "\" placeholder=\"").concat(placeholder, "\" autocomplete=\"off\">");
 
         case 'boeking.groepsgrootte':
           return label + "<input type=\"number\" ".concat(fixedAttributes, " min=\"1\">");
@@ -2047,8 +2051,8 @@ function () {
             field: _this34.findElement('[data-identifier="boeking.datum"]'),
             i18n: RecrasCalendarHelper.i18n(_this34.languageHelper),
             numberOfMonths: 1,
-            toString: function toString(date, _format) {
-              return RecrasDateHelper.datePartOnly(date);
+            onSelect: function onSelect(date) {
+              _this34.selectedDate = date;
             }
           });
 
@@ -2415,7 +2419,7 @@ function () {
         CONTACT_FORM_SUBMIT_FAILED: 'The contact form could not be sent. Please try again later.',
         CONTACT_FORM_SUBMIT_SUCCESS: 'The contact form was sent successfully.',
         DATE: 'Datum',
-        DATE_FORMAT: 'JJJJ-MM-TT',
+        DATE_FORMAT: 'TT-MM-JJJJ',
         DATE_INVALID: 'Ungültiges datum',
         DATE_PICKER_NEXT_MONTH: 'Nächsten Monat',
         DATE_PICKER_PREVIOUS_MONTH: 'Vorheriger Monat',
@@ -2495,7 +2499,7 @@ function () {
         CONTACT_FORM_SUBMIT_FAILED: 'The contact form could not be sent. Please try again later.',
         CONTACT_FORM_SUBMIT_SUCCESS: 'The contact form was sent successfully.',
         DATE: 'Date',
-        DATE_FORMAT: 'YYYY-MM-DD',
+        DATE_FORMAT: 'DD-MM-YYYY',
         DATE_INVALID: 'Invalid date',
         DATE_PICKER_NEXT_MONTH: 'Next month',
         DATE_PICKER_PREVIOUS_MONTH: 'Previous month',
@@ -2575,7 +2579,7 @@ function () {
         CONTACT_FORM_SUBMIT_FAILED: 'Het contactformulier kon niet worden verstuurd. Probeer het later nog eens.',
         CONTACT_FORM_SUBMIT_SUCCESS: 'Het contactformulier is succesvol verstuurd.',
         DATE: 'Datum',
-        DATE_FORMAT: 'JJJJ-MM-DD',
+        DATE_FORMAT: 'DD-MM-JJJJ',
         DATE_INVALID: 'Ongeldige datum',
         DATE_PICKER_NEXT_MONTH: 'Volgende maand',
         DATE_PICKER_PREVIOUS_MONTH: 'Vorige maand',

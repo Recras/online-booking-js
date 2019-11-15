@@ -119,7 +119,7 @@ class RecrasContactForm {
             contactForm[field.dataset.identifier].push(field.value);
         });
         if (contactForm['boeking.datum']) {
-            contactForm['boeking.datum'] = RecrasDateHelper.datePartOnly(this.selectedDate);
+            contactForm['boeking.datum'] = RecrasDateHelper.formatStringForAPI(contactForm['boeking.datum']);
         }
 
         return contactForm;
@@ -207,7 +207,6 @@ class RecrasContactForm {
         }
 
         const today = RecrasDateHelper.toString(new Date());
-        const datePattern = '[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])';
         const timePattern = '(0[0-9]|1[0-9]|2[0-3])(:[0-5][0-9])';
 
         let label = this.showLabel(field, idx);
@@ -322,9 +321,6 @@ class RecrasContactForm {
                             field: this.findElement('[data-identifier="boeking.datum"]'),
                             i18n: RecrasCalendarHelper.i18n(this.languageHelper),
                             numberOfMonths: 1,
-                            onSelect: (date) => {
-                                this.selectedDate = date;
-                            },
                         }
                     );
 

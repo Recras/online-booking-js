@@ -6,6 +6,21 @@ describe('RecrasDateHelper', () => {
         });
     });
 
+    describe('formatStringForAPI', () => {
+        it('leaves ISO date intact', () => {
+            const isoDate = '2019-09-17';
+            expect(RecrasDateHelper.formatStringForAPI(isoDate)).toEqual(isoDate);
+        });
+
+        it('formats DD-MM-YYYY date', () => {
+            expect(RecrasDateHelper.formatStringForAPI('18-12-2019')).toEqual('2019-12-18');
+        });
+
+        it('leaves other formats intact for the API to handle', () => {
+            expect(RecrasDateHelper.formatStringForAPI('28/06/2019')).toEqual('28/06/2019');
+        });
+    });
+
     describe('setTimeForDate', () => {
         it('Correctly sets the time', () => {
             let date = new Date(2018, 3, 20);

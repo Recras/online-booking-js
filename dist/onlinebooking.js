@@ -1808,7 +1808,7 @@ function () {
       });
 
       if (contactForm['boeking.datum']) {
-        contactForm['boeking.datum'] = RecrasDateHelper.datePartOnly(this.selectedDate);
+        contactForm['boeking.datum'] = RecrasDateHelper.formatStringForAPI(contactForm['boeking.datum']);
       }
 
       return contactForm;
@@ -1920,7 +1920,6 @@ function () {
       }
 
       var today = RecrasDateHelper.toString(new Date());
-      var datePattern = '[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])';
       var timePattern = '(0[0-9]|1[0-9]|2[0-3])(:[0-5][0-9])';
       var label = this.showLabel(field, idx);
       var attrRequired = field.verplicht ? 'required' : '';
@@ -2050,10 +2049,7 @@ function () {
           var pikadayOptions = _extends(RecrasCalendarHelper.defaultOptions(), {
             field: _this34.findElement('[data-identifier="boeking.datum"]'),
             i18n: RecrasCalendarHelper.i18n(_this34.languageHelper),
-            numberOfMonths: 1,
-            onSelect: function onSelect(date) {
-              _this34.selectedDate = date;
-            }
+            numberOfMonths: 1
           });
 
           _this34.datePicker = new Pikaday(pikadayOptions);
@@ -2217,6 +2213,20 @@ function () {
       var x = new Date(date.getTime() - date.getTimezoneOffset() * 60 * 1000); // Fix off-by-1 errors
 
       return x.toISOString().substr(0, 10); // Format as 2018-03-13
+    }
+  }, {
+    key: "formatStringForAPI",
+    value: function formatStringForAPI(date) {
+      // Handle DD-MM-YYYY pattern in code
+      var datePatternDMY = '(0[1-9]|1[0-9]|2[0-9]|3[01])-(0[1-9]|1[012])-([0-9]{4})';
+      var dmyMatches = date.match(datePatternDMY);
+
+      if (dmyMatches) {
+        return dmyMatches[3] + '-' + dmyMatches[2] + '-' + dmyMatches[1];
+      } // Let API handle the rest. That way, the user will get an error if the input is invalid
+
+
+      return date;
     }
   }, {
     key: "setTimeForDate",

@@ -1,6 +1,6 @@
 # Changelog
 
-## unreleased
+## 1.1.4 (2019-11-18)
 * Change date format for booking date field in contact forms
 
 ## 1.1.3 (2019-11-12)

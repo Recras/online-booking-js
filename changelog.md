@@ -1,5 +1,8 @@
 # Changelog
 
+## unreleased
+* Change date format for booking date field in contact forms
+
 ## 1.1.3 (2019-11-12)
 * Styling fixes for Internet Explorer
 * Handle 'require X per Y' requirements (not just 1 per Y)

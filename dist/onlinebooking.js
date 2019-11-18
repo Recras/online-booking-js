@@ -1807,6 +1807,10 @@ function () {
         contactForm[field.dataset.identifier].push(field.value);
       });
 
+      if (contactForm['boeking.datum']) {
+        contactForm['boeking.datum'] = RecrasDateHelper.formatStringForAPI(contactForm['boeking.datum']);
+      }
+
       return contactForm;
     }
   }, {
@@ -1916,7 +1920,6 @@ function () {
       }
 
       var today = RecrasDateHelper.toString(new Date());
-      var datePattern = '[0-9]{4}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])';
       var timePattern = '(0[0-9]|1[0-9]|2[0-3])(:[0-5][0-9])';
       var label = this.showLabel(field, idx);
       var attrRequired = field.verplicht ? 'required' : '';
@@ -1993,7 +1996,7 @@ function () {
 
         case 'boeking.datum':
           placeholder = this.languageHelper.translate('DATE_FORMAT');
-          return label + "<input type=\"text\" ".concat(fixedAttributes, " min=\"").concat(today, "\" placeholder=\"").concat(placeholder, "\" pattern=\"").concat(datePattern, "\" autocomplete=\"off\">");
+          return label + "<input type=\"text\" ".concat(fixedAttributes, " min=\"").concat(today, "\" placeholder=\"").concat(placeholder, "\" autocomplete=\"off\">");
 
         case 'boeking.groepsgrootte':
           return label + "<input type=\"number\" ".concat(fixedAttributes, " min=\"1\">");
@@ -2046,10 +2049,7 @@ function () {
           var pikadayOptions = _extends(RecrasCalendarHelper.defaultOptions(), {
             field: _this34.findElement('[data-identifier="boeking.datum"]'),
             i18n: RecrasCalendarHelper.i18n(_this34.languageHelper),
-            numberOfMonths: 1,
-            toString: function toString(date, _format) {
-              return RecrasDateHelper.datePartOnly(date);
-            }
+            numberOfMonths: 1
           });
 
           _this34.datePicker = new Pikaday(pikadayOptions);
@@ -2213,6 +2213,20 @@ function () {
       var x = new Date(date.getTime() - date.getTimezoneOffset() * 60 * 1000); // Fix off-by-1 errors
 
       return x.toISOString().substr(0, 10); // Format as 2018-03-13
+    }
+  }, {
+    key: "formatStringForAPI",
+    value: function formatStringForAPI(date) {
+      // Handle DD-MM-YYYY pattern in code
+      var datePatternDMY = '(0[1-9]|1[0-9]|2[0-9]|3[01])-(0[1-9]|1[012])-([0-9]{4})';
+      var dmyMatches = date.match(datePatternDMY);
+
+      if (dmyMatches) {
+        return dmyMatches[3] + '-' + dmyMatches[2] + '-' + dmyMatches[1];
+      } // Let API handle the rest. That way, the user will get an error if the input is invalid
+
+
+      return date;
     }
   }, {
     key: "setTimeForDate",
@@ -2415,7 +2429,7 @@ function () {
         CONTACT_FORM_SUBMIT_FAILED: 'The contact form could not be sent. Please try again later.',
         CONTACT_FORM_SUBMIT_SUCCESS: 'The contact form was sent successfully.',
         DATE: 'Datum',
-        DATE_FORMAT: 'JJJJ-MM-TT',
+        DATE_FORMAT: 'TT-MM-JJJJ',
         DATE_INVALID: 'Ungültiges datum',
         DATE_PICKER_NEXT_MONTH: 'Nächsten Monat',
         DATE_PICKER_PREVIOUS_MONTH: 'Vorheriger Monat',
@@ -2495,7 +2509,7 @@ function () {
         CONTACT_FORM_SUBMIT_FAILED: 'The contact form could not be sent. Please try again later.',
         CONTACT_FORM_SUBMIT_SUCCESS: 'The contact form was sent successfully.',
         DATE: 'Date',
-        DATE_FORMAT: 'YYYY-MM-DD',
+        DATE_FORMAT: 'DD-MM-YYYY',
         DATE_INVALID: 'Invalid date',
         DATE_PICKER_NEXT_MONTH: 'Next month',
         DATE_PICKER_PREVIOUS_MONTH: 'Previous month',
@@ -2575,7 +2589,7 @@ function () {
         CONTACT_FORM_SUBMIT_FAILED: 'Het contactformulier kon niet worden verstuurd. Probeer het later nog eens.',
         CONTACT_FORM_SUBMIT_SUCCESS: 'Het contactformulier is succesvol verstuurd.',
         DATE: 'Datum',
-        DATE_FORMAT: 'JJJJ-MM-DD',
+        DATE_FORMAT: 'DD-MM-JJJJ',
         DATE_INVALID: 'Ongeldige datum',
         DATE_PICKER_NEXT_MONTH: 'Volgende maand',
         DATE_PICKER_PREVIOUS_MONTH: 'Vorige maand',

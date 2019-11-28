@@ -52,7 +52,7 @@ class RecrasBooking {
         this.clearAll();
 
         this.loadingIndicatorShow(this.element);
-        optionsPromise
+        this.promise = optionsPromise
             .then(() => RecrasCalendarHelper.loadScript())
             .then(() => this.getTexts())
             .then(texts => {
@@ -61,9 +61,9 @@ class RecrasBooking {
             }).then(packages => {
                 this.loadingIndicatorHide();
                 if (this.options.getPackageId()) {
-                    this.changePackage(this.options.getPackageId());
+                    return this.changePackage(this.options.getPackageId());
                 } else {
-                    this.showPackages(packages);
+                    return this.showPackages(packages);
                 }
             });
     }
@@ -205,13 +205,13 @@ class RecrasBooking {
             this.clearAll();
             this.showPackages(this.packages);
             this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_RESET);
-            return false;
+            return Promise.resolve(false);
         } else {
             this.clearAllExceptPackageSelection();
             this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_PACKAGE_CHANGED, selectedPackage[0].id);
         }
         this.selectedPackage = selectedPackage[0];
-        this.showProducts(this.selectedPackage).then(() => {
+        return this.showProducts(this.selectedPackage).then(() => {
             this.nextSectionActive('.recras-package-select', '.recras-amountsform');
 
             this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_PRODUCTS_SHOWN);
@@ -244,7 +244,7 @@ class RecrasBooking {
         let bsMinimum = this.bookingSizeMinimum(pack);
 
         if (bookingSize < bsMinimum) {
-            this.setMinMaxAmountWarning('bookingsize', bsMinimum);
+            this.setMinMaxAmountWarning('bookingsize', bsMinimum, 'minimum');
         } else if (bookingSize > bsMaximum) {
             this.setMinMaxAmountWarning('bookingsize', bsMaximum, 'maximum');
         }
@@ -419,7 +419,7 @@ class RecrasBooking {
             }
 
             if (product.aantal < packageLine.product.minimum_aantal) {
-                this.setMinMaxAmountWarning(input.id, packageLine.product.minimum_aantal);
+                this.setMinMaxAmountWarning(input.id, packageLine.product.minimum_aantal, 'minimum');
             } else if (product.aantal > packageLine.max) {
                 this.setMinMaxAmountWarning(input.id, packageLine.max, 'maximum');
             }
@@ -572,6 +572,10 @@ class RecrasBooking {
         return total;
     }
 
+    getSetting(settingName) {
+        return this.fetchJson(this.options.getApiBase() + 'instellingen/' + settingName);
+    }
+
     getTexts() {
         const settings = [
             'maximum_aantal_online_boeking_overschreden',
@@ -585,9 +589,9 @@ class RecrasBooking {
             'online_boeking_step3_text_post',
         ];
         let promises = [];
-        settings.forEach(setting => {
-            promises.push(this.fetchJson(this.options.getApiBase() + 'instellingen/' + setting));
-        });
+        for (let setting of settings) {
+            promises.push(this.getSetting(setting));
+        }
         return Promise.all(promises).then(settings => {
             let texts = {};
             settings.forEach(setting => {

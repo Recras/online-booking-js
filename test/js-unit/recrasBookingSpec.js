@@ -345,5 +345,66 @@ describe('RecrasBooking', () => {
                 afronding: 'beneden',
             })).toEqual(4)
         );
-    })
+    });
+
+    describe('checkMinMaxAmounts', () => {
+        let rb;
+
+        beforeEach(() => {
+            let mainEl = document.createElement('div');
+            mainEl.id = 'onlinebooking';
+            document.body.appendChild(mainEl);
+            rb = new RecrasBooking(new RecrasOptions({
+                element: mainEl,
+                recras_hostname: 'demo.recras.nl',
+                package_id: 26,
+            }));
+            spyOn(rb, 'setMinMaxAmountWarning');
+
+            // Mocks
+            rb.getSetting = (name) => ({
+                slug: name,
+                waarde: '',
+            });
+            rb.getPackages = () => {
+                const packages = [{
+                    id: 26,
+                    onlineboeking_contactformulier_id: 4,
+                    regels: [
+                        {
+                            id: 669,
+                            max: 8,
+                            onlineboeking_aantalbepalingsmethode: "invullen_door_gebruiker",
+                            product: {
+                                minimum_aantal: 5,
+                                vereist_product: [],
+                            }
+                        }
+                    ],
+                }];
+                rb.packages = packages;
+                return packages;
+            };
+        });
+
+        it('gives error if amount is less than the minimum', async () => {
+            await rb.promise;
+
+            let el = document.getElementById('packageline0');
+            el.value = '1';
+            el.dispatchEvent(new Event('input'));
+
+            expect(rb.setMinMaxAmountWarning).toHaveBeenCalledWith('packageline0', 5, 'minimum');
+        });
+
+        it('gives error if amount is more than the maximum', async () => {
+            await rb.promise;
+
+            let el = document.getElementById('packageline0');
+            el.value = '15';
+            el.dispatchEvent(new Event('input'));
+
+            expect(rb.setMinMaxAmountWarning).toHaveBeenCalledWith('packageline0', 8, 'maximum');
+        });
+    });
 });

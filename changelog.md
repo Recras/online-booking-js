@@ -1,5 +1,8 @@
 # Changelog
 
+## unreleased
+* Show error when input is higher than allowed
+
 ## 1.1.4 (2019-11-18)
 * Change date format for booking date field in contact forms
 

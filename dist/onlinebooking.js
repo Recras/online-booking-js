@@ -457,8 +457,8 @@ function () {
       });
     }
   }, {
-    key: "checkMaximumAmounts",
-    value: function checkMaximumAmounts() {
+    key: "checkMaximumForPackage",
+    value: function checkMaximumForPackage() {
       var _this9 = this;
 
       var maxPerLine = this.selectedPackage.maximum_aantal_personen_online;
@@ -525,8 +525,8 @@ function () {
       label.parentNode.appendChild(warnEl);
     }
   }, {
-    key: "checkMinimumAmounts",
-    value: function checkMinimumAmounts() {
+    key: "checkMinMaxAmounts",
+    value: function checkMinMaxAmounts() {
       for (var _i4 = 0, _this$productCounts2 = this.productCounts(); _i4 < _this$productCounts2.length; _i4++) {
         var product = _this$productCounts2[_i4];
 
@@ -536,11 +536,6 @@ function () {
 
         var packageLineID = product.arrangementsregel_id;
         var packageLine = this.findProduct(packageLineID);
-
-        if (product.aantal >= packageLine.product.minimum_aantal) {
-          continue;
-        }
-
         var input = this.findElement("[data-package-id=\"".concat(packageLineID, "\"]"));
 
         if (!input) {
@@ -548,7 +543,11 @@ function () {
           continue;
         }
 
-        this.setMinMaxAmountWarning(input.id, packageLine.product.minimum_aantal);
+        if (product.aantal < packageLine.product.minimum_aantal) {
+          this.setMinMaxAmountWarning(input.id, packageLine.product.minimum_aantal);
+        } else if (product.aantal > packageLine.max) {
+          this.setMinMaxAmountWarning(input.id, packageLine.max, 'maximum');
+        }
       }
     }
   }, {
@@ -1529,8 +1528,8 @@ function () {
       this.availableDays = [];
       this.removeWarnings();
       this.checkDependencies();
-      this.checkMinimumAmounts();
-      var maxPromise = this.checkMaximumAmounts();
+      this.checkMinMaxAmounts();
+      var maxPromise = this.checkMaximumForPackage();
       this.checkBookingSize(this.selectedPackage);
       this.showTotalPrice();
       this.showStandardAttachments();
@@ -2482,8 +2481,8 @@ function () {
         NO_PRODUCTS: 'Kein Produkt ausgewählt',
         PRICE_TOTAL: 'Insgesamt',
         PRICE_TOTAL_WITH_DISCOUNT: 'Insgesamt inklusive Rabatt',
-        PRODUCT_MAXIMUM: '(muss höchstens {MAXIMUM} sein)',
-        PRODUCT_MINIMUM: '(muss mindestens {MINIMUM} sein)',
+        PRODUCT_MAXIMUM: '(höchstens {MAXIMUM})',
+        PRODUCT_MINIMUM: '(mindestens {MINIMUM})',
         PRODUCT_REQUIRED: '{NUM} {PRODUCT} benötigt {REQUIRED_AMOUNT} {REQUIRED_PRODUCT} um auch gebucht zu werden.',
         TIME: 'Zeit',
         TIME_FORMAT: 'UU:MM',
@@ -2562,8 +2561,8 @@ function () {
         NO_PRODUCTS: 'No product selected',
         PRICE_TOTAL: 'Total',
         PRICE_TOTAL_WITH_DISCOUNT: 'Total including discount',
-        PRODUCT_MAXIMUM: '(must be at most {MAXIMUM})',
-        PRODUCT_MINIMUM: '(must be at least {MINIMUM})',
+        PRODUCT_MAXIMUM: '(at most {MAXIMUM})',
+        PRODUCT_MINIMUM: '(at least {MINIMUM})',
         PRODUCT_REQUIRED: '{NUM} {PRODUCT} requires {REQUIRED_AMOUNT} {REQUIRED_PRODUCT} to also be booked.',
         TIME: 'Time',
         TIME_FORMAT: 'HH:MM',
@@ -2642,8 +2641,8 @@ function () {
         NO_PRODUCTS: 'Geen product gekozen',
         PRICE_TOTAL: 'Totaal',
         PRICE_TOTAL_WITH_DISCOUNT: 'Totaal inclusief korting',
-        PRODUCT_MAXIMUM: '(moet ten hoogste {MAXIMUM} zijn)',
-        PRODUCT_MINIMUM: '(moet minstens {MINIMUM} zijn)',
+        PRODUCT_MAXIMUM: '(maximaal {MAXIMUM})',
+        PRODUCT_MINIMUM: '(minimaal {MINIMUM})',
         PRODUCT_REQUIRED: '{NUM} {PRODUCT} vereist dat ook {REQUIRED_AMOUNT} {REQUIRED_PRODUCT} geboekt wordt.',
         TIME: 'Tijd',
         TIME_FORMAT: 'UU:MM',

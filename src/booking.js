@@ -345,7 +345,7 @@ class RecrasBooking {
             });
     }
 
-    checkMaximumAmounts() {
+    checkMaximumForPackage() {
         const maxPerLine = this.selectedPackage.maximum_aantal_personen_online;
         if (maxPerLine === null) {
             return Promise.resolve(null);
@@ -403,7 +403,7 @@ class RecrasBooking {
         label.parentNode.appendChild(warnEl);
     }
 
-    checkMinimumAmounts() {
+    checkMinMaxAmounts() {
         for (let product of this.productCounts()) {
             if (product.aantal < 1) {
                 continue;
@@ -411,9 +411,6 @@ class RecrasBooking {
 
             let packageLineID = product.arrangementsregel_id;
             let packageLine = this.findProduct(packageLineID);
-            if (product.aantal >= packageLine.product.minimum_aantal) {
-                continue;
-            }
 
             let input = this.findElement(`[data-package-id="${ packageLineID }"]`);
             if (!input) {
@@ -421,7 +418,11 @@ class RecrasBooking {
                 continue;
             }
 
-            this.setMinMaxAmountWarning(input.id, packageLine.product.minimum_aantal);
+            if (product.aantal < packageLine.product.minimum_aantal) {
+                this.setMinMaxAmountWarning(input.id, packageLine.product.minimum_aantal);
+            } else if (product.aantal > packageLine.max) {
+                this.setMinMaxAmountWarning(input.id, packageLine.max, 'maximum');
+            }
         }
     }
 
@@ -1257,8 +1258,8 @@ ${ msgs[1] }</p></div>`);
 
         this.removeWarnings();
         this.checkDependencies();
-        this.checkMinimumAmounts();
-        const maxPromise = this.checkMaximumAmounts();
+        this.checkMinMaxAmounts();
+        const maxPromise = this.checkMaximumForPackage();
         this.checkBookingSize(this.selectedPackage);
         this.showTotalPrice();
         this.showStandardAttachments();

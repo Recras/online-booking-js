@@ -321,6 +321,44 @@ describe('RecrasBooking', () => {
         });
     });
 
+    describe('Option "package_ids"', () => {
+        let rb;
+        const package1 = {
+            id: 1,
+        };
+        const package2 = {
+            id: 2,
+        };
+        const package3 = {
+            id: 3,
+        };
+        const package4 = {
+            id: 4,
+        };
+
+        beforeEach(() => {
+            rb = new RecrasBooking(new RecrasOptions({
+                element: document.createElement('div'),
+                recras_hostname: 'demo.recras.nl',
+                package_ids: [2, 3],
+            }));
+            spyOn(rb, 'showPackages');
+
+            // Mock
+            rb.getPackages = () => {
+                const packages = [package1, package2, package3, package4];
+                rb.packages = packages;
+                return packages;
+            };
+        });
+
+        it('filters the visible packages', async () => {
+            await rb.promise;
+
+            expect(rb.showPackages).toHaveBeenCalledWith([package2, package3]);
+        });
+    });
+
     describe('requiredAmount', () => {
         let rb;
         beforeEach(() => {

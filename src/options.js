@@ -52,6 +52,9 @@ class RecrasOptions {
     getPackageId() {
         return this.options.package_id;
     }
+    getPackageIds() {
+        return this.options.package_ids;
+    }
     getPreFilledAmounts() {
         return this.options.productAmounts;
     }

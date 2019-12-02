@@ -62,6 +62,10 @@ class RecrasBooking {
                 this.loadingIndicatorHide();
                 if (this.options.getPackageId()) {
                     return this.changePackage(this.options.getPackageId());
+                } else if (this.options.getPackageIds()) {
+                    const filtered = this.options.getPackageIds();
+                    packages = packages.filter(p => filtered.includes(p.id));
+                    return this.showPackages(packages);
                 } else {
                     return this.showPackages(packages);
                 }

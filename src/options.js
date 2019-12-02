@@ -52,9 +52,6 @@ class RecrasOptions {
     getPackageId() {
         return this.options.package_id;
     }
-    getPackageIds() {
-        return this.options.package_ids;
-    }
     getPreFilledAmounts() {
         return this.options.productAmounts;
     }
@@ -66,6 +63,13 @@ class RecrasOptions {
     }
     getVoucherTemplateId() {
         return this.options.voucher_template_id;
+    }
+
+    isSinglePackage() {
+        if (Array.isArray(this.options.package_id)) {
+            return this.options.package_id.length === 1;
+        }
+        return !isNaN(parseInt(this.options.package_id, 10));
     }
 
     setOption(option, value) {

@@ -41,7 +41,7 @@ class RecrasBooking {
         }
 
         if (this.options.getPreFilledAmounts()) {
-            if (!this.options.getPackageId()) {
+            if (!this.options.isSinglePackage()) {
                 console.warn(this.languageHelper.translate('ERR_AMOUNTS_NO_PACKAGE'));
             }
         }
@@ -60,15 +60,17 @@ class RecrasBooking {
                 return this.getPackages();
             }).then(packages => {
                 this.loadingIndicatorHide();
-                if (this.options.getPackageId()) {
-                    return this.changePackage(this.options.getPackageId());
-                } else if (this.options.getPackageIds()) {
-                    const filtered = this.options.getPackageIds();
-                    packages = packages.filter(p => filtered.includes(p.id));
-                    return this.showPackages(packages);
-                } else {
-                    return this.showPackages(packages);
+                let pck = this.options.getPackageId();
+
+                if (this.options.isSinglePackage()) {
+                    if (Array.isArray(pck)) {
+                        pck = pck[0];
+                    }
+                    return this.changePackage(pck);
+                } else if (Array.isArray(pck) && pck.length > 1) {
+                    packages = packages.filter(p => pck.includes(p.id));
                 }
+                return this.showPackages(packages);
             });
     }
 

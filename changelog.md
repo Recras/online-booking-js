@@ -1,6 +1,6 @@
 # Changelog
 
-## unreleased
+## 1.2.0 (2019-12-03)
 * Show error when input is higher than allowed
 * Allow selecting only a few package IDs
 

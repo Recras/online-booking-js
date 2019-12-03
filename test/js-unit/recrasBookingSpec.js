@@ -321,6 +321,82 @@ describe('RecrasBooking', () => {
         });
     });
 
+    describe('Option "package_id"', () => {
+        let rb;
+        const package1 = {
+            id: 1,
+        };
+        const package2 = {
+            id: 2,
+        };
+        const package3 = {
+            id: 3,
+        };
+        const package4 = {
+            id: 4,
+        };
+        const getPackagesMock = () => [package1, package2, package3, package4];
+
+        it('works with a single package', async () => {
+            rb = new RecrasBooking(new RecrasOptions({
+                element: document.createElement('div'),
+                recras_hostname: 'demo.recras.nl',
+                package_id: 2,
+            }));
+            spyOn(rb, 'showPackages');
+            spyOn(rb, 'changePackage');
+            rb.getPackages = getPackagesMock;
+
+            await rb.promise;
+
+            expect(rb.changePackage).toHaveBeenCalledWith(2);
+            expect(rb.showPackages).not.toHaveBeenCalled();
+        });
+
+        it('works with a single-item array', async () => {
+            rb = new RecrasBooking(new RecrasOptions({
+                element: document.createElement('div'),
+                recras_hostname: 'demo.recras.nl',
+                package_id: [2],
+            }));
+            spyOn(rb, 'showPackages');
+            spyOn(rb, 'changePackage');
+            rb.getPackages = getPackagesMock;
+
+            await rb.promise;
+
+            expect(rb.changePackage).toHaveBeenCalledWith(2);
+            expect(rb.showPackages).not.toHaveBeenCalled();
+        });
+
+        it('filters the visible packages', async () => {
+            rb = new RecrasBooking(new RecrasOptions({
+                element: document.createElement('div'),
+                recras_hostname: 'demo.recras.nl',
+                package_id: [2, 3],
+            }));
+            spyOn(rb, 'showPackages');
+            rb.getPackages = getPackagesMock;
+
+            await rb.promise;
+
+            expect(rb.showPackages).toHaveBeenCalledWith([package2, package3]);
+        });
+
+        it('works without option', async () => {
+            rb = new RecrasBooking(new RecrasOptions({
+                element: document.createElement('div'),
+                recras_hostname: 'demo.recras.nl',
+            }));
+            spyOn(rb, 'showPackages');
+            rb.getPackages = getPackagesMock;
+
+            await rb.promise;
+
+            expect(rb.showPackages).toHaveBeenCalledWith([package1, package2, package3, package4]);
+        });
+    });
+
     describe('requiredAmount', () => {
         let rb;
         beforeEach(() => {

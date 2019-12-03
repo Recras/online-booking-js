@@ -1,6 +1,6 @@
 /*******************************
 *  Recras integration library  *
-*  v 1.1.4                     *
+*  v 1.2.0                     *
 *******************************/
 
 class RecrasBooking {
@@ -41,7 +41,7 @@ class RecrasBooking {
         }
 
         if (this.options.getPreFilledAmounts()) {
-            if (!this.options.getPackageId()) {
+            if (!this.options.isSinglePackage()) {
                 console.warn(this.languageHelper.translate('ERR_AMOUNTS_NO_PACKAGE'));
             }
         }
@@ -60,11 +60,17 @@ class RecrasBooking {
                 return this.getPackages();
             }).then(packages => {
                 this.loadingIndicatorHide();
-                if (this.options.getPackageId()) {
-                    return this.changePackage(this.options.getPackageId());
-                } else {
-                    return this.showPackages(packages);
+                let pck = this.options.getPackageId();
+
+                if (this.options.isSinglePackage()) {
+                    if (Array.isArray(pck)) {
+                        pck = pck[0];
+                    }
+                    return this.changePackage(pck);
+                } else if (Array.isArray(pck) && pck.length > 1) {
+                    packages = packages.filter(p => pck.includes(p.id));
                 }
+                return this.showPackages(packages);
             });
     }
 

@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/Recras/online-booking-js.svg?branch=master)](https://travis-ci.org/Recras/online-booking-js)
 
 # Recras Online Booking JS library
-Version: 1.1.4
+Version: 1.2.0
 
 JS library for easy online booking & voucher integration
 
@@ -67,12 +67,14 @@ See `/demo/index.html` for integration demos
 work. If omitted, all events will be sent. For a list of events, refer to the section Events at the end of this document.
 
 ### Online booking only
-* `package_id` - optional - the ID of a package. This will hide the package selection dropdown and skip this step.
+* `package_id` - optional - can be the following:
+  - the single ID of a package. This will pre-fill the package and skip the package selection dropdown step.
+  - an array of multiple package IDs. This will only show the selected packages in the package selection dropdown. If there is only one package in the array, it will behave the same as the first method.
 * `redirect_url` - optional - the URL to redirect to after a successful online booking. The URL will receive the created booking ID as `boeking_id` GET parameter (i.e. `?booking_id=42`). For more information on our booking API, we refer to our [booking API documentation](https://recras.github.io/docs/endpoints/boekingen.html).
 * `autoScroll` - optional, defaults to `true` - whether or not to scroll the amounts form into view when changing packages. This is most useful if you select a package by default and don't want to scroll past the intro text, set it to `false` in that case.
 * `previewTimes` - optional, defaults to `true` - whether or not to preview times for each line 
 in the programme after selecting a date and time.
-* `productAmounts` - optional, use in combination with `package_id`. Set this to an object where the keys are the package line ID's and the values are the amounts to enter, i.e. :
+* `productAmounts` - optional, use in combination with a single `package_id`. Set this to an object where the keys are the package line ID's and the values are the amounts to enter, i.e. :
     ```
     {
         bookingsize: 16,

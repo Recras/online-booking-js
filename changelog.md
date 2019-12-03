@@ -1,7 +1,8 @@
 # Changelog
 
-## unreleased
+## 1.2.0 (2019-12-03)
 * Show error when input is higher than allowed
+* Allow selecting only a few package IDs
 
 ## 1.1.4 (2019-11-18)
 * Change date format for booking date field in contact forms

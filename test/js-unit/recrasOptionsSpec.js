@@ -38,6 +38,43 @@ describe('RecrasOptions', () => {
         });
     });
 
+    describe('isSinglePackage', () => {
+        it('is true for an integer', () => {
+            let options = new RecrasOptions({
+                element: document.createElement('div'),
+                recras_hostname: 'demo.recras.nl',
+                package_id: 42,
+            });
+            expect(options.isSinglePackage()).toBe(true);
+        });
+
+        it('is true for a single-item array', () => {
+            let options = new RecrasOptions({
+                element: document.createElement('div'),
+                recras_hostname: 'demo.recras.nl',
+                package_id: [42],
+            });
+            expect(options.isSinglePackage()).toBe(true);
+        });
+
+        it('is false when left unspecified', () => {
+            let options = new RecrasOptions({
+                element: document.createElement('div'),
+                recras_hostname: 'demo.recras.nl',
+            });
+            expect(options.isSinglePackage()).toBe(false);
+        });
+
+        it('is false for multi-item array', () => {
+            let options = new RecrasOptions({
+                element: document.createElement('div'),
+                recras_hostname: 'demo.recras.nl',
+                package_id: [17, 42],
+            });
+            expect(options.isSinglePackage()).toBe(false);
+        });
+    });
+
     describe('autoScroll', () => {
         it('is true if omitted', () => {
             let options = new RecrasOptions({

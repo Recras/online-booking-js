@@ -88,7 +88,7 @@ function () {
     }
 
     if (this.options.getPreFilledAmounts()) {
-      if (!this.options.getPackageId()) {
+      if (!this.options.isSinglePackage()) {
         console.warn(this.languageHelper.translate('ERR_AMOUNTS_NO_PACKAGE'));
       }
     }
@@ -108,11 +108,21 @@ function () {
     }).then(function (packages) {
       _this.loadingIndicatorHide();
 
-      if (_this.options.getPackageId()) {
-        return _this.changePackage(_this.options.getPackageId());
-      } else {
-        return _this.showPackages(packages);
+      var pck = _this.options.getPackageId();
+
+      if (_this.options.isSinglePackage()) {
+        if (Array.isArray(pck)) {
+          pck = pck[0];
+        }
+
+        return _this.changePackage(pck);
+      } else if (Array.isArray(pck) && pck.length > 1) {
+        packages = packages.filter(function (p) {
+          return pck.includes(p.id);
+        });
       }
+
+      return _this.showPackages(packages);
     });
   }
 
@@ -2881,6 +2891,15 @@ function () {
     key: "getVoucherTemplateId",
     value: function getVoucherTemplateId() {
       return this.options.voucher_template_id;
+    }
+  }, {
+    key: "isSinglePackage",
+    value: function isSinglePackage() {
+      if (Array.isArray(this.options.package_id)) {
+        return this.options.package_id.length === 1;
+      }
+
+      return !isNaN(parseInt(this.options.package_id, 10));
     }
   }, {
     key: "setOption",

@@ -1,8 +1,7 @@
 # Changelog
 
 ## unreleased
-* Small styling improvement
-* Option `showSubmit` for contact forms is now named `standalone`. The old option will remain as alias until the next major version
+* Option `showSubmit` for contact forms (only used internally) is now named `standalone`. The old option will remain as alias until the next major version
 * Better error messages for standalone contact forms
 
 ## 1.2.0 (2019-12-03)

@@ -78,13 +78,11 @@ class RecrasContactForm {
     }
 
     isStandalone(options) {
-        if (options.standalone) {
-            return true;
-        }
         if (options.showSubmit) {
-            console.warn('Option "showSubmit" was renamed to "standalone". Please update your code.')
+            console.warn('Option "showSubmit" was renamed to "standalone". Please update your code.');
+            options.standalone = true;
         }
-        return false;
+        return !!options.standalone;
     }
 
     generateForm(extraOptions = {}) {
@@ -177,7 +175,7 @@ class RecrasContactForm {
 
     getInvalidFields() {
         let invalid = [];
-        let required = this.getRequiredFields();
+        let required = this.getEmptyRequiredFields();
 
         let els = this.findElements('.recras-contactform :invalid');
         for (let el of els) {
@@ -188,7 +186,7 @@ class RecrasContactForm {
         return invalid;
     }
 
-    getRequiredFields() {
+    getEmptyRequiredFields() {
         let isEmpty = [];
         let els = this.findElements('.recras-contactform :required');
         for (let el of els) {
@@ -215,15 +213,9 @@ class RecrasContactForm {
     }
 
     isEmpty() {
-        let isEmpty = true;
         let els = this.findElements('.recras-contactform input, .recras-contactform select, .recras-contactform textarea');
         let formValues = [...els].map(el => el.value);
-        for (let val of formValues) {
-            if (val !== '') {
-                isEmpty = false;
-            }
-        }
-        return isEmpty;
+        return !formValues.some(v => v !== '');
     }
 
     isValid() {
@@ -259,8 +251,8 @@ class RecrasContactForm {
         });
     }
 
-    requiredIsEmpty() {
-        return this.getRequiredFields().length > 0;
+    hasEmptyRequiredFields() {
+        return this.getEmptyRequiredFields().length > 0;
     }
 
     showField(field, idx) {
@@ -393,7 +385,7 @@ class RecrasContactForm {
     }
 
     showInlineErrors() {
-        for (let el of this.getRequiredFields()) {
+        for (let el of this.getEmptyRequiredFields()) {
             const labelEl = el.parentNode.querySelector('label');
             const requiredText = this.languageHelper.translate('CONTACT_FORM_FIELD_REQUIRED', {
                 FIELD_NAME: labelEl.innerText,
@@ -439,7 +431,7 @@ class RecrasContactForm {
                 `<div class="booking-error">${ this.languageHelper.translate('ERR_CONTACT_FORM_EMPTY') }</div>`
             );
             return false;
-        } else if (this.requiredIsEmpty() || !this.isValid()) {
+        } else if (this.hasEmptyRequiredFields() || !this.isValid()) {
             this.showInlineErrors();
             return false;
         }

@@ -221,7 +221,7 @@ describe('RecrasContactForm', () => {
             });
         });
 
-        describe('getRequiredFields', () => {
+        describe('getEmptyRequiredFields', () => {
             let rc;
 
             beforeEach(async () => {
@@ -234,7 +234,7 @@ describe('RecrasContactForm', () => {
             });
 
             it('only returns required fields', () => {
-                const els = rc.getRequiredFields();
+                const els = rc.getEmptyRequiredFields();
                 expect(els.length).toBeGreaterThan(0);
                 for (const el of els) {
                     expect(el.getAttribute('required')).not.toBeNull();

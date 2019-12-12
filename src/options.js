@@ -1,6 +1,6 @@
 class RecrasOptions {
     static hostnamesDebug = [
-        '172.16.0.2', // Local development
+        'nginx:8886', // Local development
         'nginx', // Docker Selenium tests
     ];
 

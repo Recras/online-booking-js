@@ -455,7 +455,16 @@ describe('RecrasBooking', () => {
                                 minimum_aantal: 5,
                                 vereist_product: [],
                             }
-                        }
+                        },
+                        {
+                            id: 1337,
+                            max: null,
+                            onlineboeking_aantalbepalingsmethode: "invullen_door_gebruiker",
+                            product: {
+                                minimum_aantal: 1,
+                                vereist_product: [],
+                            }
+                        },
                     ],
                 }];
                 rb.packages = packages;
@@ -481,6 +490,16 @@ describe('RecrasBooking', () => {
             el.dispatchEvent(new Event('input'));
 
             expect(rb.setMinMaxAmountWarning).toHaveBeenCalledWith('packageline0', 8, 'maximum');
+        });
+
+        it('does not give error if there is no maximum', async () => {
+            await rb.promise;
+
+            let el = document.getElementById('packageline1');
+            el.value = '2';
+            el.dispatchEvent(new Event('input'));
+
+            expect(rb.setMinMaxAmountWarning).not.toHaveBeenCalled();
         });
     });
 });

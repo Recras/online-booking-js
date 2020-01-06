@@ -4,6 +4,9 @@
 * Option `showSubmit` for contact forms (only used internally) is now named `standalone`. The old option will remain as alias until the next major version
 * Better error messages for standalone contact forms
 
+## 1.2.1 (2019-12-18)
+* Fix error when trying to book a product that has no material
+
 ## 1.2.0 (2019-12-03)
 * Show error when input is higher than allowed
 * Allow selecting only a few package IDs

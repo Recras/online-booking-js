@@ -131,6 +131,26 @@ describe('RecrasBooking', () => {
         });
     });
 
+    describe('lastAvailableDate', () => {
+        beforeEach(() => {
+            this.rb = new RecrasBooking(new RecrasOptions({
+                element: document.createElement('div'),
+                recras_hostname: 'demo.recras.nl',
+            }));
+        });
+
+        it('returns today when there are no available days yet', () => {
+            let date = this.rb.lastAvailableDate();
+            expect(date.toDateString()).toEqual((new Date()).toDateString());
+        });
+
+        it('returns last available date', () => {
+            this.rb.availableDays = ['2020-01-01', '2019-12-31'];
+            let date = this.rb.lastAvailableDate();
+            expect(date.toDateString()).toEqual((new Date('2020-01-01')).toDateString());
+        });
+    });
+
     describe('bookingSizeMaximum', () => {
         beforeEach(() => {
             this.rb = new RecrasBooking(new RecrasOptions({

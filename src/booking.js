@@ -5,6 +5,7 @@
 
 class RecrasBooking {
     constructor(options = {}) {
+        this.availableDays = [];
         this.datePicker = null;
 
         this.PAYMENT_DIRECT = 'mollie';
@@ -1009,6 +1010,17 @@ class RecrasBooking {
         </form>`;
         this.appendHtml(html);
     }
+
+    lastAvailableDate() {
+        let lastAvailableDay = this.availableDays.reduce((acc, curVal) => {
+            return curVal > acc ? curVal : acc;
+        }, '');
+        if (lastAvailableDay) {
+            return new Date(lastAvailableDay);
+        }
+        return new Date();
+    }
+
     showDateTimeSelection(pack) {
         let startDate = new Date();
         let endDate = new Date();
@@ -1036,14 +1048,7 @@ class RecrasBooking {
                             let lastMonthYear = pika.calendars[pika.calendars.length - 1];
                             let lastDay = new Date(lastMonthYear.year, lastMonthYear.month, 31);
 
-                            let lastAvailableDay = this.availableDays.reduce((acc, curVal) => {
-                                return curVal > acc ? curVal : acc;
-                            }, '');
-                            if (!lastAvailableDay) {
-                                lastAvailableDay = new Date();
-                            } else {
-                                lastAvailableDay = new Date(lastAvailableDay);
-                            }
+                            let lastAvailableDay = this.lastAvailableDate();
                             if (lastAvailableDay > lastDay) {
                                 return;
                             }

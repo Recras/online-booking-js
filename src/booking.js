@@ -1044,18 +1044,10 @@ class RecrasBooking {
                         },
                         field: this.findElement('.recras-onlinebooking-date'),
                         i18n: RecrasCalendarHelper.i18n(this.languageHelper),
-                        onDraw: (pika) => {
-                            let lastMonthYear = pika.calendars[pika.calendars.length - 1];
-                            let lastDay = new Date(lastMonthYear.year, lastMonthYear.month, 31);
-
+                        onDraw: () => {
                             let lastAvailableDay = this.lastAvailableDate();
-                            if (lastAvailableDay > lastDay) {
-                                return;
-                            }
-
                             let newEndDate = RecrasDateHelper.clone(lastAvailableDay);
-                            newEndDate.setFullYear(lastMonthYear.year);
-                            newEndDate.setMonth(lastMonthYear.month + 2);
+                            newEndDate.setMonth(newEndDate.getMonth() + 1);
 
                             this.getAvailableDays(pack.id, lastAvailableDay, newEndDate);
                         },
@@ -1281,7 +1273,7 @@ ${ msgs[1] }</p></div>`);
 
         let datePickerEl = this.findElement('.recras-onlinebooking-date');
 
-        var thisClass = this;
+        const thisClass = this;
         maxPromise.then(function() {
             let amountErrors = thisClass.findElements(
                 '.minimum-amount, .maximum-amount, .recras-product-dependency'
@@ -1296,7 +1288,7 @@ ${ msgs[1] }</p></div>`);
             thisClass.loadingIndicatorShow(thisClass.findElement('label[for="recras-onlinebooking-date"]'));
             let startDate = new Date();
             let endDate = new Date();
-            endDate.setMonth(endDate.getMonth() + 3);
+            endDate.setMonth(endDate.getMonth() + 6);
 
             thisClass.getAvailableDays(thisClass.selectedPackage.id, startDate, endDate)
                 .then(availableDays => {

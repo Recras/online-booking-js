@@ -465,6 +465,16 @@ describe('RecrasBooking', () => {
                                 vereist_product: [],
                             }
                         },
+                        {
+                            id: 420,
+                            aantal_personen: 10,
+                            max: 80,
+                            onlineboeking_aantalbepalingsmethode: "invullen_door_gebruiker",
+                            product: {
+                                minimum_aantal: 1,
+                                vereist_product: [],
+                            }
+                        },
                     ],
                 }];
                 rb.packages = packages;
@@ -472,7 +482,7 @@ describe('RecrasBooking', () => {
             };
         });
 
-        it('gives error if amount is less than the minimum', async () => {
+        it('gives error if amount is less than the product minimum', async () => {
             await rb.promise;
 
             let el = document.getElementById('packageline0');
@@ -480,6 +490,16 @@ describe('RecrasBooking', () => {
             el.dispatchEvent(new Event('input'));
 
             expect(rb.setMinMaxAmountWarning).toHaveBeenCalledWith('packageline0', 5, 'minimum');
+        });
+
+        it('gives error if amount is less than the line minimum', async () => {
+            await rb.promise;
+
+            let el = document.getElementById('packageline2');
+            el.value = '1';
+            el.dispatchEvent(new Event('input'));
+
+            expect(rb.setMinMaxAmountWarning).toHaveBeenCalledWith('packageline2', 10, 'minimum');
         });
 
         it('gives error if amount is more than the maximum', async () => {

@@ -426,6 +426,8 @@ class RecrasBooking {
 
             if (product.aantal < packageLine.product.minimum_aantal) {
                 this.setMinMaxAmountWarning(input.id, packageLine.product.minimum_aantal, 'minimum');
+            } else if (product.aantal < packageLine.aantal_personen) {
+                this.setMinMaxAmountWarning(input.id, packageLine.aantal_personen, 'minimum');
             } else if (packageLine.max !== null && product.aantal > packageLine.max) {
                 this.setMinMaxAmountWarning(input.id, packageLine.max, 'maximum');
             }

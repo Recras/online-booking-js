@@ -1,6 +1,6 @@
 class RecrasOptions {
     static hostnamesDebug = [
-        '172.16.0.2', // Local development
+        'nginx:8886', // Local development
         'nginx', // Docker Selenium tests
     ];
 
@@ -63,6 +63,13 @@ class RecrasOptions {
     }
     getVoucherTemplateId() {
         return this.options.voucher_template_id;
+    }
+
+    isSinglePackage() {
+        if (Array.isArray(this.options.package_id)) {
+            return this.options.package_id.length === 1;
+        }
+        return !isNaN(parseInt(this.options.package_id, 10));
     }
 
     setOption(option, value) {

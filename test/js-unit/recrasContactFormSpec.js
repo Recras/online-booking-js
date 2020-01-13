@@ -9,6 +9,12 @@ describe('RecrasContactForm', () => {
                 verplicht: false,
                 field_identifier: 'boeking.arrangement',
             };
+            this.fieldPackageRequired = {
+                naam: 'Package required',
+                soort_invoer: 'boeking.arrangement',
+                verplicht: true,
+                field_identifier: 'boeking.arrangement',
+            };
             this.fieldCustomerType = {
                 naam: 'Customer type',
                 soort_invoer: 'contact.soort_klant',
@@ -24,6 +30,10 @@ describe('RecrasContactForm', () => {
                 {
                     id: 7,
                     arrangement: 'Package',
+                },
+                {
+                    id: 10,
+                    arrangement: 'Other package',
                 },
             ];
         });
@@ -65,6 +75,32 @@ describe('RecrasContactForm', () => {
 
                 let html = rc.showField(this.fieldPackage, 0);
                 expect(html.indexOf('selected')).toBe(-1);
+            });
+
+            it('selects package if there is only one and field is required', () => {
+                let rc = new RecrasContactForm(new RecrasOptions({
+                    element: this.mainEl,
+                    form_id: 1,
+                    recras_hostname: 'demo.recras.nl',
+                }));
+                rc.packages = this.packages.slice(0, 1);
+
+                let html = rc.showField(this.fieldPackageRequired, 0);
+                expect(html.includes('selected')).toBe(true);
+                expect((html.match(/<option/g) || []).length).toBe(1);
+            });
+
+            it('includes empty option and does not select package if there is only one but field is not required', () => {
+                let rc = new RecrasContactForm(new RecrasOptions({
+                    element: this.mainEl,
+                    form_id: 1,
+                    recras_hostname: 'demo.recras.nl',
+                }));
+                rc.packages = this.packages.slice(0, 1);
+
+                let html = rc.showField(this.fieldPackage, 0);
+                expect(html.includes('selected')).toBe(false);
+                expect((html.match(/<option/g) || []).length).toBe(2);
             });
         });
 
@@ -183,6 +219,75 @@ describe('RecrasContactForm', () => {
                 expect(sorted[1]).toEqual(packs[0]);
                 expect(sorted[2]).toEqual(packs[1]);
             });
-        })
+        });
+
+        describe('getEmptyRequiredFields', () => {
+            let rc;
+
+            beforeEach(async () => {
+                rc = new RecrasContactForm(new RecrasOptions({
+                    element: this.mainEl,
+                    form_id: 1,
+                    recras_hostname: 'demo.recras.nl',
+                }));
+                await rc.showForm();
+            });
+
+            it('only returns required fields', () => {
+                const els = rc.getEmptyRequiredFields();
+                expect(els.length).toBeGreaterThan(0);
+                for (const el of els) {
+                    expect(el.getAttribute('required')).not.toBeNull();
+                }
+            });
+        });
+
+        describe('getInvalidFields', () => {
+            let rc;
+
+            beforeEach(async () => {
+                rc = new RecrasContactForm(new RecrasOptions({
+                    element: this.mainEl,
+                    form_id: 1,
+                    recras_hostname: 'demo.recras.nl',
+                }));
+                await rc.showForm();
+            });
+
+            it('returns invalid fields', () => {
+                let elEmail = rc.findElement('[type="email"]');
+                elEmail.value = 'invalid';
+
+                let invalid = rc.getInvalidFields();
+                expect(invalid.length).toBe(1);
+                expect(invalid[0]).toBe(elEmail);
+
+                elEmail.value = 'info@recras.com';
+
+                invalid = rc.getInvalidFields();
+                expect(invalid.length).toBe(0);
+            });
+        });
+
+        describe('isEmpty', () => {
+            let rc;
+
+            beforeEach(async () => {
+                rc = new RecrasContactForm(new RecrasOptions({
+                    element: this.mainEl,
+                    form_id: 5,
+                    recras_hostname: 'demo.recras.nl',
+                }));
+                await rc.showForm();
+            });
+
+            it('returns if form is empty', () => {
+                expect(rc.isEmpty()).toBe(true);
+                let elEmail = rc.findElement('[type="email"]');
+                elEmail.value = 'hi@example.com';
+
+                expect(rc.isEmpty()).toBe(false);
+            });
+        });
     });
 });

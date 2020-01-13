@@ -6,7 +6,7 @@ module.exports = function(config) {
             //'FirefoxHeadless',
         ],
         files: [
-            'dist/onlinebooking.js',
+            'src/*.js',
             'test/js-unit/*Spec.js'
         ],
         frameworks: ['jasmine'],

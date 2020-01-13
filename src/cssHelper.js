@@ -8,6 +8,21 @@ class RecrasCSSHelper {
 .recras-onlinebooking > *:not(:first-child) + * {
     border-top: 2px solid #dedede; /* Any love for Kirby out there? */
 }
+.recras-amountsform > div {
+    display: -ms-grid;
+    display: grid;
+    -ms-grid-columns: 1fr 5em 7em;
+    grid-template-columns: 1fr 5em 7em;
+}
+.recras-amountsform > div > div:first-child {
+    -ms-grid-column: 1;
+}
+.recras-amountsform > div > input {
+    -ms-grid-column: 2;
+}
+.recras-amountsform > div > div:last-child {
+    -ms-grid-column: 3;
+}
 .recras-input-invalid {
     border: 1px solid hsl(0, 50%, 50%);
 }
@@ -51,11 +66,6 @@ class RecrasCSSHelper {
 .recrasUnitPrice {
     opacity: 0.5;
 }
-.bookPackage, .submitForm, .buyTemplate {
-    font: inherit;
-    font-weight: bold;
-    padding: 0.5em 2em;
-}
 `;
     }
 
@@ -66,12 +76,6 @@ class RecrasCSSHelper {
 }
 .recras-onlinebooking > *:not(.latestError):not(.recrasLoadingIndicator) {
     padding: 1em 0;
-}
-.recras-amountsform > div {
-    display: -ms-grid;
-    display: grid;
-    -ms-grid-columns: 1fr 5em 7em;
-    grid-template-columns: 1fr 5em 7em;
 }
 .recras-datetime, .recras-discounts > div, .recras-contactform > div {
     display: -ms-grid;
@@ -86,8 +90,14 @@ class RecrasCSSHelper {
 .recras-contactform label {
     display: block;
 }
+.recras-contactform > div > :last-child {
+    -ms-grid-column: 2;
+}
 .recras-amountsform .recras-full-width {
     display: block;
+}
+.recras-discounts > div > input {
+    -ms-grid-column: 2;
 }
 
 .recrasLoadingIndicator {
@@ -116,6 +126,11 @@ button .recrasLoadingIndicator, label .recrasLoadingIndicator {
 }
 button .recrasLoadingIndicator {
     margin-left: 0.5em;
+}
+.bookPackage, .submitForm, .buyTemplate {
+    font: inherit;
+    font-weight: bold;
+    padding: 0.5em 2em;
 }
 `;
     }

@@ -1,6 +1,6 @@
 /*******************************
 *  Recras integration library  *
-*  v 1.1.1                     *
+*  v 1.2.1                     *
 *******************************/
 
 class RecrasBooking {
@@ -41,7 +41,7 @@ class RecrasBooking {
         }
 
         if (this.options.getPreFilledAmounts()) {
-            if (!this.options.getPackageId()) {
+            if (!this.options.isSinglePackage()) {
                 console.warn(this.languageHelper.translate('ERR_AMOUNTS_NO_PACKAGE'));
             }
         }
@@ -52,7 +52,7 @@ class RecrasBooking {
         this.clearAll();
 
         this.loadingIndicatorShow(this.element);
-        optionsPromise
+        this.promise = optionsPromise
             .then(() => RecrasCalendarHelper.loadScript())
             .then(() => this.getTexts())
             .then(texts => {
@@ -60,11 +60,17 @@ class RecrasBooking {
                 return this.getPackages();
             }).then(packages => {
                 this.loadingIndicatorHide();
-                if (this.options.getPackageId()) {
-                    this.changePackage(this.options.getPackageId());
-                } else {
-                    this.showPackages(packages);
+                let pck = this.options.getPackageId();
+
+                if (this.options.isSinglePackage()) {
+                    if (Array.isArray(pck)) {
+                        pck = pck[0];
+                    }
+                    return this.changePackage(pck);
+                } else if (Array.isArray(pck) && pck.length > 1) {
+                    packages = packages.filter(p => pck.includes(p.id));
                 }
+                return this.showPackages(packages);
             });
     }
 
@@ -216,13 +222,13 @@ class RecrasBooking {
             this.clearAll();
             this.showPackages(this.packages);
             this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_RESET);
-            return false;
+            return Promise.resolve(false);
         } else {
             this.clearAllExceptPackageSelection();
             this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_PACKAGE_CHANGED, selectedPackage[0].id);
         }
         this.selectedPackage = selectedPackage[0];
-        this.showProducts(this.selectedPackage).then(() => {
+        return this.showProducts(this.selectedPackage).then(() => {
             this.nextSectionActive('.recras-package-select', '.recras-amountsform');
 
             this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_PRODUCTS_SHOWN);
@@ -254,7 +260,7 @@ class RecrasBooking {
         let bsMinimum = this.bookingSizeMinimum(pack);
 
         if (bookingSize < bsMinimum) {
-            this.setMinMaxAmountWarning('bookingsize', bsMinimum);
+            this.setMinMaxAmountWarning('bookingsize', bsMinimum, 'minimum');
         } else if (bookingSize > bsMaximum) {
             this.setMinMaxAmountWarning('bookingsize', bsMaximum, 'maximum');
         }
@@ -355,7 +361,7 @@ class RecrasBooking {
             });
     }
 
-    checkMaximumAmounts() {
+    checkMaximumForPackage() {
         const maxPerLine = this.selectedPackage.maximum_aantal_personen_online;
         if (maxPerLine === null) {
             return Promise.resolve(null);
@@ -453,7 +459,7 @@ class RecrasBooking {
         label.parentNode.appendChild(warnEl);
     }
 
-    checkMinimumAmounts() {
+    checkMinMaxAmounts() {
         for (let product of this.productCounts()) {
             if (product.aantal < 1) {
                 continue;
@@ -461,9 +467,6 @@ class RecrasBooking {
 
             let packageLineID = product.arrangementsregel_id;
             let packageLine = this.findProduct(packageLineID);
-            if (product.aantal >= packageLine.product.minimum_aantal) {
-                continue;
-            }
 
             let input = this.findElement(`[data-package-id="${ packageLineID }"]`);
             if (!input) {
@@ -471,7 +474,11 @@ class RecrasBooking {
                 continue;
             }
 
-            this.setMinMaxAmountWarning(input.id, packageLine.product.minimum_aantal);
+            if (product.aantal < packageLine.product.minimum_aantal) {
+                this.setMinMaxAmountWarning(input.id, packageLine.product.minimum_aantal, 'minimum');
+            } else if (packageLine.max !== null && product.aantal > packageLine.max) {
+                this.setMinMaxAmountWarning(input.id, packageLine.max, 'maximum');
+            }
         }
     }
 
@@ -621,6 +628,10 @@ class RecrasBooking {
         return total;
     }
 
+    getSetting(settingName) {
+        return this.fetchJson(this.options.getApiBase() + 'instellingen/' + settingName);
+    }
+
     getTexts() {
         const settings = [
             'maximum_aantal_online_boeking_overschreden',
@@ -634,9 +645,9 @@ class RecrasBooking {
             'online_boeking_step3_text_post',
         ];
         let promises = [];
-        settings.forEach(setting => {
-            promises.push(this.fetchJson(this.options.getApiBase() + 'instellingen/' + setting));
-        });
+        for (let setting of settings) {
+            promises.push(this.getSetting(setting));
+        }
         return Promise.all(promises).then(settings => {
             let texts = {};
             settings.forEach(setting => {
@@ -842,14 +853,24 @@ class RecrasBooking {
         });
     }
 
+    /**
+     * requiredAmount calculates the amount N needed of Y in the sentence 'product X requires N times product Y'
+     *
+     * @param {number} hasNow The amount of product X selected
+     * @param {object} requiredProduct
+     * @param {number} requiredProduct.aantal The base amount of Y required
+     * @param {number} requiredProduct.per_x_aantal The quantum of X that will require product Y
+     * @param {"boven"|"beneden"} requiredProduct.afronding Indication of how hasNow / per_x_aantal should be rounded ("boven" will round up, "beneden" will round down)
+     * @return {number} The amount of product Y needed
+     */
     requiredAmount(hasNow, requiredProduct) {
-        let requiredAmount = hasNow / requiredProduct.per_x_aantal;
+        let requiredFraction = hasNow / requiredProduct.per_x_aantal;
         if (requiredProduct.afronding === 'boven') {
-            requiredAmount = Math.ceil(requiredAmount);
+            requiredFraction = Math.ceil(requiredFraction);
         } else {
-            requiredAmount = Math.floor(requiredAmount);
+            requiredFraction = Math.floor(requiredFraction);
         }
-        return requiredAmount;
+        return requiredProduct.aantal * requiredFraction;
     }
 
     resetForm() {
@@ -1007,7 +1028,7 @@ class RecrasBooking {
             <form class="recras-discounts">
                 <div>
                     <label for="discountcode">${ this.languageHelper.translate('DISCOUNT_TITLE') }</label>
-                    <input type="text" id="discountcode" class="discountcode" maxlength="50">
+                    <input type="text" id="discountcode" class="discountcode" maxlength="50" disabled>
                 </div>
                 <button type="submit" class="button-secondary">${ this.languageHelper.translate('DISCOUNT_CHECK') }</button>
             </form>
@@ -1066,7 +1087,6 @@ class RecrasBooking {
         if (this.options.getPreFilledAmounts()) {
             this.preFillAmounts(this.options.getPreFilledAmounts());
         }
-        const dateEl = this.findElement('.recras-onlinebooking-date');
         let pikadayOptions = Object.assign(
             RecrasCalendarHelper.defaultOptions(),
             {
@@ -1074,7 +1094,7 @@ class RecrasBooking {
                     let dateFmt = RecrasDateHelper.datePartOnly(day);
                     return this.availableDays.indexOf(dateFmt) === -1;
                 },
-                field: dateEl,
+                field: this.findElement('.recras-onlinebooking-date'),
                 i18n: RecrasCalendarHelper.i18n(this.languageHelper),
                 onDraw: (pika) => {
                     if (!this.hasAtLeastOneProduct(this.selectedPackage) || !this.amountsValid(this.selectedPackage) || this.requiresProduct) {
@@ -1087,6 +1107,7 @@ class RecrasBooking {
                         dateEl.blur();
                         return false;
                     }
+
                     let lastMonthYear = pika.calendars[pika.calendars.length - 1];
                     let lastDay = new Date(lastMonthYear.year, lastMonthYear.month, 31);
 
@@ -1118,6 +1139,7 @@ class RecrasBooking {
                         this.loadingIndicatorHide();
                         this.selectSingleTime();
                     });
+                    this.findElement('#discountcode').removeAttribute('disabled');
                     this.maybeShowInlineErrors();
                 },
             }
@@ -1396,8 +1418,8 @@ ${ msgs[1] }</p></div>`);
         this.removeErrors();
         this.removeWarnings();
         this.checkDependencies();
-        this.checkMinimumAmounts();
-        const maxPromise = this.checkMaximumAmounts();
+        this.checkMinMaxAmounts();
+        const maxPromise = this.checkMaximumForPackage();
         this.checkBookingSize(this.selectedPackage);
         this.showTotalPrice();
         this.showStandardAttachments();

@@ -1,7 +1,27 @@
 # Changelog
 
-## master
-* Small styling improvement
+## unreleased
+* Option `showSubmit` for contact forms (only used internally) is now named `standalone`. The old option will remain as alias until the next major version
+* Better error messages for standalone contact forms
+* Don't fetch available days when no products have been selected
+
+## 1.2.1 (2019-12-18)
+* Fix error when trying to book a product that has no material
+
+## 1.2.0 (2019-12-03)
+* Show error when input is higher than allowed
+* Allow selecting only a few package IDs
+
+## 1.1.4 (2019-11-18)
+* Change date format for booking date field in contact forms
+
+## 1.1.3 (2019-11-12)
+* Styling fixes for Internet Explorer
+* Handle 'require X per Y' requirements (not just 1 per Y)
+
+## 1.1.2 (2019-11-11)
+* Small styling improvement/fix
+* Contact form: if there is only 1 package and the field is required, fill it automatically
 
 ## 1.1.1 (2019-10-03)
 * Technical: Upgrade to Babel 7
@@ -20,7 +40,7 @@
 * Optimise loading of CSS
 * Fix sorting of packages in a contact form
 
-## 0.18.0 (2019-09-28)
+## 0.18.0 (2019-08-28)
 * Add heading to quantity form
 * Add placeholders to quantity form inputs
 

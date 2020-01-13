@@ -498,6 +498,40 @@ describe('RecrasBooking', () => {
             // Mocks
             rb.getSetting = mockGetSetting;
             rb.getPackages = () => {
+                const packages = [{
+                    id: 26,
+                    onlineboeking_contactformulier_id: 4,
+                    regels: [
+                        {
+                            id: 669,
+                            max: 8,
+                            onlineboeking_aantalbepalingsmethode: "invullen_door_gebruiker",
+                            product: {
+                                minimum_aantal: 5,
+                                vereist_product: [],
+                            }
+                        },
+                        {
+                            id: 1337,
+                            max: null,
+                            onlineboeking_aantalbepalingsmethode: "invullen_door_gebruiker",
+                            product: {
+                                minimum_aantal: 1,
+                                vereist_product: [],
+                            }
+                        },
+                        {
+                            id: 420,
+                            aantal_personen: 10,
+                            max: 80,
+                            onlineboeking_aantalbepalingsmethode: "invullen_door_gebruiker",
+                            product: {
+                                minimum_aantal: 1,
+                                vereist_product: [],
+                            }
+                        },
+                    ],
+                }];
                 rb.packages = packages;
                 return packages;
             };

@@ -354,6 +354,16 @@ class RecrasContactForm {
                 });
                 html += '</select>';
                 return label + html;
+            case 'contact.extra':
+                switch (field.input_type) {
+                    case 'number':
+                        return label + `<input type="number" ${ fixedAttributes }>`;
+                    case 'text':
+                        return label + `<input type="text" ${ fixedAttributes }>`;
+                    default:
+                        console.debug('Unknown type', field.input_type, field);
+                        return label + `<input type="number" ${ fixedAttributes }>`;
+                }
             case 'contact.website':
                 //TODO: type=url ?
             default:

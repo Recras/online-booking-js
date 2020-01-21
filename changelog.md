@@ -5,6 +5,7 @@
 * Better error messages for standalone contact forms
 * Don't fetch available days when no products have been selected
 * Add missing error message for minimum amount
+* Add inline error messages
 
 ## 1.2.1 (2019-12-18)
 * Fix error when trying to book a product that has no material

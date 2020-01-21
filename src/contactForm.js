@@ -360,6 +360,13 @@ class RecrasContactForm {
                         return label + `<input type="number" ${ fixedAttributes }>`;
                     case 'text':
                         return label + `<input type="text" ${ fixedAttributes }>`;
+                    case 'singlechoice':
+                        html = `<div class="radioGroup">`;
+                        field.mogelijke_keuzes.forEach(choice => {
+                            html += `<label><input type="radio" name="contactformulier${ idx }" value="${ choice }" ${ attrRequired } data-identifier="${ field.field_identifier }">${ choice }</label>`;
+                        });
+                        html += `</div>`;
+                        return label + html;
                     default:
                         console.debug('Unknown type', field.input_type, field);
                         return label + `<input type="number" ${ fixedAttributes }>`;

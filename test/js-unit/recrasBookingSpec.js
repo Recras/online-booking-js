@@ -1,3 +1,59 @@
+const mockGetSetting = (name) => ({
+    slug: name,
+    waarde: '',
+});
+const packageOneProduct = {
+    id: 7,
+    onlineboeking_contactformulier_id: 4,
+    regels: [
+        {
+            id: 42,
+            max: 8,
+            onlineboeking_aantalbepalingsmethode: "invullen_door_gebruiker",
+            product: {
+                minimum_aantal: 1,
+                vereist_product: [],
+            }
+        },
+    ],
+};
+const packageMinMaxAmounts = {
+    id: 26,
+    onlineboeking_contactformulier_id: 4,
+    regels: [
+        {
+            id: 669,
+            max: 8,
+            onlineboeking_aantalbepalingsmethode: "invullen_door_gebruiker",
+            product: {
+                minimum_aantal: 5,
+                vereist_product: [],
+            }
+        },
+        {
+            id: 1337,
+            max: null,
+            onlineboeking_aantalbepalingsmethode: "invullen_door_gebruiker",
+            product: {
+                minimum_aantal: 1,
+                vereist_product: [],
+            }
+        },
+        {
+            id: 420,
+            aantal_personen: 10,
+            max: 80,
+            onlineboeking_aantalbepalingsmethode: "invullen_door_gebruiker",
+            product: {
+                minimum_aantal: 1,
+                vereist_product: [],
+            }
+        },
+    ],
+};
+const packages = [packageOneProduct, packageMinMaxAmounts];
+
+
 describe('RecrasBooking', () => {
     describe('constructor', () => {
         describe('locale', () => {
@@ -438,45 +494,8 @@ describe('RecrasBooking', () => {
             spyOn(rb, 'setMinMaxAmountWarning');
 
             // Mocks
-            rb.getSetting = (name) => ({
-                slug: name,
-                waarde: '',
-            });
+            rb.getSetting = mockGetSetting;
             rb.getPackages = () => {
-                const packages = [{
-                    id: 26,
-                    onlineboeking_contactformulier_id: 4,
-                    regels: [
-                        {
-                            id: 669,
-                            max: 8,
-                            onlineboeking_aantalbepalingsmethode: "invullen_door_gebruiker",
-                            product: {
-                                minimum_aantal: 5,
-                                vereist_product: [],
-                            }
-                        },
-                        {
-                            id: 1337,
-                            max: null,
-                            onlineboeking_aantalbepalingsmethode: "invullen_door_gebruiker",
-                            product: {
-                                minimum_aantal: 1,
-                                vereist_product: [],
-                            }
-                        },
-                        {
-                            id: 420,
-                            aantal_personen: 10,
-                            max: 80,
-                            onlineboeking_aantalbepalingsmethode: "invullen_door_gebruiker",
-                            product: {
-                                minimum_aantal: 1,
-                                vereist_product: [],
-                            }
-                        },
-                    ],
-                }];
                 rb.packages = packages;
                 return packages;
             };
@@ -520,6 +539,77 @@ describe('RecrasBooking', () => {
             el.dispatchEvent(new Event('input'));
 
             expect(rb.setMinMaxAmountWarning).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('hasAtLeastOneProduct', () => {
+        const pck = {
+            id: 7,
+            onlineboeking_contactformulier_id: 4,
+            regels: [
+                {
+                    id: 42,
+                    max: 8,
+                    onlineboeking_aantalbepalingsmethode: "invullen_door_gebruiker",
+                    product: {
+                        minimum_aantal: 1,
+                        vereist_product: [],
+                    }
+                },
+            ],
+        };
+
+        beforeEach(() => {
+            let mainEl = document.createElement('div');
+            mainEl.id = 'onlinebooking';
+            document.body.appendChild(mainEl);
+            rb = new RecrasBooking(new RecrasOptions({
+                element: mainEl,
+                recras_hostname: 'demo.recras.nl',
+                package_id: 7,
+            }));
+
+            // Mocks
+            rb.getSetting = mockGetSetting;
+            rb.getPackages = () => {
+                rb.packages = packages;
+                return packages;
+            };
+        });
+
+        it('returns true if booking size is enabled and greater than 0', async () => {
+            await rb.promise;
+
+            rb.shouldShowBookingSize = () => true;
+            rb.bookingSize = () => 5;
+
+            expect(rb.hasAtLeastOneProduct({})).toBe(true);
+        });
+
+        it('returns true if there is at least one product selected', async () => {
+            await rb.promise;
+
+            let el = document.getElementById('packageline0');
+            el.value = '2';
+
+            expect(rb.hasAtLeastOneProduct(packageOneProduct)).toBe(true);
+        });
+
+        it('returns false if booking size is enabled but 0 and no product is selected', async () => {
+            await rb.promise;
+
+            rb.shouldShowBookingSize = () => true;
+            rb.bookingSize = () => 0;
+
+            expect(rb.hasAtLeastOneProduct(packageOneProduct)).toBe(false);
+        });
+
+        it('returns false if booking size is disabled and no product is selected', async () => {
+            await rb.promise;
+
+            rb.shouldShowBookingSize = () => false;
+
+            expect(rb.hasAtLeastOneProduct(packageOneProduct)).toBe(false);
         });
     });
 });

@@ -4,6 +4,7 @@
 * Option `showSubmit` for contact forms (only used internally) is now named `standalone`. The old option will remain as alias until the next major version
 * Better error messages for standalone contact forms
 * Don't fetch available days when no products have been selected
+* Add missing error message for minimum amount
 
 ## 1.2.1 (2019-12-18)
 * Fix error when trying to book a product that has no material

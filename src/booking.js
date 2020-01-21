@@ -13,7 +13,7 @@ class RecrasBooking {
 
         this.languageHelper = new RecrasLanguageHelper();
 
-        if ((options instanceof RecrasOptions) === false) {
+        if (!(options instanceof RecrasOptions)) {
             throw new Error(this.languageHelper.translate('ERR_OPTIONS_INVALID'));
         }
         this.options = options;
@@ -74,13 +74,25 @@ class RecrasBooking {
             });
     }
 
-    amountsValid(pack) {
+    hasAtLeastOneProduct(pack) {
+        if (this.shouldShowBookingSize(pack) && this.bookingSize() > 0) {
+            return true;
+        }
+
         let hasAtLeastOneProduct = false;
         for (let line of this.getLinesNoBookingSize(pack)) {
             let aantal = this.findElement(`[data-package-id="${ line.id }"]`).value;
             if (aantal > 0) {
                 hasAtLeastOneProduct = true;
             }
+        }
+
+        return hasAtLeastOneProduct;
+    }
+
+    amountsValid(pack) {
+        for (let line of this.getLinesNoBookingSize(pack)) {
+            let aantal = this.findElement(`[data-package-id="${ line.id }"]`).value;
             if (aantal > 0 && aantal < line.aantal_personen) {
                 return false;
             }
@@ -92,9 +104,8 @@ class RecrasBooking {
             if (this.bookingSize() < this.bookingSizeMinimum(pack) || this.bookingSize() > this.bookingSizeMaximum(pack)) {
                 return false;
             }
-            hasAtLeastOneProduct = true;
         }
-        return hasAtLeastOneProduct;
+        return this.hasAtLeastOneProduct(pack);
     }
 
     appendHtml(msg) {
@@ -789,9 +800,9 @@ class RecrasBooking {
 
     /**
      * requiredAmount calculates the amount N needed of Y in the sentence 'product X requires N times product Y'
-     * 
+     *
      * @param {number} hasNow The amount of product X selected
-     * @param {object} requiredProduct 
+     * @param {object} requiredProduct
      * @param {number} requiredProduct.aantal The base amount of Y required
      * @param {number} requiredProduct.per_x_aantal The quantum of X that will require product Y
      * @param {"boven"|"beneden"} requiredProduct.afronding Indication of how hasNow / per_x_aantal should be rounded ("boven" will round up, "beneden" will round down)

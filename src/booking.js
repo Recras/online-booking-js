@@ -144,6 +144,16 @@ class RecrasBooking {
         });
     }
 
+    recheckVouchers() {
+        let voucherCodes = Object.keys(this.appliedVouchers);
+        this.appliedVouchers = [];
+        let promises = [];
+        for (let voucherCode of voucherCodes) {
+            promises.push(this.applyVoucher(this.selectedPackage.id, voucherCode));
+        }
+        return Promise.all(promises);
+    }
+
     bookingSize() {
         let bookingSizeEl = this.findElement('.bookingsize');
         if (!bookingSizeEl) {
@@ -1270,7 +1280,9 @@ ${ msgs[1] }</p></div>`);
         this.checkMinMaxAmounts();
         const maxPromise = this.checkMaximumForPackage();
         this.checkBookingSize(this.selectedPackage);
-        this.showTotalPrice();
+        this.recheckVouchers().then(() => {
+            this.showTotalPrice();
+        });
         this.showStandardAttachments();
 
         let datePickerEl = this.findElement('.recras-onlinebooking-date');

@@ -313,25 +313,18 @@ class RecrasBooking {
     }
 
     checkDiscountAndVoucher() {
-        let discountStatus, voucherStatus;
         let discountPromise = this.checkDiscountcode(
             this.selectedPackage.id,
             this.findElement('.recras-onlinebooking-date').value,
             this.findElement('#discountcode').value.trim()
-        ).then(status => {
-            discountStatus = status;
-            return status;
-        });
+        );
 
         let voucherPromise = this.applyVoucher(
             this.selectedPackage.id,
             this.findElement('#discountcode').value.trim()
-        ).then(status => {
-            voucherStatus = status;
-            return status;
-        });
+        );
 
-        Promise.all([discountPromise, voucherPromise]).then(() => {
+        Promise.all([discountPromise, voucherPromise]).then(([discountStatus, voucherStatus]) => {
             if (discountStatus || voucherStatus) {
                 let status;
                 if (discountStatus) {

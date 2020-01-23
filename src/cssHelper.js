@@ -33,6 +33,7 @@ class RecrasCSSHelper {
     -ms-grid-column: 1;
     -ms-grid-column-span: 2;
     grid-column: 1 / 3;
+    -ms-grid-row: 999; /* No specified row will place it on top of certain elements. This will put it at the very end */
 }
 .minimum-amount {
     padding-left: 0.5em;

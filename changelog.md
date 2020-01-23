@@ -1,5 +1,8 @@
 # Changelog
 
+## unreleased
+* Add inline error messages
+
 ## 1.4.8 (2020-05-15)
 * After submitting a form, re-enable button later, to prevent users being able to submit twice
 
@@ -29,7 +32,6 @@
 
 ## 1.3.4 (2020-02-10)
 * Buying vouchers is limited to 100
-* Add inline error messages
 
 ## 1.3.3 (2020-02-04)
 * Update event sending for Google Analytics integrated through Google Tag Manager

@@ -1014,7 +1014,7 @@ class RecrasBooking {
             <label for="recras-onlinebooking-date">
                 ${ this.languageHelper.translate('DATE') }
             </label>
-            <input type="text" id="recras-onlinebooking-date" class="recras-onlinebooking-date" min="${ today }" disabled autocomplete="off">
+            <input type="text" id="recras-onlinebooking-date" class="recras-onlinebooking-date" min="${ today }" disabled readonly autocomplete="off">
             <label for="recras-onlinebooking-time">
                 ${ this.languageHelper.translate('TIME') }
             </label>

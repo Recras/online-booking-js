@@ -1,6 +1,6 @@
 /*******************************
 *  Recras integration library  *
-*  v 1.2.1                     *
+*  v 1.3.0                     *
 *******************************/
 
 class RecrasBooking {
@@ -142,6 +142,16 @@ class RecrasBooking {
 
             return true;
         });
+    }
+
+    recheckVouchers() {
+        let voucherCodes = Object.keys(this.appliedVouchers);
+        this.appliedVouchers = [];
+        let promises = [];
+        for (let voucherCode of voucherCodes) {
+            promises.push(this.applyVoucher(this.selectedPackage.id, voucherCode));
+        }
+        return Promise.all(promises);
     }
 
     bookingSize() {
@@ -312,25 +322,18 @@ class RecrasBooking {
     }
 
     checkDiscountAndVoucher() {
-        let discountStatus, voucherStatus;
         let discountPromise = this.checkDiscountcode(
             this.selectedPackage.id,
             this.findElement('.recras-onlinebooking-date').value,
             this.findElement('#discountcode').value.trim()
-        ).then(status => {
-            discountStatus = status;
-            return status;
-        });
+        );
 
         let voucherPromise = this.applyVoucher(
             this.selectedPackage.id,
             this.findElement('#discountcode').value.trim()
-        ).then(status => {
-            voucherStatus = status;
-            return status;
-        });
+        );
 
-        Promise.all([discountPromise, voucherPromise]).then(() => {
+        Promise.all([discountPromise, voucherPromise]).then(([discountStatus, voucherStatus]) => {
             if (discountStatus || voucherStatus) {
                 let status;
                 if (discountStatus) {
@@ -1074,7 +1077,7 @@ class RecrasBooking {
             <label for="recras-onlinebooking-date">
                 ${ this.languageHelper.translate('DATE') }
             </label>
-            <input type="text" id="recras-onlinebooking-date" class="recras-onlinebooking-date" min="${ today }" disabled autocomplete="off">
+            <input type="text" id="recras-onlinebooking-date" class="recras-onlinebooking-date" min="${ today }" disabled readonly autocomplete="off">
             <label for="recras-onlinebooking-time">
                 ${ this.languageHelper.translate('TIME') }
             </label>
@@ -1423,7 +1426,9 @@ ${ msgs[1] }</p></div>`);
         this.checkMinMaxAmounts();
         const maxPromise = this.checkMaximumForPackage();
         this.checkBookingSize(this.selectedPackage);
-        this.showTotalPrice();
+        this.recheckVouchers().then(() => {
+            this.showTotalPrice();
+        });
         this.showStandardAttachments();
 
         let datePickerEl = this.findElement('.recras-onlinebooking-date');

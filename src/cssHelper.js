@@ -133,6 +133,11 @@ button .recrasLoadingIndicator {
     font-weight: bold;
     padding: 0.5em 2em;
 }
+@media (max-width: 520px) {
+    .pika-single {
+        max-width: 256px; /* Single month is 240px + 2x8px margin */
+    }
+}
 `;
     }
 

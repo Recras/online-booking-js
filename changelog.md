@@ -1,10 +1,12 @@
 # Changelog
 
-## unreleased
-* Option `showSubmit` for contact forms (only used internally) is now named `standalone`. The old option will remain as alias until the next major version
+## 1.3.0 (2019-01-23)
 * Better error messages for standalone contact forms
 * Don't fetch available days when no products have been selected
 * Add missing error message for minimum amount
+* Recheck vouchers when changing product amounts
+* Improve interaction (particularly on mobile)
+* Option `showSubmit` for contact forms (only used internally) is now named `standalone`. The old option will remain as alias until the next major version
 * Add inline error messages
 
 ## 1.2.1 (2019-12-18)

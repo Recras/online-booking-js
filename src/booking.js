@@ -1114,7 +1114,6 @@ class RecrasBooking {
                         this.removeErrors('.recras-contactform ');
                         this.maybeShowInlineErrors();
                         if (this.contactFormValid()) {
-                            this.removeErrors();
                             this.nextSectionActive('.recras-contactform', '.recras-finalise');
                         }
                     });

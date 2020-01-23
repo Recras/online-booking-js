@@ -1,5 +1,8 @@
 # Changelog
 
+## unreleased
+* Add inline error messages
+
 ## 1.7.0 (2021-03-18)
 * Add `defaultCountry` option to contact forms
 

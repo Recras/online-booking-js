@@ -356,10 +356,22 @@ class RecrasContactForm {
                 return label + html;
             case 'contact.extra':
                 switch (field.input_type) {
+                    case 'date':
                     case 'number':
-                        return label + `<input type="number" ${ fixedAttributes }>`;
                     case 'text':
-                        return label + `<input type="text" ${ fixedAttributes }>`;
+                        return label + `<input type="${ field.input_type }" ${ fixedAttributes }>`;
+                    case 'multiplechoice':
+                        classes = ['checkboxGroup'];
+                        if (field.verplicht) {
+                            classes.push('checkboxGroupRequired');
+                        }
+
+                        html = `<div class="${ classes.join(' ') }">`;
+                        field.mogelijke_keuzes.forEach(choice => {
+                            html += `<label><input type="checkbox" name="contactformulier${ idx }" value="${ choice }" data-identifier="${ field.field_identifier }">${ choice }</label>`;
+                        });
+                        html += '</div>';
+                        return label + html;
                     case 'singlechoice':
                         html = `<div class="radioGroup">`;
                         field.mogelijke_keuzes.forEach(choice => {

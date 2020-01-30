@@ -48,7 +48,7 @@ class RecrasEventHelper {
         return this.eventsEnabled.includes(name);
     }
 
-    sendEvent(cat, action, value = undefined) {
+    sendEvent(cat, action, label = undefined, value = undefined) {
         let event;
 
         try {
@@ -59,15 +59,34 @@ class RecrasEventHelper {
             event.initEvent(action, true, true);
         }
 
-        if (this.analyticsEnabled && typeof window.ga === 'function' && this.eventEnabled(action)) {
-            let eventData = {
-                eventCategory: RecrasEventHelper.PREFIX_GLOBAL + ':' + cat,
-                eventAction: action,
-            };
-            if (value) {
-                eventData.eventValue = value;
+        if (this.analyticsEnabled && this.eventEnabled(action)) {
+            if (typeof window.gtag === 'function') {
+                // Global Site Tag - the more modern variant
+                let eventData = {
+                    event_category: RecrasEventHelper.PREFIX_GLOBAL + ':' + cat,
+                };
+                if (label) {
+                    eventData.event_label = label;
+                }
+                if (value) {
+                    eventData.value = value;
+                }
+                window.gtag('event', action, eventData);
+            } else if (typeof window.ga === 'function') {
+                // "Old" Google Analytics
+                let eventData = {
+                    hitType: 'event',
+                    eventCategory: RecrasEventHelper.PREFIX_GLOBAL + ':' + cat,
+                    eventAction: action,
+                };
+                if (label) {
+                    eventData.eventLabel = label;
+                }
+                if (value) {
+                    eventData.eventValue = value;
+                }
+                window.ga('send', eventData);
             }
-            window.ga('send', 'event', eventData);
         }
 
         return document.dispatchEvent(event);

@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.3.1 (2019-01-30)
 * Update event sending for Google Analytics
 
 ## 1.3.0 (2019-01-23)

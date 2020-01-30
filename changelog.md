@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+* Update event sending for Google Analytics
+
 ## 1.3.0 (2019-01-23)
 * Better error messages for standalone contact forms
 * Don't fetch available days when no products have been selected

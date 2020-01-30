@@ -440,7 +440,12 @@ class RecrasContactForm {
             return false;
         }
 
-        this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_CONTACT_FORM, RecrasEventHelper.EVENT_CONTACT_FORM_SUBMIT, this.options.getFormId());
+        this.eventHelper.sendEvent(
+            RecrasEventHelper.PREFIX_CONTACT_FORM,
+            RecrasEventHelper.EVENT_CONTACT_FORM_SUBMIT,
+            null,
+            this.options.getFormId()
+        );
 
         this.loadingIndicatorHide();
         this.loadingIndicatorShow(submitButton);

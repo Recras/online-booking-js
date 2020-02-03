@@ -1,6 +1,6 @@
 /*******************************
 *  Recras integration library  *
-*  v 1.3.0                     *
+*  v 1.3.2                     *
 *******************************/
 
 class RecrasBooking {
@@ -235,7 +235,12 @@ class RecrasBooking {
             return Promise.resolve(false);
         } else {
             this.clearAllExceptPackageSelection();
-            this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_PACKAGE_CHANGED, selectedPackage[0].id);
+            this.eventHelper.sendEvent(
+                RecrasEventHelper.PREFIX_BOOKING,
+                RecrasEventHelper.EVENT_BOOKING_PACKAGE_CHANGED,
+                selectedPackage[0].arrangement,
+                selectedPackage[0].id
+            );
         }
         this.selectedPackage = selectedPackage[0];
         return this.showProducts(this.selectedPackage).then(() => {
@@ -1135,7 +1140,11 @@ class RecrasBooking {
                 },
                 onSelect: (date) => {
                     this.loadingIndicatorShow(this.findElement('label[for="recras-onlinebooking-time"]'));
-                    this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_DATE_SELECTED);
+                    this.eventHelper.sendEvent(
+                        RecrasEventHelper.PREFIX_BOOKING,
+                        RecrasEventHelper.EVENT_BOOKING_DATE_SELECTED,
+                        RecrasDateHelper.datePartOnly(date)
+                    );
                     this.selectedDate = date;
                     this.getAvailableTimes(pack.id, date).then(times => {
                         times = times.map(time => RecrasDateHelper.timePartOnly(new Date(time)));
@@ -1360,7 +1369,12 @@ ${ msgs[1] }</p></div>`);
             return false;
         }
 
-        this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_BOOKING_SUBMITTED, this.selectedPackage.id);
+        this.eventHelper.sendEvent(
+            RecrasEventHelper.PREFIX_BOOKING,
+            RecrasEventHelper.EVENT_BOOKING_BOOKING_SUBMITTED,
+            this.selectedPackage.arrangement,
+            this.selectedPackage.id
+        );
 
         let paymentMethod = this.paymentMethods(this.selectedPackage)[0];
         let paymentMethodEl = this.findElement('[name="paymentMethod"]:checked');

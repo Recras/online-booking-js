@@ -3,6 +3,12 @@
 ## unreleased
 * Add inline error messages
 
+## 1.3.2 (2019-02-03)
+* Fix amount inputs in Firefox
+
+## 1.3.1 (2019-01-30)
+* Update event sending for Google Analytics
+
 ## 1.3.0 (2019-01-23)
 * Better error messages for standalone contact forms
 * Don't fetch available days when no products have been selected

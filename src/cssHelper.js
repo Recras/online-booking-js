@@ -20,6 +20,9 @@ class RecrasCSSHelper {
 .recras-amountsform > div > input {
     -ms-grid-column: 2;
 }
+.recras-amountsform input {
+    width: auto; /* Firefox fix */
+}
 .recras-amountsform > div > div:last-child {
     -ms-grid-column: 3;
 }

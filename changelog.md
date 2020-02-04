@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+* Update event sending for Google Analytics integrated through Google Tag Manager
+
 ## 1.3.2 (2019-02-03)
 * Fix amount inputs in Firefox
 

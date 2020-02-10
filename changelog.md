@@ -1,5 +1,8 @@
 # Changelog
 
+## unreleased
+* Buying vouchers is limited to 100
+
 ## 1.3.3 (2019-02-04)
 * Update event sending for Google Analytics integrated through Google Tag Manager
 

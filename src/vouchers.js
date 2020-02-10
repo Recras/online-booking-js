@@ -146,11 +146,9 @@ class RecrasVoucher {
         }
 
         let shouldDisable = false;
-        if (!this.findElement('.recras-contactform').checkValidity() || !this.contactForm.checkRequiredCheckboxes()) {
-            shouldDisable = true;
-        }
-
-        if (this.findElement('.number-of-vouchers').value < 1) {
+        this.contactForm.removeErrors();
+        if (this.contactForm.hasEmptyRequiredFields() || !this.contactForm.isValid() || !this.contactForm.checkRequiredCheckboxes()) {
+            this.contactForm.showInlineErrors();
             shouldDisable = true;
         }
 
@@ -180,7 +178,7 @@ class RecrasVoucher {
                 this.appendHtml(html);
                 this.showBuyButton();
 
-                [...this.findElements('[name^="contactformulier"]')].forEach(el => {
+                [...this.findElements('#number-of-vouchers, [name^="contactformulier"]')].forEach(el => {
                     el.addEventListener('change', this.maybeDisableBuyButton.bind(this));
                 });
         });

@@ -1,6 +1,6 @@
 # Changelog
 
-## unreleased
+## 1.3.4 (2019-02-10)
 * Buying vouchers is limited to 100
 
 ## 1.3.3 (2019-02-04)

@@ -236,7 +236,10 @@ class RecrasContactForm {
     }
 
     quantitySelector() {
-        return `<div><label for="number-of-vouchers">${ this.languageHelper.translate('VOUCHER_QUANTITY') }</label><input type="number" id="number-of-vouchers" class="number-of-vouchers" min="1" value="1" required></div>`;
+        return `<div>
+            <label for="number-of-vouchers">${ this.languageHelper.translate('VOUCHER_QUANTITY') }</label>
+            <input type="number" id="number-of-vouchers" class="number-of-vouchers" min="1" max="100" value="1" required>
+        </div>`;
     }
 
     removeErrors(parentQuery = '') {

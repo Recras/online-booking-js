@@ -3,6 +3,12 @@
 ## unreleased
 * Add inline error messages
 
+## 1.3.4 (2019-02-10)
+* Buying vouchers is limited to 100
+
+## 1.3.3 (2019-02-04)
+* Update event sending for Google Analytics integrated through Google Tag Manager
+
 ## 1.3.2 (2019-02-03)
 * Fix amount inputs in Firefox
 

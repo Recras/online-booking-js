@@ -40,7 +40,7 @@
     "babel-plugin-transform-es2017-object-entries": "0.0.5",
     "jasmine-core": "3.5.0",
     "jasmine-spec-reporter": "4.2.1",
-    "jshint": "2.10.2",
+    "jshint": "2.11.0",
     "karma": "4.3.0",
     "karma-chrome-launcher": "2.2.0",
     "karma-firefox-launcher": "1.2.0",

@@ -79,8 +79,12 @@ class RecrasVoucher {
     }
 
     changeTemplate(templateID) {
+        this.selectedTemplate = this.templates.filter(t => {
+            return t.id === templateID;
+        })[0];
+
         this.clearAllExceptTemplateSelection();
-        this.showContactForm(templateID);
+        this.showContactForm();
         this.eventHelper.sendEvent(
             RecrasEventHelper.PREFIX_VOUCHER,
             RecrasEventHelper.EVENT_VOUCHER_TEMPLATE_CHANGED,
@@ -165,11 +169,7 @@ class RecrasVoucher {
         this.findElement('.buyTemplate').addEventListener('click', this.buyTemplate.bind(this));
     }
 
-    showContactForm(templateId) {
-        this.selectedTemplate = this.templates.filter(t => {
-            return t.id === templateId;
-        })[0];
-
+    showContactForm() {
         this.getContactForm(this.selectedTemplate)
             .then(form => form.generateForm({
                 voucherQuantitySelector: true,

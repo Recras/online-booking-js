@@ -1271,7 +1271,12 @@ ${ msgs[1] }</p></div>`);
                 window.top.location.href = json.payment_url;
             } else if (json.message && json.status) {
                 if (bookingParams.redirect_url) {
-                    this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_REDIRECT_PAYMENT);
+                    this.eventHelper.sendEvent(
+                        RecrasEventHelper.PREFIX_BOOKING,
+                        RecrasEventHelper.EVENT_BOOKING_REDIRECT_PAYMENT,
+                        null,
+                        Math.round(this.getTotalPrice())
+                    );
                     window.top.location.href = bookingParams.redirect_url;
                 } else {
                     this.findElement('.recras-amountsform').reset();

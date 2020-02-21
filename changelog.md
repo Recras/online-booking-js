@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+* Include amount in 'RedirectToPayment' events
+
 ## 1.3.4 (2019-02-10)
 * Buying vouchers is limited to 100
 

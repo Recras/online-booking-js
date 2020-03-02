@@ -1,21 +1,21 @@
 # Changelog
 
-## Unreleased
+## 1.4.0 (2020-03-02)
 * Include amount in 'RedirectToPayment' events
 
-## 1.3.4 (2019-02-10)
+## 1.3.4 (2020-02-10)
 * Buying vouchers is limited to 100
 
-## 1.3.3 (2019-02-04)
+## 1.3.3 (2020-02-04)
 * Update event sending for Google Analytics integrated through Google Tag Manager
 
-## 1.3.2 (2019-02-03)
+## 1.3.2 (2020-02-03)
 * Fix amount inputs in Firefox
 
-## 1.3.1 (2019-01-30)
+## 1.3.1 (2020-01-30)
 * Update event sending for Google Analytics
 
-## 1.3.0 (2019-01-23)
+## 1.3.0 (2020-01-23)
 * Better error messages for standalone contact forms
 * Don't fetch available days when no products have been selected
 * Add missing error message for minimum amount

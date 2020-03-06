@@ -257,7 +257,6 @@ class RecrasBooking {
                 this.findElement('.recras-amountsform').scrollIntoView(scrollOptions);
             }
 
-            this.checkDependencies();
             this.loadingIndicatorShow(this.findElement('.recras-amountsform'));
             return this.showDateTimeSelection(this.selectedPackage);
         }).then(() => {
@@ -280,7 +279,7 @@ class RecrasBooking {
         } else if (bookingSize > bsMaximum) {
             this.setMinMaxAmountWarning('bookingsize', bsMaximum, 'maximum');
         }
-        this.maybeDisableBookButton();
+        this.maybeShowInlineErrors();
     }
 
     checkDependencies() {
@@ -324,7 +323,7 @@ class RecrasBooking {
             }
         });
 
-        this.maybeDisableBookButton();
+        this.maybeShowInlineErrors();
     }
 
     checkDiscountAndVoucher() {
@@ -400,6 +399,46 @@ class RecrasBooking {
                 }
             });
         });
+    }
+
+    contactFormIsEmpty() {
+        let isEmpty = true;
+        let els = this.findElements('.recras-contactform input, .recras-contactform select, .recras-contactform textarea');
+        let formValues = [...els].map(el => el.value);
+        for (let val of formValues) {
+            if (val !== '') {
+                isEmpty = false;
+            }
+        }
+        return isEmpty;
+    }
+
+    contactFormInvalidFields() {
+        let invalid = [];
+        let required = this.contactFormRequiredFields();
+
+        let els = this.findElements('.recras-contactform :invalid');
+        for (let el of els) {
+            if (!required.includes(el)) {
+                invalid.push(el);
+            }
+        }
+        return invalid;
+    }
+
+    contactFormRequiredFields() {
+        let isEmpty = [];
+        let els = this.findElements('.recras-contactform :required');
+        for (let el of els) {
+            if (el.value === undefined || el.value === '') {
+                isEmpty.push(el);
+            }
+        }
+        return isEmpty;
+    }
+
+    contactFormRequiredIsEmpty() {
+        return this.contactFormRequiredFields().length > 0;
     }
 
     contactFormValid() {
@@ -661,41 +700,54 @@ class RecrasBooking {
         afterEl.insertAdjacentHTML('beforeend', `<span class="recrasLoadingIndicator">${ this.languageHelper.translate('LOADING') }</span>`);
     }
 
-    maybeDisableBookButton() {
-        let button = this.findElement('.bookPackage');
-        if (!button) {
-            return false;
-        }
+    bookingErrors() {
+        let bookingDisabledReasons = {};
 
-        let bookingDisabledReasons = [];
-        if (this.requiresProduct) {
-            bookingDisabledReasons.push('BOOKING_DISABLED_REQUIRED_PRODUCT');
+        if (!this.hasAtLeastOneProduct(this.selectedPackage)) {
+            bookingDisabledReasons.amountsInvalid = 'BOOKING_DISABLED_NO_PRODUCTS';
+            return bookingDisabledReasons;
         }
         if (!this.amountsValid(this.selectedPackage)) {
-            bookingDisabledReasons.push('BOOKING_DISABLED_AMOUNTS_INVALID');
+            bookingDisabledReasons.amountsInvalid = 'BOOKING_DISABLED_AMOUNTS_INVALID';
+            return bookingDisabledReasons;
         }
+        if (this.requiresProduct) {
+            bookingDisabledReasons.requiresProduct = 'BOOKING_DISABLED_REQUIRED_PRODUCT';
+        }
+
         if (!this.findElement('.recras-onlinebooking-date').value) {
-            bookingDisabledReasons.push('BOOKING_DISABLED_INVALID_DATE');
+            bookingDisabledReasons.dateInvalid = 'BOOKING_DISABLED_INVALID_DATE';
+            return bookingDisabledReasons;
         }
         if (!this.findElement('.recras-onlinebooking-time').value) {
-            bookingDisabledReasons.push('BOOKING_DISABLED_INVALID_TIME');
+            bookingDisabledReasons.timeInvalid = 'BOOKING_DISABLED_INVALID_TIME';
+            return bookingDisabledReasons;
         }
-        if (!this.contactFormValid()) {
-            bookingDisabledReasons.push('BOOKING_DISABLED_CONTACT_FORM_INVALID');
+
+        if (this.contactFormIsEmpty()) {
+            bookingDisabledReasons.contactFormInvalid = 'BOOKING_DISABLED_CONTACT_FORM_EMPTY';
+        } else if (this.contactFormRequiredIsEmpty() || !this.contactFormValid()) {
+            // Special case
+            bookingDisabledReasons.contactFormRequired = true;
+            return bookingDisabledReasons;
         }
 
         const agreeEl = this.findElement('#recrasAgreeToAttachments');
         if (agreeEl && !agreeEl.checked) {
-            bookingDisabledReasons.push('BOOKING_DISABLED_AGREEMENT');
+            bookingDisabledReasons.notAgreed = 'BOOKING_DISABLED_AGREEMENT';
         }
 
-        if (bookingDisabledReasons.length > 0) {
-            const reasonsList = bookingDisabledReasons.map(reason => this.languageHelper.translate(reason)).join('<li>');
-            this.findElement('#bookingErrors').innerHTML = `<ul><li>${ reasonsList }</ul>`;
-            button.setAttribute('disabled', 'disabled');
-        } else {
-            this.findElement('#bookingErrors').innerHTML = '';
-            button.removeAttribute('disabled');
+        return bookingDisabledReasons;
+    }
+
+    bookingHasErrors() {
+        let bookingDisabledReasons = this.bookingErrors();
+        return Object.keys(bookingDisabledReasons).length > 0;
+    }
+
+    maybeShowInlineErrors() {
+        if (this.bookingHasErrors()) {
+            this.showInlineErrors();
         }
     }
 
@@ -794,6 +846,11 @@ class RecrasBooking {
         return counts;
     }
 
+    removeErrors(parentQS = '') {
+        [...this.findElements(parentQS + '.booking-error')].forEach(el => {
+            el.parentNode.removeChild(el);
+        });
+    }
     removeWarnings() {
         [...this.findElements('.minimum-amount')].forEach(el => {
             el.parentNode.removeChild(el);
@@ -884,7 +941,10 @@ class RecrasBooking {
         this.findElement('.standard-attachments').innerHTML = attachmentHtml;
         const agreeEl = this.findElement('#recrasAgreeToAttachments');
         if (agreeEl) {
-            agreeEl.addEventListener('change', this.maybeDisableBookButton.bind(this));
+            agreeEl.addEventListener('change', () => {
+                this.removeErrors('.standard-attachments ');
+                this.maybeShowInlineErrors();
+            });
         }
     }
 
@@ -961,12 +1021,10 @@ class RecrasBooking {
             <p>${ textPostBooking }</p>
             <div class="standard-attachments"></div>
             ${ paymentText }
-            <button type="submit" class="bookPackage" disabled>${ this.languageHelper.translate('BUTTON_BOOK_NOW') }</button>
-            <div class="booking-error" id="bookingErrors"></div>
+            <button type="submit" class="bookPackage">${ this.languageHelper.translate('BUTTON_BOOK_NOW') }</button>
         </div>`;
             this.appendHtml(html);
             this.findElement('.bookPackage').addEventListener('click', this.submitBooking.bind(this));
-            this.maybeDisableBookButton();
         });
     }
 
@@ -1006,8 +1064,9 @@ class RecrasBooking {
                 this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_CONTACT_FORM_SHOWN);
 
                 [...this.findElements('[name^="contactformulier"]')].forEach(el => {
-                    el.addEventListener('input', this.maybeDisableBookButton.bind(this));
                     el.addEventListener('input', () => {
+                        this.removeErrors('.recras-contactform ');
+                        this.maybeShowInlineErrors();
                         if (this.contactFormValid()) {
                             this.nextSectionActive('.recras-contactform', '.recras-finalise');
                         }
@@ -1047,6 +1106,17 @@ class RecrasBooking {
                 field: this.findElement('.recras-onlinebooking-date'),
                 i18n: RecrasCalendarHelper.i18n(this.languageHelper),
                 onDraw: (pika) => {
+                    if (!this.hasAtLeastOneProduct(this.selectedPackage) || !this.amountsValid(this.selectedPackage) || this.requiresProduct) {
+                        let errorMsg = this.languageHelper.translate('BOOKING_DISABLED_PRODUCTS_BEFORE_DATE');
+                        this.removeErrors('.recras-datetime ');
+                        dateEl.insertAdjacentHTML(
+                            'afterend',
+                            `<div class="booking-error">${ errorMsg }</div>`
+                        );
+                        dateEl.blur();
+                        return false;
+                    }
+
                     let lastMonthYear = pika.calendars[pika.calendars.length - 1];
                     let lastDay = new Date(lastMonthYear.year, lastMonthYear.month, 31);
 
@@ -1083,7 +1153,7 @@ class RecrasBooking {
                         this.selectSingleTime();
                     });
                     this.findElement('#discountcode').removeAttribute('disabled');
-                    this.maybeDisableBookButton();
+                    this.maybeShowInlineErrors();
                 },
             }
         );
@@ -1102,7 +1172,8 @@ class RecrasBooking {
                 this.previewTimes();
             }
 
-            this.maybeDisableBookButton();
+            this.removeErrors('.recras-datetime ');
+            this.maybeShowInlineErrors();
         });
     }
 
@@ -1211,7 +1282,82 @@ ${ msgs[1] }</p></div>`);
         return attachments;
     }
 
+    contactformErrors() {
+        this.removeErrors('.recras-contactform ');
+        for (let el of this.contactFormRequiredFields()) {
+            const labelEl = el.parentNode.querySelector('label');
+            const requiredText = this.languageHelper.translate('CONTACT_FORM_FIELD_REQUIRED', { FIELD_NAME: labelEl.innerText });
+            el.parentNode.insertAdjacentHTML(
+                'afterend',
+                `<div class="booking-error">${ requiredText }</div>`
+            );
+        }
+        for (let el of this.contactFormInvalidFields()) {
+            const labelEl = el.parentNode.querySelector('label');
+            const invalidText = this.languageHelper.translate('CONTACT_FORM_FIELD_INVALID', { FIELD_NAME: labelEl.innerText });
+            el.parentNode.insertAdjacentHTML(
+                'afterend',
+                `<div class="booking-error">${ invalidText }</div>`
+            );
+        }
+    }
+
+    errorAtPosition(key, msg) {
+        let pos;
+        let qs;
+
+        switch (key) {
+            case 'requiresProduct':
+            case 'amountsInvalid':
+                pos = 'beforeend';
+                qs = '.recras-amountsform';
+                break;
+            case 'dateInvalid':
+                pos = 'afterend';
+                qs = '.recras-onlinebooking-date';
+                break;
+            case 'timeInvalid':
+                pos = 'beforeend';
+                qs = '.recras-datetime';
+                break;
+            case 'contactFormInvalid':
+                pos = 'beforeend';
+                qs = '.recras-contactform';
+                break;
+            case 'notAgreed':
+                pos = 'beforeend';
+                qs = '.standard-attachments';
+                break;
+            case 'contactFormRequired':
+                this.contactformErrors();
+                break;
+            default:
+                pos = 'beforeend';
+                qs = '.bookPackage';
+                break;
+        }
+        const el = this.findElement(qs);
+        if (el) {
+            el.insertAdjacentHTML(
+                pos,
+                `<p class="booking-error">${ this.languageHelper.translate(msg) }</p>`
+            );
+        }
+    }
+
+    showInlineErrors() {
+        this.removeErrors();
+        let errorMsgs = this.bookingErrors();
+        for (const [key, msg] of Object.entries(errorMsgs)) {
+            this.errorAtPosition(key, msg);
+        }
+    }
+
     submitBooking() {
+        if (this.bookingHasErrors()) {
+            this.showInlineErrors();
+            return false;
+        }
         let productCounts = this.productCounts().map(line => line.aantal);
         let productSum = productCounts.reduce((a, b) => a + b, 0);
         if (this.bookingSize() === 0 && productSum === 0) {
@@ -1236,12 +1382,10 @@ ${ msgs[1] }</p></div>`);
             paymentMethod = paymentMethodEl.value;
         }
 
+        let bookButton = this.findElement('.bookPackage');
         this.loadingIndicatorHide();
-        this.loadingIndicatorShow(this.findElement('.bookPackage'));
-        let elem;
-        if (null !== (elem = this.findElement('.bookPackage'))) {
-            elem.setAttribute('disabled', 'disabled');
-        }
+        this.loadingIndicatorShow(bookButton);
+        bookButton.setAttribute('disabled', 'disabled');
 
         let vouchers = Object.keys(this.appliedVouchers).length > 0 ? Object.keys(this.appliedVouchers) : null;
         let bookingParams = {
@@ -1294,6 +1438,7 @@ ${ msgs[1] }</p></div>`);
         this.loadingIndicatorHide();
         this.availableDays = [];
 
+        this.removeErrors();
         this.removeWarnings();
         this.checkDependencies();
         this.checkMinMaxAmounts();

@@ -1,5 +1,8 @@
 # Changelog
 
+## unreleased
+* Add inline error messages
+
 ## 1.4.0 (2020-03-02)
 * Include amount in 'RedirectToPayment' events
 

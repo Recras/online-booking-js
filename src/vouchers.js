@@ -70,7 +70,12 @@ class RecrasVoucher {
                 this.findElement('.buyTemplate').removeAttribute('disabled');
 
                 if (json.payment_url) {
-                    this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_VOUCHER, RecrasEventHelper.EVENT_VOUCHER_REDIRECT_PAYMENT);
+                    this.eventHelper.sendEvent(
+                        RecrasEventHelper.PREFIX_VOUCHER,
+                        RecrasEventHelper.EVENT_VOUCHER_REDIRECT_PAYMENT,
+                        null,
+                        Math.round(this.totalPrice())
+                    );
                     window.top.location.href = json.payment_url;
                 } else {
                     console.log(json);
@@ -79,8 +84,12 @@ class RecrasVoucher {
     }
 
     changeTemplate(templateID) {
+        this.selectedTemplate = this.templates.filter(t => {
+            return t.id === templateID;
+        })[0];
+
         this.clearAllExceptTemplateSelection();
-        this.showContactForm(templateID);
+        this.showContactForm(this.selectedTemplate);
         this.eventHelper.sendEvent(
             RecrasEventHelper.PREFIX_VOUCHER,
             RecrasEventHelper.EVENT_VOUCHER_TEMPLATE_CHANGED,
@@ -165,12 +174,8 @@ class RecrasVoucher {
         this.findElement('.buyTemplate').addEventListener('click', this.buyTemplate.bind(this));
     }
 
-    showContactForm(templateId) {
-        this.selectedTemplate = this.templates.filter(t => {
-            return t.id === templateId;
-        })[0];
-
-        this.getContactForm(this.selectedTemplate)
+    showContactForm(template) {
+        this.getContactForm(template)
             .then(form => form.generateForm({
                 voucherQuantitySelector: true,
             }))
@@ -194,5 +199,9 @@ class RecrasVoucher {
             let selectedTemplateId = parseInt(voucherSelectEl.value, 10);
             this.changeTemplate(selectedTemplateId);
         });
+    }
+
+    totalPrice() {
+        return this.selectedTemplate.price * this.findElement('#number-of-vouchers').value;
     }
 }

@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/Recras/online-booking-js.svg?branch=master)](https://travis-ci.org/Recras/online-booking-js)
 
 # Recras Online Booking JS library
-Version: 1.3.4
+Version: 1.4.0
 
 JS library for easy online booking & voucher integration
 
@@ -100,7 +100,7 @@ The library provides a bit of styling to make it look okay straight from the box
 
 
 ## Browser support
-This library uses various modern techniques that are unsupported in Internet Explorer, and/or old Edge, and/or old Safari. If you care about supporting old browsers, a polyfill should be loaded into your website. We recommend loading the following [Polyfill.io](https://polyfill.io/v2/docs/) script: `https://cdn.polyfill.io/v2/polyfill.min.js?features=default,fetch,Promise,RegExp.prototype.flags`
+This library uses various modern techniques that are unsupported in Internet Explorer, and/or old Edge, and/or old Safari. If you care about supporting old browsers, a polyfill should be loaded into your website. We recommend loading the following [Polyfill.io](https://polyfill.io/v3/) script: `https://polyfill.io/v3/polyfill.min.js?features=default,fetch,Promise,Array.prototype.includes,RegExp.prototype.flags`
 
 In modern browsers, this is only a very small file causing little overhead.
 
@@ -124,3 +124,16 @@ The library sends out a few custom events when certain things change:
 
 You can use these events for custom actions, such as analytics. For use in code, please refer to 
 the constants in [src/eventHelper.js](src/eventHelper.js).
+
+When Google Analytics integration is enabled, certain events sent to GA include a label and/or value:
+
+| Event                              | Label                             | Value                               |
+| ---------------------------------- | --------------------------------- | ----------------------------------- |
+| `Recras:Booking:PackageChanged`    | Package name                      | Package ID                          |
+| `Recras:Booking:DateSelected`      | Selected date, in ISO 8601 format | N/A                                 |
+| `Recras:Booking:BuyInProgress`     | Package name                      | Package ID                          |
+| `Recras:Booking:RedirectToPayment` | N/A                               | Rounded total amount of the booking |
+| `Recras:ContactForm:Submit`        | N/A                               | Form ID                             |
+| `Recras:Voucher:TemplateChanged`   | N/A                               | Template ID                         |
+| `Recras:Voucher:BuyInProgress`     | Template name                     | Template ID                         |
+| `Recras:Voucher:RedirectToPayment` | N/A                               | Rounded total amount of the order   |

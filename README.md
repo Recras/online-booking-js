@@ -62,9 +62,10 @@ See `/demo/index.html` for integration demos
 * `recras_hostname` - **required** - the name of your Recras, i.e. `demo.recras.nl`
 * `element` - **required** - a single HTML element, using `getElementById` or `querySelector`
 * `locale` - optional, defaults to nl_NL - a valid locale (de_DE, en_GB, and nl_NL). This is used for country names, error messages, etc. Package names from Recras are not affected.
-* `analytics` - optional, defaults to `false` - set to `true` if you want to enable Google Analytics integration.
+* `analytics` - optional, defaults to `false` - set to `true` if you want to enable Google Analytics integration. For more information, see "Google Analytics" below.
 * `analyticsEvents` - optional - a list of events to track. `analytics` must be set to `true` for this to 
 work. If omitted, all events will be sent. For a list of events, refer to the section Events at the end of this document.
+* `ecommerce` - optional, defaults to `false` - set to `true` if you want to enable Google Analytics Ecommerce integration. This requires `analytics` to be set to `true`. For more information, see "Google Analytics" below.
 
 ### Online booking only
 * `package_id` - optional - can be the following:
@@ -125,6 +126,7 @@ The library sends out a few custom events when certain things change:
 You can use these events for custom actions, such as analytics. For use in code, please refer to 
 the constants in [src/eventHelper.js](src/eventHelper.js).
 
+## Google Analytics
 When Google Analytics integration is enabled, certain events sent to GA include a label and/or value:
 
 | Event                              | Label                             | Value                               |
@@ -137,3 +139,9 @@ When Google Analytics integration is enabled, certain events sent to GA include 
 | `Recras:Voucher:TemplateChanged`   | N/A                               | Template ID                         |
 | `Recras:Voucher:BuyInProgress`     | Template name                     | Template ID                         |
 | `Recras:Voucher:RedirectToPayment` | N/A                               | Rounded total amount of the order   |
+
+When Ecommerce integration is enabled, the `BuyInProgress` events will also send a [`purchase` event](https://developers.google.com/analytics/devguides/collection/gtagjs/ecommerce) to Google Analytics.
+
+**Please note**
+* Ecommerce integration can lead to false positives, as there is no way for the library to know whether or not the transaction has succeeded or was cancelled. It is better to send this event when the customer ends up on the redirect page, since you can check there if the transaction was succesful. This does, however, require a custom integration with our API.
+* Ecommerce integration requires you to use the "Global Site Tag" for Analytics integration. This is the case when you create a new tracking code or when using Google Tag Manager for integrating.

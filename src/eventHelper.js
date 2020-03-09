@@ -22,6 +22,7 @@ class RecrasEventHelper {
 
     constructor() {
         this.analyticsEnabled = false;
+        this.eCommerceEnabled = false;
         this.eventsEnabled = RecrasEventHelper.allEvents();
     }
 
@@ -44,20 +45,26 @@ class RecrasEventHelper {
         ];
     }
 
+    createEvent(type) {
+        let event;
+
+        try {
+            event = new Event(type);
+        } catch (e) {
+            // IE
+            event = document.createEvent('Event');
+            event.initEvent(type, true, true);
+        }
+
+        return event;
+    }
+
     eventEnabled(name) {
         return this.eventsEnabled.includes(name);
     }
 
     sendEvent(cat, action, label = undefined, value = undefined) {
-        let event;
-
-        try {
-            event = new Event(RecrasEventHelper.PREFIX_GLOBAL + ':' + cat + ':' + action);
-        } catch (e) {
-            // IE
-            event = document.createEvent('Event');
-            event.initEvent(action, true, true);
-        }
+        const event = this.createEvent(RecrasEventHelper.PREFIX_GLOBAL + ':' + cat + ':' + action);
 
         if (this.analyticsEnabled && this.eventEnabled(action)) {
             if (typeof window.gtag === 'function') {
@@ -99,6 +106,16 @@ class RecrasEventHelper {
 
     setAnalytics(bool) {
         this.analyticsEnabled = bool;
+    }
+
+    setECommerce(bool) {
+        if (!this.analyticsEnabled) {
+            throw new Error('Google Analytics integration is required for Ecommerce integration to work. Please set the parameter "analytics" to "true".');
+        }
+        if (typeof window.gtag !== 'function') {
+            throw new Error('Ecommerce integration requires Google Analytics to be loaded through gtag.js.');
+        }
+        this.eCommerceEnabled = bool;
     }
 
     setEvents(events) {

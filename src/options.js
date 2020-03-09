@@ -37,6 +37,9 @@ class RecrasOptions {
     getAutoScroll() {
         return (this.options.autoScroll !== undefined ? this.options.autoScroll : true);
     }
+    getECommerce() {
+        return this.options.ecommerce;
+    }
     getElement() {
         return this.options.element;
     }

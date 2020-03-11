@@ -63,13 +63,13 @@ class RecrasEventHelper {
         amount,
         id,
         name,
-        packageName,
+        listName,
         price,
     }) {
         return {
             id: id,
             name: name,
-            list_name: packageName,
+            list_name: listName,
             quantity: amount,
             price: price,
         };
@@ -90,6 +90,7 @@ class RecrasEventHelper {
         }
         window.gtag('event', 'purchase', {
             transaction_id: id,
+            affiliation: 'Recras',
             value: amount,
             items: items,
             coupon: coupon,

@@ -804,7 +804,7 @@ class RecrasBooking {
                 amount: line.aantal,
                 id: product.id,
                 name: product.weergavenaam,
-                packageName: this.selectedPackage.arrangement,
+                listName: this.selectedPackage.arrangement,
                 price: product.verkoop,
             });
         });
@@ -1258,13 +1258,14 @@ ${ msgs[1] }</p></div>`);
             }
             couponString += this.discount;
         }
+        const transactionId = 'B' + this.selectedPackage.id + '-' + Date.now();
         let items = this.productCountsEcommerce();
-        /*this.eventHelper.sendECommerceEvent({
+        this.eventHelper.sendECommerceEvent({
             amount: this.getTotalPrice(),
-            id: null, //TODO - what to use?
+            id: transactionId,
             items: items,
             coupon: couponString,
-        });*/
+        });
 
 
         let paymentMethod = this.paymentMethods(this.selectedPackage)[0];

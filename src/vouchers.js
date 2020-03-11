@@ -55,6 +55,21 @@ class RecrasVoucher {
             this.selectedTemplate.name,
             this.selectedTemplate.id
         );
+
+        const transactionId = 'V' + this.selectedTemplate.id + '-' + Date.now();
+        this.eventHelper.sendECommerceEvent({
+            amount: this.totalPrice(),
+            id: transactionId,
+            items: [
+                this.eventHelper.ecommerceItem({
+                    amount: this.findElement('#number-of-vouchers').value,
+                    id: this.selectedTemplate.id,
+                    name: this.selectedTemplate.name,
+                    listName: this.selectedTemplate.name,
+                    price: this.selectedTemplate.price,
+                }),
+            ],
+        });
         this.findElement('.buyTemplate').setAttribute('disabled', 'disabled');
 
         let payload = {

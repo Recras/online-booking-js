@@ -795,6 +795,21 @@ class RecrasBooking {
         return counts;
     }
 
+    productCountsEcommerce() {
+        let counts = this.productCounts();
+        counts = counts.filter(c => c.aantal > 0);
+        return counts.map(line => {
+            const product = this.findProduct(line.arrangementsregel_id).product;
+            return this.eventHelper.ecommerceItem({
+                amount: line.aantal,
+                id: product.id,
+                name: product.weergavenaam,
+                packageName: this.selectedPackage.arrangement,
+                price: product.verkoop,
+            });
+        });
+    }
+
     removeWarnings() {
         [...this.findElements('.minimum-amount')].forEach(el => {
             el.parentNode.removeChild(el);
@@ -1224,12 +1239,33 @@ ${ msgs[1] }</p></div>`);
             return false;
         }
 
+        let vouchers = Object.keys(this.appliedVouchers).length > 0 ? Object.keys(this.appliedVouchers) : null;
+
         this.eventHelper.sendEvent(
             RecrasEventHelper.PREFIX_BOOKING,
             RecrasEventHelper.EVENT_BOOKING_BOOKING_SUBMITTED,
             this.selectedPackage.arrangement,
             this.selectedPackage.id
         );
+
+        let couponString = '';
+        if (vouchers) {
+            couponString += vouchers.join(', ');
+        }
+        if (this.discount) {
+            if (couponString) {
+                couponString += ', ';
+            }
+            couponString += this.discount;
+        }
+        let items = this.productCountsEcommerce();
+        /*this.eventHelper.sendECommerceEvent({
+            amount: this.getTotalPrice(),
+            id: null, //TODO - what to use?
+            items: items,
+            coupon: couponString,
+        });*/
+
 
         let paymentMethod = this.paymentMethods(this.selectedPackage)[0];
         let paymentMethodEl = this.findElement('[name="paymentMethod"]:checked');
@@ -1244,7 +1280,6 @@ ${ msgs[1] }</p></div>`);
             elem.setAttribute('disabled', 'disabled');
         }
 
-        let vouchers = Object.keys(this.appliedVouchers).length > 0 ? Object.keys(this.appliedVouchers) : null;
         let bookingParams = {
             arrangement_id: this.selectedPackage.id,
             begin: this.selectedDate,

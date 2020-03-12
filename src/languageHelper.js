@@ -9,7 +9,7 @@ class RecrasLanguageHelper {
         //TODO: what is the best way to handle multiple locales?
         this.i18n = {
             de_DE: {
-                AGREE_ATTACHMENTS: 'Ich stimme mit den folgenden Unterlagen:',
+                AGREE_ATTACHMENTS: 'Ich stimme den folgenden Unterlagen zu:',
                 ATTR_REQUIRED: 'Erforderlich',
                 BOOKING_DISABLED_AGREEMENT: 'You have not agreed to the terms yet',
                 BOOKING_DISABLED_AMOUNTS_INVALID: 'Programme amounts are invalid',

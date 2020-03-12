@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.4.1 (2020-03-12)
+* Fix a German translation error with customer's suggestion
+
 ## 1.4.0 (2020-03-02)
 * Include amount in 'RedirectToPayment' events
 

@@ -1,5 +1,8 @@
 # Changelog
 
+## unreleased
+* Add some more German translations
+
 ## 1.4.1 (2020-03-12)
 * Fix a German translation error with customer's suggestion
 

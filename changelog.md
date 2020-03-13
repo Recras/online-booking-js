@@ -1,6 +1,6 @@
 # Changelog
 
-## unreleased
+## 1.4.2 (2020-03-13)
 * Add some more German translations
 
 ## 1.4.1 (2020-03-12)

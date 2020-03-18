@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.4.3 (2020-03-18)
 * Use minimum quantity of a line, if it is set
 
 ## 1.4.2 (2020-03-13)

@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+* Use minimum quantity of a line, if it is set
+
 ## 1.4.2 (2020-03-13)
 * Add some more German translations
 

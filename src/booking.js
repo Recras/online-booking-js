@@ -96,6 +96,9 @@ class RecrasBooking {
             if (aantal > 0 && aantal < line.aantal_personen) {
                 return false;
             }
+            if (line.min && aantal < line.min) {
+                return false;
+            }
             if (line.max && aantal > line.max) {
                 return false;
             }
@@ -182,6 +185,9 @@ class RecrasBooking {
     }
 
     bookingSizeLineMinimum(line) {
+        if (line.min) {
+            return line.min;
+        }
         if (line.onlineboeking_aantalbepalingsmethode === 'vast') {
             return 0;
         }
@@ -447,6 +453,8 @@ class RecrasBooking {
                 this.setMinMaxAmountWarning(input.id, packageLine.product.minimum_aantal, 'minimum');
             } else if (product.aantal < packageLine.aantal_personen) {
                 this.setMinMaxAmountWarning(input.id, packageLine.aantal_personen, 'minimum');
+            } else if (packageLine.min !== undefined && product.aantal < packageLine.min) {
+                this.setMinMaxAmountWarning(input.id, packageLine.min, 'minimum');
             } else if (packageLine.max !== null && product.aantal > packageLine.max) {
                 this.setMinMaxAmountWarning(input.id, packageLine.max, 'maximum');
             }

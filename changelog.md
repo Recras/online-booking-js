@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.4.4 (2020-03-19)
+* update a dependency to remove npm audit warning
+
 ## 1.4.3 (2020-03-18)
 * Use minimum quantity of a line, if it is set
 

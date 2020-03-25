@@ -145,11 +145,11 @@ describe('RecrasContactForm', () => {
         });
 
         it('works for date field', () => {
-            expect(rc.hasDateField()).toBe(false);
+            expect(rc.hasBookingDateField()).toBe(false);
             rc.contactFormFields.push({
                 field_identifier: 'boeking.datum',
             });
-            expect(rc.hasDateField()).toBe(true);
+            expect(rc.hasBookingDateField()).toBe(true);
         });
 
         it('works for country field', () => {
@@ -166,6 +166,31 @@ describe('RecrasContactForm', () => {
                 field_identifier: 'boeking.arrangement',
             });
             expect(rc.hasPackageField()).toBe(true);
+        });
+    });
+
+    describe('hasRelationDateField', () => {
+        let rc;
+        beforeEach(() => {
+            rc = new RecrasContactForm(new RecrasOptions({
+                element: this.mainEl,
+                form_id: 1,
+                package_id: 7,
+                recras_hostname: 'demo.recras.nl',
+            }));
+            rc.contactFormFields = [];
+        });
+
+        it('works on empty set', () => {
+            expect(rc.hasRelationDateField()).toBe(false);
+        });
+
+        it('works for relation date field', () => {
+            rc.contactFormFields.push({
+                input_type: 'date',
+                soort_invoer: 'contact.extra',
+            });
+            expect(rc.hasRelationDateField()).toBe(true);
         });
     });
 

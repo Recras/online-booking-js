@@ -96,7 +96,7 @@ class RecrasBooking {
             if (aantal > 0 && aantal < line.aantal_personen) {
                 return false;
             }
-            if (line.min && aantal < line.min) {
+            if (aantal > 0 && line.min && aantal < line.min) {
                 return false;
             }
             if (line.max && aantal > line.max) {

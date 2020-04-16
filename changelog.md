@@ -1,7 +1,10 @@
 # Changelog
 
-## 1.4.6
+## 1.4.7 (2020-04-16)
 * Update German translations, courtesy of Wiljon Bolten
+
+## 1.4.6 (2020-04-09)
+* Fix NPM build
 
 ## 1.4.5 (2020-04-09)
 * only check minimum quantity if quantity is > 0

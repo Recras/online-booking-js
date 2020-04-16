@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.4.6
+* Update German translations, courtesy of Wiljon Bolten
+
 ## 1.4.5 (2020-04-09)
 * only check minimum quantity if quantity is > 0
 

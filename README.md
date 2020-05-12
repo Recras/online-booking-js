@@ -84,6 +84,8 @@ in the programme after selecting a date and time.
     }
     ```
     The package line ID's can be obtained by inspecting the amounts form, or by checking the [packages API specification](https://demo.recras.nl/docs/api/endpoints/arrangementen.html) - use the `id` field for each entry in `regels`.
+* `date` - optional, use in combination with a single `package_id`. Set this to an ISO 8601 date (e.g. "2021-06-28") to prefill the date. If the selected date is not available for the chosen package or selected products, the date selection will be visible.
+* `time` - optional, use in combination with a single `package_id`. Set this to a 24-hour time string (e.g. "16:00") to prefill the time. This can be used in combination with `date`, but this is not required. If the selected time is not available for the chosen date, the time selection will be visible.
 
 ### Vouchers only
 * `voucher_template_id` - optional - the ID of a voucher template. This will hide the template selection dropdown and skip this step.

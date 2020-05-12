@@ -46,6 +46,17 @@ class RecrasBooking {
             }
         }
 
+        if (this.options.getPreFilledDate()) {
+            this.prefillDateIfPossible();
+        }
+        /*if (this.options.getPreFilledTime()) {
+            if (!this.options.getPreFilledDate()) {
+                console.warn(this.languageHelper.translate('ERR_TIME_WITHOUT_DATE'));
+            } else {
+                this.selectedTime = this.options.getPreFilledTime();
+            }
+        }*/
+
         RecrasCSSHelper.loadCSS('global');
         RecrasCSSHelper.loadCSS('booking');
         RecrasCSSHelper.loadCSS('pikaday');
@@ -72,6 +83,23 @@ class RecrasBooking {
                 }
                 return this.showPackages(packages);
             });
+    }
+
+    prefillDateIfPossible() {
+        let date = new Date(this.options.getPreFilledDate());
+        if (isNaN(date.getTime())) {
+            console.warn(this.languageHelper.translate('ERR_INVALID_DATE'));
+            return false;
+        }
+
+        if (!this.options.isSinglePackage()) {
+            console.warn(this.languageHelper.translate('ERR_DATE_NO_SINGLE_PACKAGE'));
+            return false;
+        }
+
+        this.prefilledDate = this.options.getPreFilledDate();
+
+        return true;
     }
 
     hasAtLeastOneProduct(pack) {
@@ -1042,6 +1070,10 @@ class RecrasBooking {
         this.addDateTimeSelectionHtml();
         this.showDiscountFields();
 
+        if (this.prefilledDate) {
+            this.toggleDateField('hide');
+        }
+
         if (this.options.getPreFilledAmounts()) {
             this.preFillAmounts(this.options.getPreFilledAmounts());
         }
@@ -1297,6 +1329,16 @@ ${ msgs[1] }</p></div>`);
         });
     }
 
+    toggleDateField(showHide) {
+        if (showHide === 'hide') {
+            this.findElement('[for="recras-onlinebooking-date"]').style.display = 'none';
+            this.findElement('#recras-onlinebooking-date').style.display = 'none';
+        } else {
+            this.findElement('[for="recras-onlinebooking-date"]').style.display = 'block';
+            this.findElement('#recras-onlinebooking-date').style.display = 'inline-block';
+        }
+    }
+
     updateProductAmounts() {
         this.loadingIndicatorHide();
         this.availableDays = [];
@@ -1330,18 +1372,41 @@ ${ msgs[1] }</p></div>`);
             let endDate = new Date();
             endDate.setMonth(endDate.getMonth() + 3);
 
-            thisClass.getAvailableDays(thisClass.selectedPackage.id, startDate, endDate)
-                .then(availableDays => {
-                    thisClass.loadingIndicatorHide();
+            if (thisClass.prefilledDate) {
+                let date = thisClass.prefilledDate;
+                let startDate = new Date(date);
+                let endDate = new Date(date);
+                endDate = new Date(endDate.setDate(endDate.getDate() + 1));
 
-                    if (datePickerEl.value && availableDays.indexOf(datePickerEl.value) === -1) {
-                        datePickerEl.value = '';
-                        thisClass.clearTimes();
-                    } else {
-                        datePickerEl.removeAttribute('disabled');
-                    }
-                });
+                thisClass.getAvailableDays(thisClass.selectedPackage.id, startDate, endDate)
+                    .then(availableDays => {
+                        if (availableDays.includes(date)) {
+                            thisClass.toggleDateField('hide');
+                            thisClass.selectedDate = new Date(date);
+                        } else {
+                            thisClass.toggleDateField('show');
+                            thisClass.getAvailableDaysInPeriod(thisClass.selectedPackage.id, startDate, endDate);
+                        }
+                    });
+            } else {
+                thisClass.getAvailableDaysInPeriod(thisClass.selectedPackage.id, startDate, endDate);
+            }
         });
+    }
+
+    getAvailableDaysInPeriod(packageId, startDate, endDate) {
+        const datePickerEl = this.findElement('.recras-onlinebooking-date');
+        this.getAvailableDays(packageId, startDate, endDate)
+            .then(availableDays => {
+                this.loadingIndicatorHide();
+
+                if (datePickerEl.value && availableDays.indexOf(datePickerEl.value) === -1) {
+                    datePickerEl.value = '';
+                    this.clearTimes();
+                } else {
+                    datePickerEl.removeAttribute('disabled');
+                }
+            });
     }
 
     updateProductPrice(el) {

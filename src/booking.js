@@ -1288,13 +1288,12 @@ ${ msgs[1] }</p></div>`);
                     this.findElement('.recras-datetime').reset();
                     this.findElement('.recras-contactform').reset();
                     window.alert(json.message);
-
-                    this.loadingIndicatorHide();
-                    this.findElement('.bookPackage').removeAttribute('disabled');
                 }
             } else {
                 console.log(json);
             }
+            this.loadingIndicatorHide();
+            this.findElement('.bookPackage').removeAttribute('disabled');
         });
     }
 

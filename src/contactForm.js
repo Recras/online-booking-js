@@ -456,9 +456,6 @@ class RecrasContactForm {
         submitButton.setAttribute('disabled', 'disabled');
 
         this.postJson('contactformulieren/' + this.options.getFormId() + '/opslaan', this.generateJson()).then(json => {
-            submitButton.removeAttribute('disabled');
-            this.loadingIndicatorHide();
-
             if (json.success) {
                 if (this.options.getRedirectUrl()) {
                     window.top.location.href = this.options.getRedirectUrl();
@@ -469,6 +466,8 @@ class RecrasContactForm {
             } else {
                 window.alert(this.languageHelper.translate('CONTACT_FORM_SUBMIT_FAILED'));
             }
+            submitButton.removeAttribute('disabled');
+            this.loadingIndicatorHide();
         });
         return false;
     }

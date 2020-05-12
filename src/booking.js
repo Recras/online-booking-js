@@ -1271,9 +1271,6 @@ ${ msgs[1] }</p></div>`);
         }
 
         return this.postJson('onlineboeking/reserveer', bookingParams).then(json => {
-            this.loadingIndicatorHide();
-            this.findElement('.bookPackage').removeAttribute('disabled');
-
             //TODO: redirect for payment afterwards. This needs to be implemented in Recras first
             if (json.payment_url) {
                 window.top.location.href = json.payment_url;
@@ -1291,6 +1288,9 @@ ${ msgs[1] }</p></div>`);
                     this.findElement('.recras-datetime').reset();
                     this.findElement('.recras-contactform').reset();
                     window.alert(json.message);
+
+                    this.loadingIndicatorHide();
+                    this.findElement('.bookPackage').removeAttribute('disabled');
                 }
             } else {
                 console.log(json);

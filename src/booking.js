@@ -49,13 +49,9 @@ class RecrasBooking {
         if (this.options.getPreFilledDate()) {
             this.prefillDateIfPossible();
         }
-        /*if (this.options.getPreFilledTime()) {
-            if (!this.options.getPreFilledDate()) {
-                console.warn(this.languageHelper.translate('ERR_TIME_WITHOUT_DATE'));
-            } else {
-                this.selectedTime = this.options.getPreFilledTime();
-            }
-        }*/
+        if (this.options.getPreFilledTime()) {
+            this.prefillTimeIfPossible();
+        }
 
         RecrasCSSHelper.loadCSS('global');
         RecrasCSSHelper.loadCSS('booking');
@@ -102,8 +98,24 @@ class RecrasBooking {
             return false;
         }
 
-        this.prefilledDate = this.options.getPreFilledDate();
+        this.prefilledDate = date;
 
+        return true;
+    }
+
+    prefillTimeIfPossible() {
+        if (!this.prefilledDate) {
+            console.warn(this.languageHelper.translate('ERR_TIME_WITHOUT_DATE'));
+            return false;
+        }
+
+        let time = this.options.getPreFilledTime();
+        if (!time.match(/^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])$/)) {
+            console.warn(this.languageHelper.translate('ERR_INVALID_TIME'));
+            return false;
+        }
+
+        this.prefilledTime = time;
         return true;
     }
 
@@ -1057,6 +1069,53 @@ class RecrasBooking {
         });
     }
 
+    calendarOnDateSelect(date, packageId) {
+        this.loadingIndicatorShow(this.findElement('label[for="recras-onlinebooking-time"]'));
+        this.eventHelper.sendEvent(
+            RecrasEventHelper.PREFIX_BOOKING,
+            RecrasEventHelper.EVENT_BOOKING_DATE_SELECTED,
+            RecrasDateHelper.datePartOnly(date)
+        );
+        this.selectedDate = date;
+        this.getAvailableTimes(packageId, date).then(times => {
+            times = times.map(time => RecrasDateHelper.timePartOnly(new Date(time)));
+            this.showTimes(times);
+            this.loadingIndicatorHide();
+            if (this.prefilledTime && times.includes(this.prefilledTime)) {
+                console.log('Pre filled time is valid');
+                //TODO
+            } else {
+                console.log('Pre filled time is not set or invalid');
+                this.selectSingleTime();
+            }
+        });
+        this.findElement('#discountcode').removeAttribute('disabled');
+        this.maybeDisableBookButton();
+    }
+
+    calendarOnDraw(pika, packageId) {
+        let lastMonthYear = pika.calendars[pika.calendars.length - 1];
+        let lastDay = new Date(lastMonthYear.year, lastMonthYear.month, 31);
+
+        let lastAvailableDay = this.availableDays.reduce((acc, curVal) => {
+            return curVal > acc ? curVal : acc;
+        }, '');
+        if (!lastAvailableDay) {
+            lastAvailableDay = new Date();
+        } else {
+            lastAvailableDay = new Date(lastAvailableDay);
+        }
+        if (lastAvailableDay > lastDay) {
+            return;
+        }
+
+        let newEndDate = RecrasDateHelper.clone(lastAvailableDay);
+        newEndDate.setFullYear(lastMonthYear.year);
+        newEndDate.setMonth(lastMonthYear.month + 2);
+
+        this.getAvailableDays(packageId, lastAvailableDay, newEndDate);
+    }
+
     addDateTimeSelectionHtml() {
         let today = RecrasDateHelper.datePartOnly(new Date());
         let html = `<form class="recras-datetime">
@@ -1071,12 +1130,17 @@ class RecrasBooking {
         </form>`;
         this.appendHtml(html);
     }
+
     showDateTimeSelection(pack) {
         this.addDateTimeSelectionHtml();
         this.showDiscountFields();
 
         if (this.prefilledDate) {
             this.toggleDateField('hide');
+            this.calendarOnDateSelect(this.prefilledDate, pack.id);
+        }
+        if (this.prefilledTime) {
+            this.toggleTimeField('hide');
         }
 
         if (this.options.getPreFilledAmounts()) {
@@ -1091,45 +1155,8 @@ class RecrasBooking {
                 },
                 field: this.findElement('.recras-onlinebooking-date'),
                 i18n: RecrasCalendarHelper.i18n(this.languageHelper),
-                onDraw: (pika) => {
-                    let lastMonthYear = pika.calendars[pika.calendars.length - 1];
-                    let lastDay = new Date(lastMonthYear.year, lastMonthYear.month, 31);
-
-                    let lastAvailableDay = this.availableDays.reduce((acc, curVal) => {
-                        return curVal > acc ? curVal : acc;
-                    }, '');
-                    if (!lastAvailableDay) {
-                        lastAvailableDay = new Date();
-                    } else {
-                        lastAvailableDay = new Date(lastAvailableDay);
-                    }
-                    if (lastAvailableDay > lastDay) {
-                        return;
-                    }
-
-                    let newEndDate = RecrasDateHelper.clone(lastAvailableDay);
-                    newEndDate.setFullYear(lastMonthYear.year);
-                    newEndDate.setMonth(lastMonthYear.month + 2);
-
-                    this.getAvailableDays(pack.id, lastAvailableDay, newEndDate);
-                },
-                onSelect: (date) => {
-                    this.loadingIndicatorShow(this.findElement('label[for="recras-onlinebooking-time"]'));
-                    this.eventHelper.sendEvent(
-                        RecrasEventHelper.PREFIX_BOOKING,
-                        RecrasEventHelper.EVENT_BOOKING_DATE_SELECTED,
-                        RecrasDateHelper.datePartOnly(date)
-                    );
-                    this.selectedDate = date;
-                    this.getAvailableTimes(pack.id, date).then(times => {
-                        times = times.map(time => RecrasDateHelper.timePartOnly(new Date(time)));
-                        this.showTimes(times);
-                        this.loadingIndicatorHide();
-                        this.selectSingleTime();
-                    });
-                    this.findElement('#discountcode').removeAttribute('disabled');
-                    this.maybeDisableBookButton();
-                },
+                onDraw: (pika) => this.calendarOnDraw(pika, pack.id),
+                onSelect: (date) => this.calendarOnDateSelect(date, pack.id),
             }
         );
 
@@ -1341,6 +1368,16 @@ ${ msgs[1] }</p></div>`);
         } else {
             this.findElement('[for="recras-onlinebooking-date"]').style.display = 'block';
             this.findElement('#recras-onlinebooking-date').style.display = 'inline-block';
+        }
+    }
+
+    toggleTimeField(showHide) {
+        if (showHide === 'hide') {
+            this.findElement('[for="recras-onlinebooking-time"]').style.display = 'none';
+            this.findElement('#recras-onlinebooking-time').style.display = 'none';
+        } else {
+            this.findElement('[for="recras-onlinebooking-time"]').style.display = 'block';
+            this.findElement('#recras-onlinebooking-time').style.display = 'inline-block';
         }
     }
 

@@ -614,6 +614,55 @@ describe('RecrasBooking', () => {
         });
     });
 
+    describe('prefillTimeIfPossible', () => {
+        let rb;
+
+        let mainEl = document.createElement('div');
+        mainEl.id = 'onlinebooking';
+        document.body.appendChild(mainEl);
+
+        it('does not set time if time is invalid', async () => {
+            rb = new RecrasBooking(new RecrasOptions({
+                element: mainEl,
+                recras_hostname: 'demo.recras.nl',
+                package_id: 7,
+                date: '2050-06-28',
+                time: '30:60',
+            }));
+
+            await rb.promise;
+
+            expect(rb.prefillTimeIfPossible()).toBe(false);
+        });
+
+        it('does not set time if no date is set', async () => {
+            rb = new RecrasBooking(new RecrasOptions({
+                element: mainEl,
+                recras_hostname: 'demo.recras.nl',
+                package_id: 7,
+                time: '10:00',
+            }));
+
+            await rb.promise;
+
+            expect(rb.prefillTimeIfPossible()).toBe(false);
+        });
+
+        it('sets date if time is valid', async () => {
+            rb = new RecrasBooking(new RecrasOptions({
+                element: mainEl,
+                recras_hostname: 'demo.recras.nl',
+                package_id: [7],
+                date: '2050-06-28',
+                time: '10:00',
+            }));
+
+            await rb.promise;
+
+            expect(rb.prefillTimeIfPossible()).toBe(true);
+        });
+    });
+
     describe('hasAtLeastOneProduct', () => {
         const pck = {
             id: 7,

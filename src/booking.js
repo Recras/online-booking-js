@@ -92,6 +92,11 @@ class RecrasBooking {
             return false;
         }
 
+        if (date < new Date()) {
+            console.warn(this.languageHelper.translate('ERR_DATE_PAST'));
+            return false;
+        }
+
         if (!this.options.isSinglePackage()) {
             console.warn(this.languageHelper.translate('ERR_DATE_NO_SINGLE_PACKAGE'));
             return false;

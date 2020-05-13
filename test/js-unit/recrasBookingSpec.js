@@ -542,6 +542,78 @@ describe('RecrasBooking', () => {
         });
     });
 
+    describe('prefillDateIfPossible', () => {
+        let rb;
+
+        let mainEl = document.createElement('div');
+        mainEl.id = 'onlinebooking';
+        document.body.appendChild(mainEl);
+
+        it('does not set date if date is invalid', async () => {
+            rb = new RecrasBooking(new RecrasOptions({
+                element: mainEl,
+                recras_hostname: 'demo.recras.nl',
+                package_id: 7,
+                date: '2050-15-66',
+            }));
+
+            await rb.promise;
+
+            expect(rb.prefillDateIfPossible()).toBe(false);
+        });
+
+        it('does not set date if date is in the past', async () => {
+            rb = new RecrasBooking(new RecrasOptions({
+                element: mainEl,
+                recras_hostname: 'demo.recras.nl',
+                package_id: 7,
+                date: '2019-06-28',
+            }));
+
+            await rb.promise;
+
+            expect(rb.prefillDateIfPossible()).toBe(false);
+        });
+
+        it('does not set date if no package is selected', async () => {
+            rb = new RecrasBooking(new RecrasOptions({
+                element: mainEl,
+                recras_hostname: 'demo.recras.nl',
+                date: '2050-06-28',
+            }));
+
+            await rb.promise;
+
+            expect(rb.prefillDateIfPossible()).toBe(false);
+        });
+
+        it('does not set date if multiple packages are selected', async () => {
+            rb = new RecrasBooking(new RecrasOptions({
+                element: mainEl,
+                recras_hostname: 'demo.recras.nl',
+                package_id: [1, 2, 3],
+                date: '2050-06-28',
+            }));
+
+            await rb.promise;
+
+            expect(rb.prefillDateIfPossible()).toBe(false);
+        });
+
+        it('sets date if date is valid and one package is selected', async () => {
+            rb = new RecrasBooking(new RecrasOptions({
+                element: mainEl,
+                recras_hostname: 'demo.recras.nl',
+                package_id: [7],
+                date: '2050-06-28',
+            }));
+
+            await rb.promise;
+
+            expect(rb.prefillDateIfPossible()).toBe(true);
+        });
+    });
+
     describe('hasAtLeastOneProduct', () => {
         const pck = {
             id: 7,

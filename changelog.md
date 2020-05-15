@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.4.8 (2020-05-15)
+* After submitting a form, re-enable button later, to prevent users being able to submit twice
+
 ## 1.4.7 (2020-04-16)
 * Update German translations, courtesy of Wiljon Bolten
 

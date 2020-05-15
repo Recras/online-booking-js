@@ -67,8 +67,6 @@ class RecrasVoucher {
         }
         this.postJson('vouchers/buy', payload)
             .then(json => {
-                this.findElement('.buyTemplate').removeAttribute('disabled');
-
                 if (json.payment_url) {
                     this.eventHelper.sendEvent(
                         RecrasEventHelper.PREFIX_VOUCHER,
@@ -80,6 +78,8 @@ class RecrasVoucher {
                 } else {
                     console.log(json);
                 }
+
+                this.findElement('.buyTemplate').removeAttribute('disabled');
             });
     }
 

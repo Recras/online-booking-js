@@ -635,20 +635,7 @@ describe('RecrasBooking', () => {
             expect(rb.prefillTimeIfPossible()).toBe(false);
         });
 
-        it('does not set time if no date is set', async () => {
-            rb = new RecrasBooking(new RecrasOptions({
-                element: mainEl,
-                recras_hostname: 'demo.recras.nl',
-                package_id: 7,
-                time: '10:00',
-            }));
-
-            await rb.promise;
-
-            expect(rb.prefillTimeIfPossible()).toBe(false);
-        });
-
-        it('sets date if time is valid', async () => {
+        it('sets time if time is valid', async () => {
             rb = new RecrasBooking(new RecrasOptions({
                 element: mainEl,
                 recras_hostname: 'demo.recras.nl',

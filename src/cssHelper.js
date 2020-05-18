@@ -64,6 +64,9 @@ class RecrasCSSHelper {
 .recrasUnitPrice {
     opacity: 0.5;
 }
+.recrasHidden {
+    display: none;
+}
 `;
     }
 

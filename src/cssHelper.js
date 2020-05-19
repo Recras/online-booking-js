@@ -64,7 +64,7 @@ class RecrasCSSHelper {
 .recrasUnitPrice {
     opacity: 0.5;
 }
-.recrasHidden {
+.recras-onlinebooking .recrasHidden {
     display: none;
 }
 `;

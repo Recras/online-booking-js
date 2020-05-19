@@ -722,10 +722,10 @@ class RecrasBooking {
         if (!this.amountsValid(this.selectedPackage)) {
             bookingDisabledReasons.push('BOOKING_DISABLED_AMOUNTS_INVALID');
         }
-        if (!this.findElement('.recras-onlinebooking-date').value && !this.selectedDate) {
+        if (!this.selectedDate) {
             bookingDisabledReasons.push('BOOKING_DISABLED_INVALID_DATE');
         }
-        if (!this.findElement('.recras-onlinebooking-time').value && !this.selectedTime) {
+        if (!this.selectedTime) {
             bookingDisabledReasons.push('BOOKING_DISABLED_INVALID_TIME');
         }
         if (!this.contactFormValid()) {
@@ -1094,7 +1094,11 @@ class RecrasBooking {
             RecrasDateHelper.datePartOnly(date)
         );
         this.selectedDate = date;
-        this.getAvailableTimes(packageId, date).then(times => this.maybeFillTime(times));
+
+        if (this.hasAtLeastOneProduct(this.selectedPackage)) {
+            this.getAvailableTimes(packageId, date).then(times => this.maybeFillTime(times));
+        }
+
         this.findElement('#discountcode').removeAttribute('disabled');
         this.maybeDisableBookButton();
     }
@@ -1154,7 +1158,7 @@ class RecrasBooking {
             this.toggleTimeField('hide');
         }
         if (this.prefilledDate && this.prefilledTime) {
-            this.findElement('.recras-datetime').style.display = 'none';
+            this.findElement('.recras-datetime').classList.add('recrasHidden');
         }
 
         if (this.options.getPreFilledAmounts()) {
@@ -1418,7 +1422,7 @@ ${ msgs[1] }</p></div>`);
 
         let datePickerEl = this.findElement('.recras-onlinebooking-date');
 
-        var thisClass = this;
+        const thisClass = this;
         maxPromise.then(function() {
             let amountErrors = thisClass.findElements(
                 '.minimum-amount, .maximum-amount, .recras-product-dependency'
@@ -1430,30 +1434,35 @@ ${ msgs[1] }</p></div>`);
             }
             thisClass.nextSectionActive('.recras-amountsform', '.recras-datetime');
 
+            if (!thisClass.hasAtLeastOneProduct(thisClass.selectedPackage)) {
+                return;
+            }
+
             thisClass.loadingIndicatorShow(thisClass.findElement('label[for="recras-onlinebooking-date"]'));
             let startDate = new Date();
             let endDate = new Date();
             endDate.setMonth(endDate.getMonth() + 3);
 
-            if (thisClass.prefilledDate) {
-                let date = thisClass.prefilledDate;
-                let startDate = new Date(date);
-                let endDate = new Date(date);
-                endDate = new Date(endDate.setDate(endDate.getDate() + 1));
-
-                thisClass.getAvailableDays(thisClass.selectedPackage.id, startDate, endDate)
-                    .then(availableDays => {
-                        if (availableDays.includes(RecrasDateHelper.datePartOnly(date))) {
-                            thisClass.toggleDateField('hide');
-                            thisClass.calendarOnDateSelect(date, thisClass.selectedPackage.id);
-                        } else {
-                            thisClass.toggleDateField('show');
-                            thisClass.getAvailableDaysInPeriod(thisClass.selectedPackage.id, startDate, endDate);
-                        }
-                    });
-            } else {
+            if (!thisClass.prefilledDate) {
                 thisClass.getAvailableDaysInPeriod(thisClass.selectedPackage.id, startDate, endDate);
+                return;
             }
+
+            let date = thisClass.prefilledDate;
+            startDate = new Date(date);
+            endDate = new Date(date);
+            endDate.setDate(endDate.getDate() + 1);
+
+            thisClass.getAvailableDays(thisClass.selectedPackage.id, startDate, endDate)
+                .then(availableDays => {
+                    if (availableDays.includes(RecrasDateHelper.datePartOnly(date))) {
+                        thisClass.toggleDateField('hide');
+                        thisClass.calendarOnDateSelect(date, thisClass.selectedPackage.id);
+                    } else {
+                        thisClass.toggleDateField('show');
+                        thisClass.getAvailableDaysInPeriod(thisClass.selectedPackage.id, startDate, endDate);
+                    }
+                });
         });
     }
 

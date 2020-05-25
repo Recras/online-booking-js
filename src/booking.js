@@ -1215,6 +1215,7 @@ class RecrasBooking {
     selectTime(time) {
         this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_TIME_SELECTED);
         this.selectedTime = time;
+        this.maybeDisableBookButton();
     }
 
     showDateTimeSelection(pack) {

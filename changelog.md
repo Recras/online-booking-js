@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.5.0 (2020-05-25)
+* Allow pre-filling of date and time
+
 ## 1.4.8 (2020-05-15)
 * After submitting a form, re-enable button later, to prevent users being able to submit twice
 

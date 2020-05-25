@@ -1,7 +1,8 @@
 # Changelog
 
-## unreleased
+## development (unreleased)
 * Add inline error messages
+* Fix calendar alignment on small screens
 
 ## 1.5.0 (2020-05-25)
 * Allow pre-filling of date and time

@@ -5,6 +5,7 @@ class RecrasCalendarHelper {
             minDate: new Date(),
             numberOfMonths: 2,
             reposition: false,
+            position: 'bottom right',
             toString: (date) => RecrasDateHelper.toString(date),
         };
     }

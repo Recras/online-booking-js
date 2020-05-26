@@ -2,6 +2,7 @@
 
 ## development (unreleased)
 * Fix calendar alignment on small screens
+* Fix attachments not being visible when pre-filling amounts
 
 ## 1.5.0 (2020-05-25)
 * Allow pre-filling of date and time

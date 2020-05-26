@@ -2,6 +2,8 @@
 
 ## development (unreleased)
 * Add inline error messages
+
+## 1.5.1 (2020-05-26)
 * Fix calendar alignment on small screens
 * Fix attachments not being visible when pre-filling amounts
 

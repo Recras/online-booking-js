@@ -1067,13 +1067,14 @@ class RecrasBooking {
 
         Promise.all(promises).then(() => {
             let html = `<div class="recras-finalise">
-            <p>${ textPostBooking }</p>
-            <div class="standard-attachments"></div>
-            ${ paymentText }
-            <button type="submit" class="bookPackage">${ this.languageHelper.translate('BUTTON_BOOK_NOW') }</button>
-        </div>`;
+                <p>${ textPostBooking }</p>
+                <div class="standard-attachments"></div>
+                ${ paymentText }
+                <button type="submit" class="bookPackage">${ this.languageHelper.translate('BUTTON_BOOK_NOW') }</button>
+            </div>`;
             this.appendHtml(html);
             this.findElement('.bookPackage').addEventListener('click', this.submitBooking.bind(this));
+            this.updateProductAmounts();
         });
     }
 

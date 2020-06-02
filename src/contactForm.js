@@ -389,7 +389,7 @@ class RecrasContactForm {
                         return label + html;
                     default:
                         console.debug('Unknown type', field.input_type, field);
-                        return label + `<input type="number" ${ fixedAttributes }>`;
+                        return label + `<input type="text" ${ fixedAttributes }>`;
                 }
             case 'contact.website':
                 //TODO: type=url ?

@@ -1,6 +1,7 @@
 # Changelog
 
 ## development (unreleased)
+* Show customer extra fields in contact forms
 * Add inline error messages
 
 ## 1.5.1 (2020-05-26)

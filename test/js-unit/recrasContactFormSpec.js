@@ -119,175 +119,175 @@ describe('RecrasContactForm', () => {
                 expect(html.indexOf('Kids party')).not.toBe(-1);
             });
         });
+    });
 
-        describe('hasFieldOfType', () => {
-            let rc;
-            beforeEach(() => {
-                rc = new RecrasContactForm(new RecrasOptions({
-                    element: this.mainEl,
-                    form_id: 1,
-                    package_id: 7,
-                    recras_hostname: 'demo.recras.nl',
-                }));
-                rc.contactFormFields = [];
-            });
-
-            it('works on empty set', () => {
-                expect(rc.hasFieldOfType('foo')).toBe(false);
-            });
-
-            it('works for general field', () => {
-                rc.contactFormFields.push({
-                    field_identifier: 'foo',
-                });
-                expect(rc.hasFieldOfType('foo')).toBe(true);
-            });
-
-            it('works for date field', () => {
-                expect(rc.hasDateField()).toBe(false);
-                rc.contactFormFields.push({
-                    field_identifier: 'boeking.datum',
-                });
-                expect(rc.hasDateField()).toBe(true);
-            });
-
-            it('works for country field', () => {
-                expect(rc.hasCountryField()).toBe(false);
-                rc.contactFormFields.push({
-                    field_identifier: 'contact.landcode',
-                });
-                expect(rc.hasCountryField()).toBe(true);
-            });
-
-            it('works for package field', () => {
-                expect(rc.hasPackageField()).toBe(false);
-                rc.contactFormFields.push({
-                    field_identifier: 'boeking.arrangement',
-                });
-                expect(rc.hasPackageField()).toBe(true);
-            });
+    describe('hasFieldOfType', () => {
+        let rc;
+        beforeEach(() => {
+            rc = new RecrasContactForm(new RecrasOptions({
+                element: document.createElement('div'),
+                form_id: 1,
+                package_id: 7,
+                recras_hostname: 'demo.recras.nl',
+            }));
+            rc.contactFormFields = [];
         });
 
-        describe('sortPackages', () => {
-            let rc;
-            beforeEach(() => {
-                rc = new RecrasContactForm(new RecrasOptions({
-                    element: this.mainEl,
-                    form_id: 1,
-                    package_id: 7,
-                    recras_hostname: 'demo.recras.nl',
-                }));
-            });
-
-            it('sorts by package name first', () => {
-                let packs = [
-                    {
-                        arrangement: 'BBB',
-                    },
-                    {
-                        arrangement: 'AAA',
-                    },
-                    {
-                        arrangement: 'CCC',
-                    },
-                ];
-                let unsorted = JSON.parse(JSON.stringify(packs));
-                let sorted = rc.sortPackages(unsorted);
-                expect(sorted[0]).toEqual(packs[1]);
-                expect(sorted[1]).toEqual(packs[0]);
-                expect(sorted[2]).toEqual(packs[2]);
-            });
-
-            it('sorts by ID second', () => {
-                let packs = [
-                    {
-                        arrangement: 'Same',
-                        id: 42,
-                    },
-                    {
-                        arrangement: 'Zzz',
-                        id: 9,
-                    },
-                    {
-                        arrangement: 'Same',
-                        id: 17,
-                    },
-                ];
-                let unsorted = JSON.parse(JSON.stringify(packs));
-                let sorted = rc.sortPackages(unsorted);
-                expect(sorted[0]).toEqual(packs[2]);
-                expect(sorted[1]).toEqual(packs[0]);
-                expect(sorted[2]).toEqual(packs[1]);
-            });
+        it('works on empty set', () => {
+            expect(rc.hasFieldOfType('foo')).toBe(false);
         });
 
-        describe('getEmptyRequiredFields', () => {
-            let rc;
-
-            beforeEach(async () => {
-                rc = new RecrasContactForm(new RecrasOptions({
-                    element: this.mainEl,
-                    form_id: 1,
-                    recras_hostname: 'demo.recras.nl',
-                }));
-                await rc.showForm();
+        it('works for general field', () => {
+            rc.contactFormFields.push({
+                field_identifier: 'foo',
             });
-
-            it('only returns required fields', () => {
-                const els = rc.getEmptyRequiredFields();
-                expect(els.length).toBeGreaterThan(0);
-                for (const el of els) {
-                    expect(el.getAttribute('required')).not.toBeNull();
-                }
-            });
+            expect(rc.hasFieldOfType('foo')).toBe(true);
         });
 
-        describe('getInvalidFields', () => {
-            let rc;
-
-            beforeEach(async () => {
-                rc = new RecrasContactForm(new RecrasOptions({
-                    element: this.mainEl,
-                    form_id: 1,
-                    recras_hostname: 'demo.recras.nl',
-                }));
-                await rc.showForm();
+        it('works for date field', () => {
+            expect(rc.hasDateField()).toBe(false);
+            rc.contactFormFields.push({
+                field_identifier: 'boeking.datum',
             });
-
-            it('returns invalid fields', () => {
-                let elEmail = rc.findElement('[type="email"]');
-                elEmail.value = 'invalid';
-
-                let invalid = rc.getInvalidFields();
-                expect(invalid.length).toBe(1);
-                expect(invalid[0]).toBe(elEmail);
-
-                elEmail.value = 'info@recras.com';
-
-                invalid = rc.getInvalidFields();
-                expect(invalid.length).toBe(0);
-            });
+            expect(rc.hasDateField()).toBe(true);
         });
 
-        describe('isEmpty', () => {
-            let rc;
-
-            beforeEach(async () => {
-                rc = new RecrasContactForm(new RecrasOptions({
-                    element: this.mainEl,
-                    form_id: 5,
-                    recras_hostname: 'demo.recras.nl',
-                }));
-                await rc.showForm();
+        it('works for country field', () => {
+            expect(rc.hasCountryField()).toBe(false);
+            rc.contactFormFields.push({
+                field_identifier: 'contact.landcode',
             });
+            expect(rc.hasCountryField()).toBe(true);
+        });
 
-            it('returns if form is empty', () => {
-                expect(rc.isEmpty()).toBe(true);
-                let elEmail = rc.findElement('[type="email"]');
-                elEmail.value = 'hi@example.com';
-
-                expect(rc.isEmpty()).toBe(false);
+        it('works for package field', () => {
+            expect(rc.hasPackageField()).toBe(false);
+            rc.contactFormFields.push({
+                field_identifier: 'boeking.arrangement',
             });
+            expect(rc.hasPackageField()).toBe(true);
+        });
+    });
+
+    describe('sortPackages', () => {
+        let rc;
+        beforeEach(() => {
+            rc = new RecrasContactForm(new RecrasOptions({
+                element: document.createElement('div'),
+                form_id: 1,
+                package_id: 7,
+                recras_hostname: 'demo.recras.nl',
+            }));
+        });
+
+        it('sorts by package name first', () => {
+            let packs = [
+                {
+                    arrangement: 'BBB',
+                },
+                {
+                    arrangement: 'AAA',
+                },
+                {
+                    arrangement: 'CCC',
+                },
+            ];
+            let unsorted = JSON.parse(JSON.stringify(packs));
+            let sorted = rc.sortPackages(unsorted);
+            expect(sorted[0]).toEqual(packs[1]);
+            expect(sorted[1]).toEqual(packs[0]);
+            expect(sorted[2]).toEqual(packs[2]);
+        });
+
+        it('sorts by ID second', () => {
+            let packs = [
+                {
+                    arrangement: 'Same',
+                    id: 42,
+                },
+                {
+                    arrangement: 'Zzz',
+                    id: 9,
+                },
+                {
+                    arrangement: 'Same',
+                    id: 17,
+                },
+            ];
+            let unsorted = JSON.parse(JSON.stringify(packs));
+            let sorted = rc.sortPackages(unsorted);
+            expect(sorted[0]).toEqual(packs[2]);
+            expect(sorted[1]).toEqual(packs[0]);
+            expect(sorted[2]).toEqual(packs[1]);
+        });
+    });
+
+    describe('getEmptyRequiredFields', () => {
+        let rc;
+
+        beforeEach(async () => {
+            rc = new RecrasContactForm(new RecrasOptions({
+                element: document.createElement('div'),
+                form_id: 1,
+                recras_hostname: 'demo.recras.nl',
+            }));
+            await rc.showForm();
+        });
+
+        it('only returns required fields', () => {
+            const els = rc.getEmptyRequiredFields();
+            expect(els.length).toBeGreaterThan(0);
+            for (const el of els) {
+                expect(el.getAttribute('required')).not.toBeNull();
+            }
+        });
+    });
+
+    describe('getInvalidFields', () => {
+        let rc;
+
+        beforeEach(async () => {
+            rc = new RecrasContactForm(new RecrasOptions({
+                element: document.createElement('div'),
+                form_id: 1,
+                recras_hostname: 'demo.recras.nl',
+            }));
+            await rc.showForm();
+        });
+
+        it('returns invalid fields', () => {
+            let elEmail = rc.findElement('[type="email"]');
+            elEmail.value = 'invalid';
+
+            let invalid = rc.getInvalidFields();
+            expect(invalid.length).toBe(1);
+            expect(invalid[0]).toBe(elEmail);
+
+            elEmail.value = 'info@recras.com';
+
+            invalid = rc.getInvalidFields();
+            expect(invalid.length).toBe(0);
+        });
+    });
+
+    describe('isEmpty', () => {
+        let rc;
+
+        beforeEach(async () => {
+            rc = new RecrasContactForm(new RecrasOptions({
+                element: document.createElement('div'),
+                form_id: 5,
+                recras_hostname: 'demo.recras.nl',
+            }));
+            await rc.showForm();
+        });
+
+        it('returns if form is empty', () => {
+            expect(rc.isEmpty()).toBe(true);
+            let elEmail = rc.findElement('[type="email"]');
+            elEmail.value = 'hi@example.com';
+
+            expect(rc.isEmpty()).toBe(false);
         });
     });
 });

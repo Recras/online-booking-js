@@ -1,6 +1,5 @@
 class RecrasContactForm {
     constructor(options = {}) {
-        this.datePicker = null;
         this.languageHelper = new RecrasLanguageHelper();
 
         if (!(options instanceof RecrasOptions)) {
@@ -91,7 +90,7 @@ class RecrasContactForm {
         if (this.hasCountryField()) {
             waitFor.push(this.getCountryList());
         }
-        if (this.hasDateField()) {
+        if (this.hasBookingDateField() || this.hasRelationDateField()) {
             waitFor.push(RecrasCalendarHelper.loadScript());
             RecrasCSSHelper.loadCSS('pikaday');
         }
@@ -196,13 +195,18 @@ class RecrasContactForm {
         }
         return isEmpty;
     }
+    getRelationExtraDateFields() {
+        return this.contactFormFields.filter(
+            field => field.soort_invoer === 'contact.extra' && field.input_type === 'date'
+        );
+    }
 
     hasFieldOfType(identifier) {
         return this.contactFormFields.filter(field => {
             return field.field_identifier === identifier;
         }).length > 0;
     }
-    hasDateField() {
+    hasBookingDateField() {
         return this.hasFieldOfType('boeking.datum');
     }
     hasCountryField() {
@@ -210,6 +214,9 @@ class RecrasContactForm {
     }
     hasPackageField() {
         return this.hasFieldOfType('boeking.arrangement');
+    }
+    hasRelationDateField() {
+        return this.getRelationExtraDateFields().length > 0;
     }
 
     isEmpty() {
@@ -354,6 +361,36 @@ class RecrasContactForm {
                 });
                 html += '</select>';
                 return label + html;
+            case 'contact.extra':
+                switch (field.input_type) {
+                    case 'number':
+                        return label + `<input type="number" ${ fixedAttributes } autocomplete="off">`;
+                    case 'date':
+                    case 'text':
+                        return label + `<input type="text" ${ fixedAttributes }>`;
+                    case 'multiplechoice':
+                        classes = ['checkboxGroup'];
+                        if (field.verplicht) {
+                            classes.push('checkboxGroupRequired');
+                        }
+
+                        html = `<div class="${ classes.join(' ') }">`;
+                        field.mogelijke_keuzes.forEach(choice => {
+                            html += `<label><input type="checkbox" name="contactformulier${ idx }" value="${ choice }" data-identifier="${ field.field_identifier }">${ choice }</label>`;
+                        });
+                        html += '</div>';
+                        return label + html;
+                    case 'singlechoice':
+                        html = `<div class="radioGroup">`;
+                        field.mogelijke_keuzes.forEach(choice => {
+                            html += `<label><input type="radio" name="contactformulier${ idx }" value="${ choice }" ${ attrRequired } data-identifier="${ field.field_identifier }">${ choice }</label>`;
+                        });
+                        html += `</div>`;
+                        return label + html;
+                    default:
+                        console.debug('Unknown type', field.input_type, field);
+                        return label + `<input type="text" ${ fixedAttributes }>`;
+                }
             case 'contact.website':
                 //TODO: type=url ?
             default:
@@ -371,7 +408,7 @@ class RecrasContactForm {
             .then(html => {
                 this.appendHtml(html);
                 this.findElement('.recras-contactform').addEventListener('submit', this.submitForm.bind(this));
-                if (this.hasDateField()) {
+                if (this.hasBookingDateField()) {
                     let pikadayOptions = Object.assign(
                         RecrasCalendarHelper.defaultOptions(),
                         {
@@ -380,8 +417,21 @@ class RecrasContactForm {
                             numberOfMonths: 1,
                         }
                     );
-
-                    this.datePicker = new Pikaday(pikadayOptions);
+                    new Pikaday(pikadayOptions);
+                }
+                if (this.hasRelationDateField()) {
+                    const fields = this.getRelationExtraDateFields();
+                    let pikadayOptions = Object.assign(
+                        RecrasCalendarHelper.defaultOptions(),
+                        {
+                            i18n: RecrasCalendarHelper.i18n(this.languageHelper),
+                            numberOfMonths: 1,
+                        }
+                    );
+                    for (let field of fields) {
+                        pikadayOptions.field = this.findElement(`[data-identifier="${ field.field_identifier }"]`);
+                        new Pikaday(pikadayOptions);
+                    }
                 }
                 this.loadingIndicatorHide();
             });

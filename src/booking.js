@@ -403,7 +403,12 @@ class RecrasBooking {
     }
 
     checkDiscountcode(packageID, date, code) {
-        return this.fetchJson(this.options.getApiBase() + 'onlineboeking/controleerkortingscode?datum=' + date + '&arrangement=' + packageID + '&kortingscode=' + code)
+        return this.fetchJson(
+            this.options.getApiBase() + 'onlineboeking/controleerkortingscode' +
+            '?datum=' + date +
+            '&arrangement=' + packageID +
+            '&kortingscode=' + encodeURIComponent(code)
+        )
             .then(discount => {
                 if (discount === false) {
                     return false;

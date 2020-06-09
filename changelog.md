@@ -1,7 +1,8 @@
 # Changelog
 
-## development (unreleased)
+## 1.6.0 (2020-06-09)
 * Show customer extra fields in contact forms
+* Fix checking discount codes containing "special" characters, such as `#`
 
 ## 1.5.1 (2020-05-26)
 * Fix calendar alignment on small screens

@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/Recras/online-booking-js.svg?branch=master)](https://travis-ci.org/Recras/online-booking-js)
 
 # Recras JS Integration Library
-Version: 1.5.1
+Version: 1.6.0
 
 JS library for easy online booking, contact form, and voucher integration
 

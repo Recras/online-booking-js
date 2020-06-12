@@ -1084,6 +1084,58 @@ class RecrasBooking {
         });
     }
 
+    calendarOnDateSelect(date, packageId) {
+        this.loadingIndicatorShow(this.findElement('label[for="recras-onlinebooking-time"]'));
+        this.eventHelper.sendEvent(
+            RecrasEventHelper.PREFIX_BOOKING,
+            RecrasEventHelper.EVENT_BOOKING_DATE_SELECTED,
+            RecrasDateHelper.datePartOnly(date)
+        );
+        this.selectedDate = date;
+        this.getAvailableTimes(packageId, date).then(times => {
+            times = times.map(time => RecrasDateHelper.timePartOnly(new Date(time)));
+            this.showTimes(times);
+            this.loadingIndicatorHide();
+            this.selectSingleTime();
+        });
+        this.findElement('#discountcode').removeAttribute('disabled');
+        this.maybeShowInlineErrors();
+    }
+
+    calendarOnDraw(pika, packageId) {
+        if (!this.hasAtLeastOneProduct(this.selectedPackage) || !this.amountsValid(this.selectedPackage) || this.requiresProduct) {
+            const dateEl = this.findElement('.recras-onlinebooking-date');
+            let errorMsg = this.languageHelper.translate('BOOKING_DISABLED_PRODUCTS_BEFORE_DATE');
+            this.removeErrors('.recras-datetime ');
+            dateEl.insertAdjacentHTML(
+                'afterend',
+                `<div class="booking-error">${ errorMsg }</div>`
+            );
+            dateEl.blur();
+            return false;
+        }
+        let lastMonthYear = pika.calendars[pika.calendars.length - 1];
+        let lastDay = new Date(lastMonthYear.year, lastMonthYear.month, 31);
+
+        let lastAvailableDay = this.availableDays.reduce((acc, curVal) => {
+            return curVal > acc ? curVal : acc;
+        }, '');
+        if (!lastAvailableDay) {
+            lastAvailableDay = new Date();
+        } else {
+            lastAvailableDay = new Date(lastAvailableDay);
+        }
+        if (lastAvailableDay > lastDay) {
+            return;
+        }
+
+        let newEndDate = RecrasDateHelper.clone(lastAvailableDay);
+        newEndDate.setFullYear(lastMonthYear.year);
+        newEndDate.setMonth(lastMonthYear.month + 2);
+
+        this.getAvailableDays(packageId, lastAvailableDay, newEndDate);
+    }
+
     addDateTimeSelectionHtml() {
         let today = RecrasDateHelper.datePartOnly(new Date());
         let html = `<form class="recras-datetime">
@@ -1114,55 +1166,8 @@ class RecrasBooking {
                 },
                 field: this.findElement('.recras-onlinebooking-date'),
                 i18n: RecrasCalendarHelper.i18n(this.languageHelper),
-                onDraw: (pika) => {
-                    if (!this.hasAtLeastOneProduct(this.selectedPackage) || !this.amountsValid(this.selectedPackage) || this.requiresProduct) {
-                        let errorMsg = this.languageHelper.translate('BOOKING_DISABLED_PRODUCTS_BEFORE_DATE');
-                        this.removeErrors('.recras-datetime ');
-                        dateEl.insertAdjacentHTML(
-                            'afterend',
-                            `<div class="booking-error">${ errorMsg }</div>`
-                        );
-                        dateEl.blur();
-                        return false;
-                    }
-                    let lastMonthYear = pika.calendars[pika.calendars.length - 1];
-                    let lastDay = new Date(lastMonthYear.year, lastMonthYear.month, 31);
-
-                    let lastAvailableDay = this.availableDays.reduce((acc, curVal) => {
-                        return curVal > acc ? curVal : acc;
-                    }, '');
-                    if (!lastAvailableDay) {
-                        lastAvailableDay = new Date();
-                    } else {
-                        lastAvailableDay = new Date(lastAvailableDay);
-                    }
-                    if (lastAvailableDay > lastDay) {
-                        return;
-                    }
-
-                    let newEndDate = RecrasDateHelper.clone(lastAvailableDay);
-                    newEndDate.setFullYear(lastMonthYear.year);
-                    newEndDate.setMonth(lastMonthYear.month + 2);
-
-                    this.getAvailableDays(pack.id, lastAvailableDay, newEndDate);
-                },
-                onSelect: (date) => {
-                    this.loadingIndicatorShow(this.findElement('label[for="recras-onlinebooking-time"]'));
-                    this.eventHelper.sendEvent(
-                        RecrasEventHelper.PREFIX_BOOKING,
-                        RecrasEventHelper.EVENT_BOOKING_DATE_SELECTED,
-                        RecrasDateHelper.datePartOnly(date)
-                    );
-                    this.selectedDate = date;
-                    this.getAvailableTimes(pack.id, date).then(times => {
-                        times = times.map(time => RecrasDateHelper.timePartOnly(new Date(time)));
-                        this.showTimes(times);
-                        this.loadingIndicatorHide();
-                        this.selectSingleTime();
-                    });
-                    this.findElement('#discountcode').removeAttribute('disabled');
-                    this.maybeShowInlineErrors();
-                },
+                onDraw: (pika) => this.calendarOnDraw(pika, pack.id),
+                onSelect: (date) => this.calendarOnDateSelect(date, pack.id),
             }
         );
 

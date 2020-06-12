@@ -173,7 +173,7 @@ describe('RecrasContactForm', () => {
         let rc;
         beforeEach(() => {
             rc = new RecrasContactForm(new RecrasOptions({
-                element: this.mainEl,
+                element: document.createElement('div'),
                 form_id: 1,
                 package_id: 7,
                 recras_hostname: 'demo.recras.nl',

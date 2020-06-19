@@ -86,11 +86,13 @@ class RecrasEventHelper {
                     eventData.eventValue = value;
                 }
                 // Google Analytics via Google Tag Manager doesn't work without a prefix
-                let prefix = window.ga.getAll()[0].get('name');
-                if (prefix) {
-                    prefix += '.';
-                }
-                window.ga(prefix + 'send', eventData);
+                window.ga(function() {
+                    let prefix = window.ga.getAll()[0].get('name');
+                    if (prefix) {
+                        prefix += '.';
+                    }
+                    window.ga(prefix + 'send', eventData);
+                })
             }
         }
 

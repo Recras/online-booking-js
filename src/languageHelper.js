@@ -94,7 +94,7 @@ class RecrasLanguageHelper {
                 TIME: 'Zeit',
                 TIME_FORMAT: 'UU:MM',
                 VOUCHER_ALREADY_APPLIED: 'Gutschein bereits eingelöst',
-                VOUCHER_APPLIED: 'Gutschein bereits eingelöst',
+                VOUCHER_APPLIED: 'Gutschein eingelöst',
                 VOUCHER_EMPTY: 'Leerer Gutscheincode',
                 VOUCHER_QUANTITY: 'Anzahl der Gutscheine',
                 VOUCHERS_DISCOUNT: 'Rabatt von Gutschein(en)',

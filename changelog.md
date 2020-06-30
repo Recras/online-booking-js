@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.6.2 (2020-06-30)
+* Fix german translation for 'Voucher applied'
+
 ## 1.6.1 (2020-06-22)
 * Fix "window.ga.getAll is not a function" error in Firefox
 

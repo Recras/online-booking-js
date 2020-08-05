@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+* Show warning if the selected date has no available time slots
+
 ## 1.6.2 (2020-06-30)
 * Fix german translation for 'Voucher applied'
 

@@ -5,7 +5,7 @@ class RecrasCSSHelper {
 .recras-onlinebooking {
     max-width: 800px;
 }
-.recras-onlinebooking > *:not(:first-child) + * {
+.recras-onlinebooking > form + form, .recras-finalise {
     border-top: 2px solid #dedede; /* Any love for Kirby out there? */
 }
 .recras-amountsform > div {

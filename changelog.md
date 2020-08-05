@@ -2,6 +2,8 @@
 
 ## development (unreleased)
 * Add inline error messages
+
+## 1.6.3 (2020-08-05)
 * Show warning if the selected date has no available time slots
 
 ## 1.6.2 (2020-06-30)

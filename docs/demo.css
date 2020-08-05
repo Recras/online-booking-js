@@ -85,11 +85,11 @@ input[type="number"] {
 }
 .booking-error {
     background: hsl(0, 25%, 96%);
-    border: 1px solid #a00;
-    padding: 0.5em;
+    border: 1px solid #a00 !important;
+    padding: 0.5em !important;
 }
 
-.recras-onlinebooking > *:not(:first-child) + * {
+.recras-onlinebooking > form + form, .recras-finalise {
     border-top: 2px solid hsla(147, 25%, 25%, 0.25);
 }
 

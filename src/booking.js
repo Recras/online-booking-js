@@ -906,6 +906,9 @@ class RecrasBooking {
         });
     }
     removeWarnings() {
+        [...this.findElements('.booking-error:not(#bookingErrors)')].forEach(el => {
+            el.parentNode.removeChild(el);
+        });
         [...this.findElements('.minimum-amount')].forEach(el => {
             el.parentNode.removeChild(el);
         });
@@ -1153,6 +1156,7 @@ class RecrasBooking {
     }
 
     calendarOnDateSelect(date, packageId) {
+        this.removeWarnings();
         this.loadingIndicatorShow(this.findElement('label[for="recras-onlinebooking-time"]'));
         this.eventHelper.sendEvent(
             RecrasEventHelper.PREFIX_BOOKING,
@@ -1353,6 +1357,12 @@ ${ msgs[1] }</p></div>`);
         });
         this.findElement('.recras-onlinebooking-time').innerHTML = html;
         this.findElement('.recras-onlinebooking-time').removeAttribute('disabled');
+        if (times.length === 0) {
+            this.findElement('.recras-datetime').insertAdjacentHTML(
+                'afterend',
+                `<div class="booking-error">${ this.languageHelper.translate('ERR_NO_TIMES_FOR_DATE') }</div>`
+            );
+        }
     }
 
     clearTimes() {

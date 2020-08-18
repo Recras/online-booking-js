@@ -22,8 +22,8 @@ class RecrasContactForm {
             this.languageHelper.setLocale(this.options.getLocale());
         }
 
-        this.fetchJson = url => RecrasHttpHelper.fetchJson(url, this.error);
-        this.postJson = (url, data) => RecrasHttpHelper.postJson(this.options.getApiBase() + url, data, this.error);
+        this.fetchJson = url => RecrasHttpHelper.fetchJson(url, this.error.bind(this));
+        this.postJson = (url, data) => RecrasHttpHelper.postJson(this.options.getApiBase() + url, data, this.error.bind(this));
 
         RecrasCSSHelper.loadCSS('global');
 
@@ -65,7 +65,8 @@ class RecrasContactForm {
     }
 
     error(msg) {
-        console.log('Error', msg); //TODO
+        this.removeErrors('.recras-contactform');
+        this.showInlineError(this.findElement('.submitForm'), msg);
     }
 
     findElement(querystring) {
@@ -367,7 +368,7 @@ class RecrasContactForm {
                         return label + `<input type="number" ${ fixedAttributes } autocomplete="off">`;
                     case 'date':
                     case 'text':
-                        return label + `<input type="text" ${ fixedAttributes }>`;
+                        return label + `<input type="text" ${ fixedAttributes } maxlength="200">`;
                     case 'multiplechoice':
                         classes = ['checkboxGroup'];
                         if (field.verplicht) {
@@ -437,6 +438,13 @@ class RecrasContactForm {
             });
     }
 
+    showInlineError(element, errorMsg) {
+        element.parentNode.insertAdjacentHTML(
+            'afterend',
+            `<div class="booking-error">${ errorMsg }</div>`
+        );
+    }
+
     showInlineErrors() {
         for (let el of this.getEmptyRequiredFields()) {
             const labelEl = el.parentNode.querySelector('label');
@@ -453,10 +461,7 @@ class RecrasContactForm {
             const invalidText = this.languageHelper.translate('CONTACT_FORM_FIELD_INVALID', {
                 FIELD_NAME: labelEl.innerText,
             });
-            el.parentNode.insertAdjacentHTML(
-                'afterend',
-                `<div class="booking-error">${ invalidText }</div>`
-            );
+            this.showInlineError(el, invalidText);
         }
     }
 

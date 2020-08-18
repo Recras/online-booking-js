@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+* Show error message in contact form in addition to general "form could not be sent" popup
+
 ## 1.6.3 (2020-08-05)
 * Show warning if the selected date has no available time slots
 

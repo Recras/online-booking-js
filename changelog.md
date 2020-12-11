@@ -1,6 +1,6 @@
 # Changelog
 
-## unreleased
+## 1.6.5 (2020-12-11)
 * When a list of packages to show is given, don't show all after resetting package selection
 
 ## 1.6.4 (2020-08-18)

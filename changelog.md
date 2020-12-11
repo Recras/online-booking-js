@@ -1,5 +1,8 @@
 # Changelog
 
+## unreleased
+* When a list of packages to show is given, don't show all after resetting package selection
+
 ## 1.6.4 (2020-08-18)
 * Show error message in contact form in addition to general "form could not be sent" popup
 

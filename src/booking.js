@@ -264,6 +264,14 @@ class RecrasBooking {
         return price / nrOfPersons;
     }
 
+    filterPackagesFromoptions(packages) {
+        let pck = this.options.getPackageId();
+        if (!Array.isArray(pck)) {
+            return packages;
+        }
+        return packages.filter(p => pck.includes(p.id));
+    }
+
     changePackage(packageID) {
         let selectedPackage = this.packages.filter(p => {
             return p.id === packageID;
@@ -276,7 +284,8 @@ class RecrasBooking {
             // Reset form
             this.selectedPackage = null;
             this.clearAll();
-            this.showPackages(this.packages);
+            let packages = this.filterPackagesFromoptions(this.packages);
+            this.showPackages(packages);
             this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_RESET);
             return Promise.resolve(false);
         } else {

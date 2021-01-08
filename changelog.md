@@ -1,6 +1,6 @@
 # Changelog
 
-## unreleased
+## 1.6.6 (2021-01-08)
 * Check if a discount is still valid after changing the date
 
 ## 1.6.5 (2020-12-11)

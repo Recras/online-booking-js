@@ -187,6 +187,25 @@ class RecrasBooking {
         });
     }
 
+    recheckDiscountCode() {
+        this.checkDiscountcode(
+            this.selectedPackage.id,
+            RecrasDateHelper.datePartOnly(this.selectedDate),
+            this.discount.code
+        ).then(status => {
+            if (status) {
+                this.setDiscountStatus(this.languageHelper.translate('DISCOUNT_APPLIED'), false);
+            } else {
+                this.discount = null;
+                this.showTotalPrice();
+                let statusEl = this.findElement('.discount-status');
+                if (statusEl) {
+                    statusEl.parentNode.removeChild(statusEl);
+                }
+            }
+        });
+    }
+
     recheckVouchers() {
         let voucherCodes = Object.keys(this.appliedVouchers);
         this.appliedVouchers = [];
@@ -1116,6 +1135,10 @@ class RecrasBooking {
 
         if (this.hasAtLeastOneProduct(this.selectedPackage)) {
             this.getAvailableTimes(packageId, date).then(times => this.maybeFillTime(times));
+        }
+
+        if (this.discount && this.discount.code) {
+            this.recheckDiscountCode();
         }
 
         this.findElement('#discountcode').removeAttribute('disabled');

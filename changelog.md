@@ -1,5 +1,8 @@
 # Changelog
 
+## unreleased
+* Check if a discount is still valid after changing the date
+
 ## 1.6.5 (2020-12-11)
 * When a list of packages to show is given, don't show all after resetting package selection
 

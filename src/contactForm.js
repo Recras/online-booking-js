@@ -429,6 +429,7 @@ class RecrasContactForm {
                             numberOfMonths: 1,
                         }
                     );
+                    delete pikadayOptions.minDate;
                     for (let field of fields) {
                         pikadayOptions.field = this.findElement(`[data-identifier="${ field.field_identifier }"]`);
                         new Pikaday(pikadayOptions);

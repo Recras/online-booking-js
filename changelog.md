@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+* Allow dates in the past for "relation extra field"
+
 ## 1.6.6 (2021-01-08)
 * Check if a discount is still valid after changing the date
 

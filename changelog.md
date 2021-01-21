@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.6.7 (2021-01-21)
 * Allow dates in the past for "relation extra field"
 
 ## 1.6.6 (2021-01-08)

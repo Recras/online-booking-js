@@ -60,7 +60,7 @@ class RecrasCalendarHelper {
 
             let script = document.createElement('script');
             script.id = scriptID;
-            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.8.0/pikaday.min.js';
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.8.2/pikaday.min.js';
             script.addEventListener('load', () => resolve(script), false);
             script.addEventListener('error', () => reject(script), false);
             document.head.appendChild(script);

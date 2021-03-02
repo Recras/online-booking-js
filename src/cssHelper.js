@@ -174,7 +174,7 @@ button .recrasLoadingIndicator {
                 inlineCss = this.cssGlobal();
                 break;
             case 'pikaday':
-                url = 'https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.8.0/css/pikaday.min.css';
+                url = 'https://cdnjs.cloudflare.com/ajax/libs/pikaday/1.8.2/css/pikaday.min.css';
                 break;
             default:
                 console.warn('Unknown CSS');

@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.6.8 (2021-03-05)
+* Make selecting dates in the past easier for "relation extra field"
+
 ## 1.6.7 (2021-01-21)
 * Allow dates in the past for "relation extra field"
 

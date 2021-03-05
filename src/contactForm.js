@@ -422,11 +422,13 @@ class RecrasContactForm {
                 }
                 if (this.hasRelationDateField()) {
                     const fields = this.getRelationExtraDateFields();
+                    const thisYear = (new Date()).getFullYear();
                     let pikadayOptions = Object.assign(
                         RecrasCalendarHelper.defaultOptions(),
                         {
                             i18n: RecrasCalendarHelper.i18n(this.languageHelper),
                             numberOfMonths: 1,
+                            yearRange: [thisYear - 90, thisYear + 10]
                         }
                     );
                     delete pikadayOptions.minDate;

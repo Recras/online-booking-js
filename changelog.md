@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.7.0 (2021-03-18)
 * Add `defaultCountry` option to contact forms
 
 ## 1.6.8 (2021-03-05)

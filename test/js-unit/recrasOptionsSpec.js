@@ -134,4 +134,25 @@ describe('RecrasOptions', () => {
             expect(options.getAnalyticsEvents()).toEqual([RecrasEventHelper.EVENT_BOOKING_BOOKING_SUBMITTED]);
         });
     });
+
+    describe('getDefaultCountry', () => {
+        it('accepts a given country code', () => {
+            let options = new RecrasOptions({
+                element: document.createElement('div'),
+                recras_hostname: 'demo.recras.nl',
+                defaultCountry: 'AU',
+                locale: 'en_GB',
+            });
+            expect(options.getDefaultCountry()).toBe('AU');
+        });
+
+        it('falls back to locale country', () => {
+            let options = new RecrasOptions({
+                element: document.createElement('div'),
+                recras_hostname: 'demo.recras.nl',
+                locale: 'en_GB',
+            });
+            expect(options.getDefaultCountry()).toBe('GB');
+        });
+    });
 });

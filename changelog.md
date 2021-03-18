@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+* Add `defaultCountry` option to contact forms
+
 ## 1.6.8 (2021-03-05)
 * Make selecting dates in the past easier for "relation extra field"
 

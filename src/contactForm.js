@@ -331,7 +331,7 @@ class RecrasContactForm {
             case 'contact.landcode':
                 html = `<select ${ fixedAttributes } autocomplete="country">`;
                 Object.keys(this.countries).forEach(code => {
-                    let selectedText = code.toUpperCase() === this.languageHelper.getCountry() ? 'selected' : '';
+                    let selectedText = code.toUpperCase() === this.options.getDefaultCountry() ? 'selected' : '';
                     html += `<option value="${ code }" ${ selectedText }>${ this.countries[code] }`;
                 });
                 html += '</select>';

@@ -37,6 +37,12 @@ class RecrasOptions {
     getAutoScroll() {
         return (this.options.autoScroll !== undefined ? this.options.autoScroll : true);
     }
+    getDefaultCountry() {
+        if (this.options.defaultCountry !== undefined) {
+            return this.options.defaultCountry;
+        }
+        return this.getLocale().substr(3, 2); // en_IE -> IE
+    }
     getElement() {
         return this.options.element;
     }

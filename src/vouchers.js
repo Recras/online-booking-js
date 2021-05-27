@@ -111,10 +111,11 @@ class RecrasVoucher {
         [...elements].forEach(el => {
             el.parentNode.removeChild(el);
         });
-        this.appendHtml(`<div class="latestError"></div>`);
+        this.maybeAddLatestErrorElement();
     }
 
     error(msg) {
+        this.maybeAddLatestErrorElement();
         this.findElement('.latestError').innerHTML = `<strong>${ this.languageHelper.translate('ERR_GENERAL') }</strong><p>${ msg }</p>`;
     }
 
@@ -146,6 +147,13 @@ class RecrasVoucher {
                 this.templates = templates;
                 return templates;
             });
+    }
+
+    maybeAddLatestErrorElement() {
+        let errorEl = this.findElement('.latestError');
+        if (!errorEl) {
+            this.appendHtml(`<div class="latestError"></div>`);
+        }
     }
 
     maybeDisableBuyButton() {

@@ -557,7 +557,7 @@ class RecrasBooking {
         [...elements].forEach(el => {
             el.parentNode.removeChild(el);
         });
-        this.appendHtml(`<div class="latestError"></div>`);
+        this.maybeAddLatestErrorElement();
     }
 
     dependencySatisfied(hasNow, requiredProduct) {
@@ -584,6 +584,7 @@ class RecrasBooking {
         if (bookingErrorsEl) {
             bookingErrorsEl.parentNode.appendChild(this.findElement('.latestError'));
         }
+        this.maybeAddLatestErrorElement();
         this.findElement('.latestError').innerHTML = `<strong>${ this.languageHelper.translate('ERR_GENERAL') }</strong><p>${ msg }</p>`;
     }
 
@@ -740,6 +741,13 @@ class RecrasBooking {
             return;
         }
         afterEl.insertAdjacentHTML('beforeend', `<span class="recrasLoadingIndicator">${ this.languageHelper.translate('LOADING') }</span>`);
+    }
+
+    maybeAddLatestErrorElement() {
+        let errorEl = this.findElement('.latestError');
+        if (!errorEl) {
+            this.appendHtml(`<div class="latestError"></div>`);
+        }
     }
 
     maybeDisableBookButton() {

@@ -132,7 +132,12 @@ class RecrasBooking {
 
     amountsValid(pack) {
         for (let line of this.getLinesNoBookingSize(pack)) {
-            let aantal = this.findElement(`[data-package-id="${ line.id }"]`).value;
+            let lineEl = this.findElement(`[data-package-id="${ line.id }"]`);
+            if (!lineEl) {
+                console.warn(`Element for line ${ line.id } not found`);
+                return false;
+            }
+            let aantal = lineEl.value;
             if (aantal > 0 && aantal < line.aantal_personen) {
                 return false;
             }
@@ -490,7 +495,12 @@ class RecrasBooking {
     setMinMaxAmountWarning(lineID, minAmount, type = 'minimum') {
         let warnEl = document.createElement('span');
         warnEl.classList.add(type + '-amount');
-        this.findElement(`#${ lineID }`).classList.add('recras-input-invalid');
+        let lineEl = this.findElement(`#${ lineID }`);
+        if (!lineEl) {
+            console.warn(`Element for line ${ lineID } not found`);
+            return false;
+        }
+        lineEl.classList.add('recras-input-invalid');
 
         let text;
         if (type === 'minimum') {

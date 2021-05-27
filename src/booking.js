@@ -121,8 +121,8 @@ class RecrasBooking {
 
         let hasAtLeastOneProduct = false;
         for (let line of this.getLinesNoBookingSize(pack)) {
-            let aantal = this.findElement(`[data-package-id="${ line.id }"]`).value;
-            if (aantal > 0) {
+            const lineEl = this.findElement(`[data-package-id="${ line.id }"]`);
+            if (lineEl && lineEl.value > 0) {
                 hasAtLeastOneProduct = true;
             }
         }
@@ -1007,9 +1007,14 @@ class RecrasBooking {
             html += `<div class="priceWithDiscount"><div>${ this.languageHelper.translate('PRICE_TOTAL_WITH_DISCOUNT') }</div><div>${ this.formatPrice(this.getTotalPrice()) }</div></div>`;
         }
 
-        var elementToInsertBefore = this.findElement('.recras-amountsform p:last-of-type');
-        elementToInsertBefore.insertAdjacentHTML('beforebegin', html);
-        this.findElement('.priceSubtotal').innerHTML = this.formatPrice(this.getSubTotal());
+        const elementToInsertBefore = this.findElement('.recras-amountsform p:last-of-type');
+        if (elementToInsertBefore) {
+            elementToInsertBefore.insertAdjacentHTML('beforebegin', html);
+        }
+        const subtotalEl = this.findElement('.priceSubtotal');
+        if (subtotalEl) {
+            subtotalEl.innerHTML = this.formatPrice(this.getSubTotal());
+        }
     }
 
     sortPackages(packages) {
@@ -1267,7 +1272,7 @@ class RecrasBooking {
         let promises = [];
         promises.push(this.languageHelper.filterTags(this.texts.online_boeking_step0_text_pre, this.selectedPackage ? this.selectedPackage.id : null));
         promises.push(this.languageHelper.filterTags(this.texts.online_boeking_step0_text_post, this.selectedPackage ? this.selectedPackage.id : null));
-        Promise.all(promises).then(msgs => {
+        return Promise.all(promises).then(msgs => {
             this.appendHtml(`<div class="recras-package-select recras-active"><p>${ msgs[0] }</p>${ html }<p>
 ${ msgs[1] }</p></div>`);
             this.eventHelper.sendEvent(RecrasEventHelper.PREFIX_BOOKING, RecrasEventHelper.EVENT_BOOKING_PACKAGES_SHOWN);

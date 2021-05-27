@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.8.0 (2021-05-27)
+* Add Swedish translation, courtesy of Lienke Nanninga
+
 ## 1.7.0 (2021-03-18)
 * Add `defaultCountry` option to contact forms
 

@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/Recras/online-booking-js.svg?branch=master)](https://travis-ci.org/Recras/online-booking-js)
 
 # Recras JS Integration Library
-Version: 1.7.0
+Version: 1.8.0
 
 JS library for easy online booking, contact form, and voucher integration
 
@@ -11,7 +11,7 @@ JS library for easy online booking, contact form, and voucher integration
 In your HTML document,
 1. include the `dist/onlinebooking.js` script
 1. add an element where you want the integration to appear
-1. give the element a unique ID, i.e. `<div id="recras-onlinebooking"></div>`
+1. give the element a unique ID, i.e. `< div id="recras-onlinebooking"></div>`
 1. initialize the script like this:
 ```
 var options = new RecrasOptions({

@@ -1,6 +1,6 @@
 /*******************************
 *  Recras integration library  *
-*  v 1.8.0                     *
+*  v 1.8.1                     *
 *******************************/
 
 class RecrasBooking {

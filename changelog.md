@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.8.1 (2021-05-27)
+* Fix tests to fix build
+
 ## 1.8.0 (2021-05-27)
 * Add Swedish translation, courtesy of Lienke Nanninga
 

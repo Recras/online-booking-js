@@ -32,9 +32,9 @@
   "devDependencies": {
     "@babel/cli": "7.13.16",
     "@babel/core": "7.14.0",
-    "@babel/plugin-transform-for-of": "7.13.0",
     "@babel/plugin-proposal-class-properties": "7.13.0",
     "@babel/plugin-transform-arrow-functions": "7.13.0",
+    "@babel/plugin-transform-for-of": "7.13.0",
     "@babel/plugin-transform-object-assign": "7.12.13",
     "@babel/preset-env": "7.14.1",
     "babel-plugin-transform-es2017-object-entries": "0.0.5",
@@ -46,6 +46,5 @@
     "karma-firefox-launcher": "2.1.0",
     "karma-jasmine": "4.0.1",
     "karma-spec-reporter": "0.0.32"
-  },
-  "dependencies": {}
+  }
 }

@@ -409,7 +409,7 @@ class RecrasBooking {
     checkDiscountAndVoucher() {
         let discountPromise = this.checkDiscountcode(
             this.selectedPackage.id,
-            this.findElement('.recras-onlinebooking-date').value,
+            RecrasDateHelper.datePartOnly(this.selectedDate),
             this.findElement('#discountcode').value.trim()
         );
 

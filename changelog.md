@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.8.2 (2021-06-29)
+* Fix discount code with prefilled date
+
 ## 1.8.1 (2021-05-27)
 * Fix tests to fix build
 

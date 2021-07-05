@@ -1291,7 +1291,7 @@ ${ msgs[1] }</p></div>`);
         promises.push(this.languageHelper.filterTags(this.texts.online_boeking_step1_text_post, this.selectedPackage ? this.selectedPackage.id : null));
 
         return Promise.all(promises).then(msgs => {
-            let html = '<form class="recras-amountsform">';
+            let html = '<form class="recras-amountsform" onsubmit="return false">';
             html += `<p>${ msgs[0] }</p>`;
             html += `<div class="recras-heading">
                 <div>&nbsp;</div>

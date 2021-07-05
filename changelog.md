@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.8.3 (2021-07-05)
+* Prevent submitting the amounts form when pressing Enter
+
 ## 1.8.2 (2021-06-29)
 * Fix discount code with prefilled date
 

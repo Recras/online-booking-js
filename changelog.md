@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+* Allow changing the term for number of vouchers
+
 ## 1.8.3 (2021-07-05)
 * Prevent submitting the amounts form when pressing Enter
 

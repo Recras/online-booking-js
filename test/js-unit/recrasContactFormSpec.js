@@ -315,4 +315,22 @@ describe('RecrasContactForm', () => {
             expect(rc.isEmpty()).toBe(false);
         });
     });
+
+    describe('contact form with quantity term', () => {
+        it('can change the default quantity term', async () => {
+            let options = new RecrasOptions({
+                element: document.createElement('div'),
+                form_id: 5,
+                recras_hostname: 'demo.recras.nl',
+            });
+            let cf = new RecrasContactForm(options);
+            cf.contactFormFields = [];
+
+            let form = await cf.generateForm({
+                voucherQuantitySelector: true,
+                quantityTerm: 'How many?',
+            });
+            expect(form.includes('How many?')).toBe(true);
+        });
+    });
 });

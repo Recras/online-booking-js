@@ -183,9 +183,10 @@ class RecrasVoucher {
     }
 
     showContactForm(template) {
-        this.getContactForm(template)
+        return this.getContactForm(template)
             .then(form => form.generateForm({
                 voucherQuantitySelector: true,
+                quantityTerm: this.selectedTemplate.quantity_term,
             }))
             .then(html => {
                 this.appendHtml(html);

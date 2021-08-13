@@ -100,7 +100,7 @@ class RecrasContactForm {
             const validateText = standalone ? 'novalidate' : '';
             let html = `<form class="recras-contactform" ${ validateText }>`;
             if (extraOptions.voucherQuantitySelector) {
-                html += this.quantitySelector();
+                html += this.quantitySelector(extraOptions.quantityTerm);
             }
             this.contactFormFields.forEach((field, idx) => {
                 html += '<div>' + this.showField(field, idx) + '</div>';
@@ -243,9 +243,12 @@ class RecrasContactForm {
         afterEl.insertAdjacentHTML('beforeend', `<span class="recrasLoadingIndicator">${ this.languageHelper.translate('LOADING') }</span>`);
     }
 
-    quantitySelector() {
+    quantitySelector(quantityTerm) {
+        if (!quantityTerm) {
+            quantityTerm = this.languageHelper.translate('VOUCHER_QUANTITY');
+        }
         return `<div>
-            <label for="number-of-vouchers">${ this.languageHelper.translate('VOUCHER_QUANTITY') }</label>
+            <label for="number-of-vouchers">${ quantityTerm }</label>
             <input type="number" id="number-of-vouchers" class="number-of-vouchers" min="1" max="100" value="1" required>
         </div>`;
     }

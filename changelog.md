@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.9.0 (2021-08-16)
 * Allow changing the term for number of vouchers
 
 ## 1.8.3 (2021-07-05)

@@ -906,6 +906,9 @@ class RecrasBooking {
         [...this.findElements('.recras-input-invalid')].forEach(el => {
             el.classList.remove('recras-input-invalid');
         });
+        [...this.findElements('.recras-success')].forEach(el => {
+            el.parentNode.removeChild(el);
+        });
     }
 
     /**
@@ -1376,7 +1379,7 @@ ${ msgs[1] }</p></div>`);
         let productCounts = this.productCounts().map(line => line.aantal);
         let productSum = productCounts.reduce((a, b) => a + b, 0);
         if (this.bookingSize() === 0 && productSum === 0) {
-            window.alert(this.languageHelper.translate('NO_PRODUCTS'));
+            this.error(this.languageHelper.translate('NO_PRODUCTS'));
             return false;
         }
         let status = this.contactForm.checkRequiredCheckboxes();
@@ -1440,7 +1443,13 @@ ${ msgs[1] }</p></div>`);
                     this.findElement('.recras-amountsform').reset();
                     this.findElement('.recras-datetime').reset();
                     this.findElement('.recras-contactform').reset();
-                    window.alert(json.message);
+                    this.element.scrollIntoView({
+                        behavior: 'smooth',
+                    });
+                    this.element.insertAdjacentHTML(
+                        'afterbegin',
+                        `<p class="recras-success">${ json.message }</p>`
+                    );
                 }
             } else {
                 console.log(json);

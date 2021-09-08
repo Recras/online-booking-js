@@ -32,6 +32,9 @@ class RecrasCSSHelper {
 .booking-error, .minimum-amount {
     color: hsl(0, 50%, 50%);
 }
+.recras-success {
+    color: hsl(120, 40%, 40%);
+}
 .minimum-amount {
     padding-left: 0.5em;
 }

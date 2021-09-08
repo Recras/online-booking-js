@@ -263,6 +263,9 @@ class RecrasContactForm {
         [...this.findElements('.recrasError')].forEach(el => {
             el.parentNode.removeChild(el);
         });
+        [...this.findElements('.recras-success')].forEach(el => {
+            el.parentNode.removeChild(el);
+        });
     }
 
     hasEmptyRequiredFields() {
@@ -491,7 +494,7 @@ class RecrasContactForm {
         this.removeErrors('.recras-contactform');
         if (this.isEmpty()) {
             submitButton.parentNode.insertAdjacentHTML(
-                'afterend',
+                'beforeend',
                 `<div class="booking-error">${ this.languageHelper.translate('ERR_CONTACT_FORM_EMPTY') }</div>`
             );
             return false;
@@ -521,11 +524,17 @@ class RecrasContactForm {
                 if (this.options.getRedirectUrl()) {
                     window.top.location.href = this.options.getRedirectUrl();
                 } else {
-                    window.alert(this.languageHelper.translate('CONTACT_FORM_SUBMIT_SUCCESS'));
+                    this.element.scrollIntoView({
+                        behavior: 'smooth',
+                    });
+                    this.element.insertAdjacentHTML(
+                        'afterbegin',
+                        `<p class="recras-success">${ this.languageHelper.translate('CONTACT_FORM_SUBMIT_SUCCESS') }</p>`
+                    );
                     submitButton.parentNode.reset();
                 }
             } else {
-                window.alert(this.languageHelper.translate('CONTACT_FORM_SUBMIT_FAILED'));
+                this.error(this.languageHelper.translate('CONTACT_FORM_SUBMIT_FAILED'));
             }
             submitButton.removeAttribute('disabled');
             this.loadingIndicatorHide();

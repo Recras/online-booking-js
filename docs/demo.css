@@ -58,6 +58,7 @@ button:disabled {
 }
 input:not([type="checkbox"]):not([type="radio"]):not(input[type="number"]), select, textarea, .radioGroup {
     font: inherit;
+    max-width: 100%;
     width: 300px;
 }
 input[type="number"] {
@@ -81,6 +82,11 @@ input[type="number"] {
 .booking-error {
     background: hsl(0, 25%, 96%);
     border: 1px solid #a00 !important;
+    padding: 0.5em !important;
+}
+.recras-success {
+    background: hsl(120, 25%, 96%);
+    border: 1px solid hsl(120, 40%, 40%);
     padding: 0.5em !important;
 }
 

@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.10.0 (2021-09-08)
+* Replace alerts with inline messages
+
 ## 1.9.0 (2021-08-16)
 * Allow changing the term for number of vouchers
 

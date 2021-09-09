@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.10.1 (2021-09-09)
+* Make redirect without Mollie more robust
+
 ## 1.10.0 (2021-09-08)
 * Replace alerts with inline messages
 

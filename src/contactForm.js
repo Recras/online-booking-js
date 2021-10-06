@@ -55,13 +55,6 @@ class RecrasContactForm {
                 group.parentNode.querySelector('label').insertAdjacentHTML('beforeend', `<div class="recrasError">${ this.languageHelper.translate('CONTACT_FORM_CHECKBOX_REQUIRED') }</div>`);
                 isOkay = false;
             }
-            [...group.querySelectorAll('input')].forEach(el => {
-                let elName = el.getAttribute('name');
-                if (!this.checkboxEventListeners.includes(elName)) {
-                    this.checkboxEventListeners.push(elName);
-                    el.addEventListener('change', this.checkRequiredCheckboxes.bind(this));
-                }
-            });
         });
         return isOkay;
     }
@@ -420,7 +413,14 @@ class RecrasContactForm {
             }))
             .then(html => {
                 this.appendHtml(html);
+
+                [...this.findElements('.checkboxGroupRequired')].forEach(group => {
+                    [...group.querySelectorAll('input')].forEach(el => {
+                        el.addEventListener('change', this.checkRequiredCheckboxes.bind(this));
+                    });
+                });
                 this.findElement('.recras-contactform').addEventListener('submit', this.submitForm.bind(this));
+
                 if (this.hasBookingDateField()) {
                     let pikadayOptions = Object.assign(
                         RecrasCalendarHelper.defaultOptions(),

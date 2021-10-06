@@ -11,6 +11,8 @@ class RecrasContactForm {
             throw new Error(this.languageHelper.translate('ERR_NO_FORM'));
         }
 
+        this.checkboxEventListeners = [];
+
         this.eventHelper = new RecrasEventHelper();
         this.eventHelper.setEvents(this.options.getAnalyticsEvents());
 
@@ -54,7 +56,11 @@ class RecrasContactForm {
                 isOkay = false;
             }
             [...group.querySelectorAll('input')].forEach(el => {
-                el.addEventListener('change', this.checkRequiredCheckboxes.bind(this));
+                let elName = el.getAttribute('name');
+                if (!this.checkboxEventListeners.includes(elName)) {
+                    this.checkboxEventListeners.push(elName);
+                    el.addEventListener('change', this.checkRequiredCheckboxes.bind(this));
+                }
             });
         });
         return isOkay;

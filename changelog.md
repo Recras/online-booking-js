@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.10.2 (2021-10-07)
+* Clicking required checkboxes would become slow after clicking a few times - fixed
+
 ## 1.10.1 (2021-09-09)
 * Make redirect without Mollie more robust
 

@@ -1391,7 +1391,7 @@ ${ msgs[1] }</p></div>`);
             RecrasEventHelper.PREFIX_BOOKING,
             RecrasEventHelper.EVENT_BOOKING_BOOKING_SUBMITTED,
             this.selectedPackage.arrangement,
-            this.selectedPackage.id
+            Math.round(this.getTotalPrice())
         );
 
         let paymentMethod = this.paymentMethods(this.selectedPackage)[0];

@@ -53,7 +53,7 @@ class RecrasVoucher {
             RecrasEventHelper.PREFIX_VOUCHER,
             RecrasEventHelper.EVENT_VOUCHER_VOUCHER_SUBMITTED,
             this.selectedTemplate.name,
-            this.selectedTemplate.id
+            Math.round(this.totalPrice())
         );
         this.findElement('.buyTemplate').setAttribute('disabled', 'disabled');
 

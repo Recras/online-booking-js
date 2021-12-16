@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/Recras/online-booking-js.svg?branch=master)](https://travis-ci.org/Recras/online-booking-js)
 
 # Recras JS Integration Library
-Version: 1.10.2
+Version: 1.10.3
 
 JS library for easy online booking, contact form, and voucher integration
 
@@ -131,12 +131,12 @@ the constants in [src/eventHelper.js](src/eventHelper.js).
 When Google Analytics integration is enabled, certain events sent to GA include a label and/or value:
 
 | Event                              | Label                             | Value                               |
-| ---------------------------------- | --------------------------------- | ----------------------------------- |
+| ---------------------------------- | --------------------------------- |-------------------------------------|
 | `Recras:Booking:PackageChanged`    | Package name                      | Package ID                          |
 | `Recras:Booking:DateSelected`      | Selected date, in ISO 8601 format | N/A                                 |
-| `Recras:Booking:BuyInProgress`     | Package name                      | Package ID                          |
+| `Recras:Booking:BuyInProgress`     | Package name                      | Rounded total amount of the booking |
 | `Recras:Booking:RedirectToPayment` | N/A                               | Rounded total amount of the booking |
 | `Recras:ContactForm:Submit`        | N/A                               | Form ID                             |
 | `Recras:Voucher:TemplateChanged`   | N/A                               | Template ID                         |
-| `Recras:Voucher:BuyInProgress`     | Template name                     | Template ID                         |
+| `Recras:Voucher:BuyInProgress`     | Template name                     | Rounded total amount of the order   |
 | `Recras:Voucher:RedirectToPayment` | N/A                               | Rounded total amount of the order   |

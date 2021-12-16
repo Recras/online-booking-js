@@ -1,7 +1,7 @@
 # Changelog
 
-## Unreleased
-* Change value of "BuyInProgress" events (for both bookings and vouchers) from package ID to total price
+## 1.10.3 (2021-12-16)
+* Change value of "BuyInProgress" events from package/template ID (bookings/vouchers, respectively) to total price
 
 ## 1.10.2 (2021-10-07)
 * Clicking required checkboxes would become slow after clicking a few times - fixed

@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+* Minified version of the script is now included
+
 ## 1.10.3 (2021-12-16)
 * Change value of "BuyInProgress" events from package/template ID (bookings/vouchers, respectively) to total price
 

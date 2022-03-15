@@ -4,12 +4,13 @@
   "description": "JS library for easy integration of Recras online booking and voucher sales",
   "main": "dist/onlinebooking.js",
   "scripts": {
-    "build": "npm run _catFiles && npm run _babelSrc",
-    "jshint": "jshint src",
-    "test": "karma start test/js-unit/karma.conf.js --verbose",
-    "karma": "npm test",
     "_babelSrc": "babel tmp -d dist && rm tmp/*.js",
-    "_catFiles": "mkdir -p tmp && cat src/*.js > tmp/onlinebooking.js"
+    "_catFiles": "mkdir -p tmp && cat src/*.js > tmp/onlinebooking.js",
+    "build": "npm run _catFiles && npm run _babelSrc && npm run minify",
+    "jshint": "jshint src",
+    "karma": "npm test",
+    "minify": "./node_modules/uglify-js/bin/uglifyjs dist/onlinebooking.js -o dist/onlinebooking.min.js",
+    "test": "karma start test/js-unit/karma.conf.js --verbose"
   },
   "repository": {
     "type": "git",
@@ -45,6 +46,7 @@
     "karma-chrome-launcher": "3.1.0",
     "karma-firefox-launcher": "2.1.2",
     "karma-jasmine": "4.0.1",
-    "karma-spec-reporter": "0.0.33"
+    "karma-spec-reporter": "0.0.33",
+    "uglify-js": "^3.15.3"
   }
 }

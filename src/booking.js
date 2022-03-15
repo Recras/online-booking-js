@@ -318,7 +318,11 @@ class RecrasBooking {
                 RecrasEventHelper.PREFIX_BOOKING,
                 RecrasEventHelper.EVENT_BOOKING_PACKAGE_CHANGED,
                 selectedPackage[0].arrangement,
-                selectedPackage[0].id
+                selectedPackage[0].id,
+                {
+                    content_type: 'package',
+                    item_id: selectedPackage[0].id,
+                }
             );
         }
         this.selectedPackage = selectedPackage[0];
@@ -1432,7 +1436,12 @@ ${ msgs[1] }</p></div>`);
                     RecrasEventHelper.PREFIX_BOOKING,
                     RecrasEventHelper.EVENT_BOOKING_REDIRECT_PAYMENT,
                     null,
-                    Math.round(this.getTotalPrice())
+                    Math.round(this.getTotalPrice()),
+                    {
+                        currency: this.languageHelper.currency,
+                        value: this.getTotalPrice(),
+                        items: [], //TODO?
+                    }
                 );
                 window.top.location.href = json.payment_url;
             } else if (json.redirect) {

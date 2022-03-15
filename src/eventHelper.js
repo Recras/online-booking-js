@@ -48,7 +48,25 @@ class RecrasEventHelper {
         return this.eventsEnabled.includes(name);
     }
 
-    sendEvent(cat, action, label = undefined, value = undefined) {
+    ga4EventMap(action) {
+        let map = {};
+        map[RecrasEventHelper.EVENT_BOOKING_PACKAGE_CHANGED] = 'select_content';
+        map[RecrasEventHelper.EVENT_BOOKING_REDIRECT_PAYMENT] = 'begin_checkout';
+        map[RecrasEventHelper.EVENT_VOUCHER_TEMPLATE_CHANGED] = 'select_content';
+        map[RecrasEventHelper.EVENT_VOUCHER_REDIRECT_PAYMENT] = 'begin_checkout';
+
+        if (map[action] === undefined) {
+            return false;
+        }
+        return map[action];
+    }
+
+    isGA4() {
+        const fn = window[window.GoogleAnalyticsObject || 'ga'];
+        return fn.h && fn.h.gtm4;
+    }
+
+    sendEvent(cat, action, label = undefined, value = undefined, ga4Value = undefined) {
         let event;
 
         try {
@@ -60,8 +78,11 @@ class RecrasEventHelper {
         }
 
         if (this.analyticsEnabled && this.eventEnabled(action)) {
-            if (typeof window.gtag === 'function') {
-                // Global Site Tag - the more modern variant
+            if (this.isGA4() && this.ga4EventMap(action) && ga4Value) {
+                // v4
+                this.sendGA4Event(this.ga4EventMap(action), ga4Value);
+            } else if (typeof window.gtag === 'function') {
+                // Global Site Tag (v4)
                 let eventData = {
                     event_category: RecrasEventHelper.PREFIX_GLOBAL + ':' + cat,
                 };
@@ -73,7 +94,7 @@ class RecrasEventHelper {
                 }
                 window.gtag('event', action, eventData);
             } else if (typeof window.ga === 'function') {
-                // "Old" Google Analytics
+                // "Old" Google Analytics (v2) and Tag Manager
                 let eventData = {
                     hitType: 'event',
                     eventCategory: RecrasEventHelper.PREFIX_GLOBAL + ':' + cat,
@@ -92,11 +113,16 @@ class RecrasEventHelper {
                         prefix += '.';
                     }
                     window.ga(prefix + 'send', eventData);
-                })
+                });
             }
         }
 
         return document.dispatchEvent(event);
+    }
+
+    sendGA4Event(action, data) {
+        const fn = window[window.GoogleAnalyticsObject || 'ga'];
+        fn('event', action, data);
     }
 
     setAnalytics(bool) {

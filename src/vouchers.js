@@ -72,7 +72,12 @@ class RecrasVoucher {
                         RecrasEventHelper.PREFIX_VOUCHER,
                         RecrasEventHelper.EVENT_VOUCHER_REDIRECT_PAYMENT,
                         null,
-                        Math.round(this.totalPrice())
+                        Math.round(this.totalPrice()),
+                        {
+                            currency: this.languageHelper.currency,
+                            value: this.totalPrice(),
+                            items: [], //TODO?
+                        }
                     );
                     window.top.location.href = json.payment_url;
                 } else {
@@ -94,7 +99,11 @@ class RecrasVoucher {
             RecrasEventHelper.PREFIX_VOUCHER,
             RecrasEventHelper.EVENT_VOUCHER_TEMPLATE_CHANGED,
             null,
-            templateID
+            templateID,
+            {
+                content_type: 'voucher',
+                item_id: templateID,
+            }
         );
     }
 

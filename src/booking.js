@@ -769,6 +769,7 @@ class RecrasBooking {
         if (!button) {
             return false;
         }
+        console.log(this.formatGA4Items());
 
         let bookingDisabledReasons = [];
         if (this.requiresProduct) {
@@ -1379,6 +1380,43 @@ ${ msgs[1] }</p></div>`);
         return attachments;
     }
 
+    formatGA4Items() {
+        let items = [];
+
+        if (this.bookingSize() > 0) {
+            let pck = this.selectedPackage;
+            items.push({
+                item_name: (pck.weergavenaam || pck.arrangement),
+                price: this.bookingSizePrice(pck),
+                quantity: this.bookingSize(),
+            });
+        }
+
+        let linesNoBookingSize = this.getLinesNoBookingSize(this.selectedPackage);
+        linesNoBookingSize = linesNoBookingSize.filter(line => {
+            const lineEl = this.findElement(`[data-package-id="${ line.id }"]`);
+            if (!lineEl) {
+                return false;
+            }
+
+            if (isNaN(parseInt(lineEl.value))) {
+                return false;
+            }
+            return parseInt(lineEl.value) > 0;
+        });
+        linesNoBookingSize = linesNoBookingSize.map(line => {
+            const lineEl = this.findElement(`[data-package-id="${line.id}"]`);
+            return {
+                item_name: line.beschrijving_templated,
+                price: line.product.verkoop,
+                quantity: parseInt(lineEl.value),
+            };
+        });
+        items.push(...linesNoBookingSize);
+
+        return items;
+    }
+
     submitBooking() {
         let productCounts = this.productCounts().map(line => line.aantal);
         let productSum = productCounts.reduce((a, b) => a + b, 0);
@@ -1440,7 +1478,7 @@ ${ msgs[1] }</p></div>`);
                     {
                         currency: this.languageHelper.currency,
                         value: this.getTotalPrice(),
-                        items: [], //TODO?
+                        items: this.formatGA4Items(),
                     }
                 );
                 window.top.location.href = json.payment_url;

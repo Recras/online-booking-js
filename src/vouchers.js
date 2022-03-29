@@ -43,6 +43,16 @@ class RecrasVoucher {
         this.element.insertAdjacentHTML('beforeend', msg);
     }
 
+    formatGA4Item() {
+        return [
+            {
+                item_name: this.selectedTemplate.name,
+                price: this.selectedTemplate.price,
+                quantity: parseInt(this.findElement('#number-of-vouchers').value),
+            }
+        ];
+    }
+
     buyTemplate() {
         let status = this.contactForm.checkRequiredCheckboxes();
         if (!status) {
@@ -76,7 +86,7 @@ class RecrasVoucher {
                         {
                             currency: this.languageHelper.currency,
                             value: this.totalPrice(),
-                            items: [], //TODO?
+                            items: this.formatGA4Item(),
                         }
                     );
                     window.top.location.href = json.payment_url;

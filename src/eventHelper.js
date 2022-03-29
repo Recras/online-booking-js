@@ -63,7 +63,7 @@ class RecrasEventHelper {
 
     isGA4() {
         const fn = window[window.GoogleAnalyticsObject || 'ga'];
-        return fn.h && fn.h.gtm4;
+        return fn && fn.h && fn.h.gtm4;
     }
 
     sendEvent(cat, action, label = undefined, value = undefined, ga4Value = undefined) {

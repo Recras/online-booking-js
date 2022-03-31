@@ -769,7 +769,6 @@ class RecrasBooking {
         if (!button) {
             return false;
         }
-        console.log(this.formatGA4Items());
 
         let bookingDisabledReasons = [];
         if (this.requiresProduct) {

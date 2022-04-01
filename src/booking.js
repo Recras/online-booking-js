@@ -318,7 +318,11 @@ class RecrasBooking {
                 RecrasEventHelper.PREFIX_BOOKING,
                 RecrasEventHelper.EVENT_BOOKING_PACKAGE_CHANGED,
                 selectedPackage[0].arrangement,
-                selectedPackage[0].id
+                selectedPackage[0].id,
+                {
+                    content_type: 'package',
+                    item_id: selectedPackage[0].id,
+                }
             );
         }
         this.selectedPackage = selectedPackage[0];
@@ -1375,6 +1379,43 @@ ${ msgs[1] }</p></div>`);
         return attachments;
     }
 
+    formatGA4Items() {
+        let items = [];
+
+        if (this.bookingSize() > 0) {
+            let pck = this.selectedPackage;
+            items.push({
+                item_name: (pck.weergavenaam || pck.arrangement),
+                price: this.bookingSizePrice(pck),
+                quantity: this.bookingSize(),
+            });
+        }
+
+        let linesNoBookingSize = this.getLinesNoBookingSize(this.selectedPackage);
+        linesNoBookingSize = linesNoBookingSize.filter(line => {
+            const lineEl = this.findElement(`[data-package-id="${ line.id }"]`);
+            if (!lineEl) {
+                return false;
+            }
+
+            if (isNaN(parseInt(lineEl.value))) {
+                return false;
+            }
+            return parseInt(lineEl.value) > 0;
+        });
+        linesNoBookingSize = linesNoBookingSize.map(line => {
+            const lineEl = this.findElement(`[data-package-id="${line.id}"]`);
+            return {
+                item_name: line.beschrijving_templated,
+                price: line.product.verkoop,
+                quantity: parseInt(lineEl.value),
+            };
+        });
+        items.push(...linesNoBookingSize);
+
+        return items;
+    }
+
     submitBooking() {
         let productCounts = this.productCounts().map(line => line.aantal);
         let productSum = productCounts.reduce((a, b) => a + b, 0);
@@ -1432,7 +1473,12 @@ ${ msgs[1] }</p></div>`);
                     RecrasEventHelper.PREFIX_BOOKING,
                     RecrasEventHelper.EVENT_BOOKING_REDIRECT_PAYMENT,
                     null,
-                    Math.round(this.getTotalPrice())
+                    Math.round(this.getTotalPrice()),
+                    {
+                        currency: this.languageHelper.currency,
+                        value: this.getTotalPrice(),
+                        items: this.formatGA4Items(),
+                    }
                 );
                 window.top.location.href = json.payment_url;
             } else if (json.redirect) {

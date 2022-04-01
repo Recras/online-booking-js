@@ -43,6 +43,16 @@ class RecrasVoucher {
         this.element.insertAdjacentHTML('beforeend', msg);
     }
 
+    formatGA4Item() {
+        return [
+            {
+                item_name: this.selectedTemplate.name,
+                price: this.selectedTemplate.price,
+                quantity: parseInt(this.findElement('#number-of-vouchers').value),
+            }
+        ];
+    }
+
     buyTemplate() {
         let status = this.contactForm.checkRequiredCheckboxes();
         if (!status) {
@@ -72,7 +82,12 @@ class RecrasVoucher {
                         RecrasEventHelper.PREFIX_VOUCHER,
                         RecrasEventHelper.EVENT_VOUCHER_REDIRECT_PAYMENT,
                         null,
-                        Math.round(this.totalPrice())
+                        Math.round(this.totalPrice()),
+                        {
+                            currency: this.languageHelper.currency,
+                            value: this.totalPrice(),
+                            items: this.formatGA4Item(),
+                        }
                     );
                     window.top.location.href = json.payment_url;
                 } else {
@@ -94,7 +109,11 @@ class RecrasVoucher {
             RecrasEventHelper.PREFIX_VOUCHER,
             RecrasEventHelper.EVENT_VOUCHER_TEMPLATE_CHANGED,
             null,
-            templateID
+            templateID,
+            {
+                content_type: 'voucher',
+                item_id: templateID,
+            }
         );
     }
 

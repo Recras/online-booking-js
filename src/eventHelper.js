@@ -49,11 +49,12 @@ class RecrasEventHelper {
     }
 
     ga4EventMap(action) {
-        let map = {};
-        map[RecrasEventHelper.EVENT_BOOKING_PACKAGE_CHANGED] = 'select_content';
-        map[RecrasEventHelper.EVENT_BOOKING_REDIRECT_PAYMENT] = 'begin_checkout';
-        map[RecrasEventHelper.EVENT_VOUCHER_TEMPLATE_CHANGED] = 'select_content';
-        map[RecrasEventHelper.EVENT_VOUCHER_REDIRECT_PAYMENT] = 'begin_checkout';
+        let map = {
+            [RecrasEventHelper.EVENT_BOOKING_PACKAGE_CHANGED]: 'select_content',
+            [RecrasEventHelper.EVENT_BOOKING_REDIRECT_PAYMENT]: 'begin_checkout',
+            [RecrasEventHelper.EVENT_VOUCHER_TEMPLATE_CHANGED]: 'select_content',
+            [RecrasEventHelper.EVENT_VOUCHER_REDIRECT_PAYMENT]: 'begin_checkout',
+        };
 
         if (map[action] === undefined) {
             return false;

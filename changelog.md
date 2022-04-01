@@ -1,6 +1,7 @@
 # Changelog
 
-## Unreleased
+## 1.11.0 (2022-04-04)
+* Add support for Google Analytics v4 (GA4)
 * Minified version of the script is now included
 
 ## 1.10.3 (2021-12-16)

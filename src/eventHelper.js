@@ -83,7 +83,7 @@ class RecrasEventHelper {
                 // v4
                 this.sendGA4Event(this.ga4EventMap(action), ga4Value);
             } else if (typeof window.gtag === 'function') {
-                // Global Site Tag (v4)
+                // Global Site Tag (v3)
                 let eventData = {
                     event_category: RecrasEventHelper.PREFIX_GLOBAL + ':' + cat,
                 };

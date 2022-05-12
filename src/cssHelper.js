@@ -9,22 +9,11 @@ class RecrasCSSHelper {
     border-top: 2px solid #dedede; /* Any love for Kirby out there? */
 }
 .recras-amountsform > div {
-    display: -ms-grid;
     display: grid;
-    -ms-grid-columns: 1fr 5em 7em;
     grid-template-columns: 1fr 5em 7em;
-}
-.recras-amountsform > div > div:first-child {
-    -ms-grid-column: 1;
-}
-.recras-amountsform > div > input {
-    -ms-grid-column: 2;
 }
 .recras-amountsform input {
     width: auto; /* Firefox fix */
-}
-.recras-amountsform > div > div:last-child {
-    -ms-grid-column: 3;
 }
 .recras-input-invalid {
     border: 1px solid hsl(0, 50%, 50%);
@@ -39,9 +28,7 @@ class RecrasCSSHelper {
     padding-left: 0.5em;
 }
 .recras-datetime {
-    display: -ms-grid;
     display: grid;
-    -ms-grid-columns: 30% 70%;
     grid-template-columns: 30% 70%;
 }
 .recras-datetime > * {
@@ -49,17 +36,9 @@ class RecrasCSSHelper {
 }
 .recras-datetime label {
     display: block;
-    -ms-grid-column: 1;
 }
 .recras-datetime input, .recras-datetime select {
     max-width: 12em;
-    -ms-grid-column: 2;
-}
-.recras-datetime > :nth-child(-n + 2) {
-    -ms-grid-row: 1;
-}
-.recras-datetime > :nth-last-child(-n + 2) {
-    -ms-grid-row: 2;
 }
 .time-preview {
     padding-right: 0.5em;
@@ -82,9 +61,7 @@ class RecrasCSSHelper {
     padding: 1em 0;
 }
 .recras-datetime, .recras-discounts > div, .recras-contactform > div {
-    display: -ms-grid;
     display: grid;
-    -ms-grid-columns: 1fr 12em;
     grid-template-columns: 1fr 12em;
 }
 .recras-contactform > div {
@@ -94,14 +71,8 @@ class RecrasCSSHelper {
 .recras-contactform label {
     display: block;
 }
-.recras-contactform > div > :last-child {
-    -ms-grid-column: 2;
-}
 .recras-amountsform .recras-full-width {
     display: block;
-}
-.recras-discounts > div > input {
-    -ms-grid-column: 2;
 }
 
 .recrasLoadingIndicator {

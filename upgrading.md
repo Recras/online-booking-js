@@ -1,5 +1,6 @@
 # 1.11.0 -> 2.0.0
 * Support for Internet Explorer (all versions) and old Edge (12-15) has been removed.
+* Option `showSubmit` has been removed. It was renamed to `standalone` in version 1.3.0
 
 # 1.10.2 -> 1.10.3
 * The value of "BuyInProgress" events sent to Google Analytics was changed from package ID to total price. This is true for both bookings and vouchers. We consider this a bugfix and not a backwards-compatibility breaking change.

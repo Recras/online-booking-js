@@ -945,15 +945,7 @@ class RecrasBooking {
         }
         this.findElement('#recras-onlinebooking-time option[value]').selected = true;
 
-        let event;
-        try {
-            event = new Event('change');
-        } catch (e) {
-            // IE
-            event = document.createEvent('Event');
-            event.initEvent('change', true, true);
-        }
-        this.findElement('#recras-onlinebooking-time').dispatchEvent(event);
+        this.findElement('#recras-onlinebooking-time').dispatchEvent(new Event('change'));
     }
 
     setDiscountStatus(statusText, isError = true) {

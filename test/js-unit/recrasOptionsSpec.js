@@ -108,7 +108,6 @@ describe('RecrasOptions', () => {
             let options = new RecrasOptions({
                 element: document.createElement('div'),
                 recras_hostname: 'demo.recras.nl',
-                analytics: function() {},
                 analyticsEvents: 'foo',
             });
             expect(options.getAnalyticsEvents().length).toBeGreaterThan(0);
@@ -118,7 +117,6 @@ describe('RecrasOptions', () => {
             let options = new RecrasOptions({
                 element: document.createElement('div'),
                 recras_hostname: 'demo.recras.nl',
-                analytics: function() {},
                 analyticsEvents: [],
             });
             expect(options.getAnalyticsEvents().length).toBeGreaterThan(0);
@@ -128,7 +126,6 @@ describe('RecrasOptions', () => {
             let options = new RecrasOptions({
                 element: document.createElement('div'),
                 recras_hostname: 'demo.recras.nl',
-                analytics: function() {},
                 analyticsEvents: ['foo', RecrasEventHelper.EVENT_BOOKING_BOOKING_SUBMITTED],
             });
             expect(options.getAnalyticsEvents()).toEqual([RecrasEventHelper.EVENT_BOOKING_BOOKING_SUBMITTED]);

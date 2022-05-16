@@ -62,9 +62,28 @@ class RecrasEventHelper {
         return map[action];
     }
 
-    isGA4() {
-        const fn = window[window.GoogleAnalyticsObject || 'ga'];
-        return fn && fn.h && fn.h.gtm4;
+    sendAnalyticsEvent(cat, action, label = undefined, value = undefined, ga4Value = undefined) {
+        if (typeof window.gtag !== 'function') {
+            return;
+        }
+
+        if (this.ga4EventMap(action) && ga4Value) {
+            // v4
+            window.gtag('event', this.ga4EventMap(action), ga4Value);
+            return;
+        }
+
+        // Global Site Tag (v3)
+        let eventData = {
+            event_category: RecrasEventHelper.PREFIX_GLOBAL + ':' + cat,
+        };
+        if (label) {
+            eventData.event_label = label;
+        }
+        if (value) {
+            eventData.value = value;
+        }
+        window.gtag('event', action, eventData);
     }
 
     sendEvent(cat, action, label = undefined, value = undefined, ga4Value = undefined) {
@@ -79,51 +98,10 @@ class RecrasEventHelper {
         }
 
         if (this.analyticsEnabled && this.eventEnabled(action)) {
-            if (this.isGA4() && this.ga4EventMap(action) && ga4Value) {
-                // v4
-                this.sendGA4Event(this.ga4EventMap(action), ga4Value);
-            } else if (typeof window.gtag === 'function') {
-                // Global Site Tag (v3)
-                let eventData = {
-                    event_category: RecrasEventHelper.PREFIX_GLOBAL + ':' + cat,
-                };
-                if (label) {
-                    eventData.event_label = label;
-                }
-                if (value) {
-                    eventData.value = value;
-                }
-                window.gtag('event', action, eventData);
-            } else if (typeof window.ga === 'function') {
-                // "Old" Google Analytics (v2) and Tag Manager
-                let eventData = {
-                    hitType: 'event',
-                    eventCategory: RecrasEventHelper.PREFIX_GLOBAL + ':' + cat,
-                    eventAction: action,
-                };
-                if (label) {
-                    eventData.eventLabel = label;
-                }
-                if (value) {
-                    eventData.eventValue = value;
-                }
-                // Google Analytics via Google Tag Manager doesn't work without a prefix
-                window.ga(function() {
-                    let prefix = window.ga.getAll()[0].get('name');
-                    if (prefix) {
-                        prefix += '.';
-                    }
-                    window.ga(prefix + 'send', eventData);
-                });
-            }
+            this.sendAnalyticsEvent(cat, action, label, value, ga4Value);
         }
 
         return document.dispatchEvent(event);
-    }
-
-    sendGA4Event(action, data) {
-        const fn = window[window.GoogleAnalyticsObject || 'ga'];
-        fn('event', action, data);
     }
 
     setAnalytics(bool) {

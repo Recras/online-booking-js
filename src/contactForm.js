@@ -77,10 +77,6 @@ class RecrasContactForm {
     }
 
     isStandalone(options) {
-        if (options.showSubmit) {
-            console.warn('Option "showSubmit" was renamed to "standalone". Please update your code.');
-            options.standalone = true;
-        }
         return !!options.standalone;
     }
 

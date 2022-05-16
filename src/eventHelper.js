@@ -87,20 +87,11 @@ class RecrasEventHelper {
     }
 
     sendEvent(cat, action, label = undefined, value = undefined, ga4Value = undefined) {
-        let event;
-
-        try {
-            event = new Event(RecrasEventHelper.PREFIX_GLOBAL + ':' + cat + ':' + action);
-        } catch (e) {
-            // IE
-            event = document.createEvent('Event');
-            event.initEvent(action, true, true);
-        }
-
         if (this.analyticsEnabled && this.eventEnabled(action)) {
             this.sendAnalyticsEvent(cat, action, label, value, ga4Value);
         }
 
+        const event = new Event(RecrasEventHelper.PREFIX_GLOBAL + ':' + cat + ':' + action);
         return document.dispatchEvent(event);
     }
 

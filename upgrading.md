@@ -1,4 +1,5 @@
 # 1.11.0 -> 2.0.0
+* Support for Google Analytics v2 has been dropped.
 * Support for Internet Explorer (all versions) and old Edge (12-15) has been removed.
 * Option `showSubmit` has been removed. It was renamed to `standalone` in version 1.3.0
 

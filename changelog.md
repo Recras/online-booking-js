@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.0 (2022-05-16)
+* Fix GA4 events
+* Support for Google Analytics v2 has been dropped
+* Support for Internet Explorer and old Edge (12-15) has been dropped
+
 ## 1.11.0 (2022-04-04)
 * Add support for Google Analytics v4 (GA4)
 * Minified version of the script is now included

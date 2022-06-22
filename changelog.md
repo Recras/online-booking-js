@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+* "Number of people" on a package line was incorrectly used as minimum quantity - fixed
+
 ## 2.0.0 (2022-05-16)
 * Fix GA4 events
 * Support for Google Analytics v2 has been dropped

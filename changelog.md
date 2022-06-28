@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.2 (2022-06-29)
+* No changes from 2.0.1 - previous version on NPM contained wrong compiled version
+
 ## 2.0.1 (2022-06-22)
 * "Number of people" on a package line was incorrectly used as minimum quantity - fixed
 

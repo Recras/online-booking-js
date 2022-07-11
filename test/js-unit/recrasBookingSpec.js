@@ -511,16 +511,6 @@ describe('RecrasBooking', () => {
             expect(rb.setMinMaxAmountWarning).toHaveBeenCalledWith('packageline0', 5, 'minimum');
         });
 
-        it('gives error if amount is less than the line minimum', async () => {
-            await rb.promise;
-
-            let el = document.getElementById('packageline2');
-            el.value = '1';
-            el.dispatchEvent(new Event('input'));
-
-            expect(rb.setMinMaxAmountWarning).toHaveBeenCalledWith('packageline2', 10, 'minimum');
-        });
-
         it('gives error if amount is more than the maximum', async () => {
             await rb.promise;
 

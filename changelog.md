@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.3 (2022-07-21)
+* Fix entering DD-MM-YYYY dates by hand
+
 ## 2.0.2 (2022-06-29)
 * No changes from 2.0.1 - previous version on NPM contained wrong compiled version
 

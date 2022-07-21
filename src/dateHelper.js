@@ -20,6 +20,14 @@ class RecrasDateHelper {
         return date;
     }
 
+    static parseMDY(dateStr) {
+        const parts = dateStr.split('-');
+        const day = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10) - 1;
+        const year = parseInt(parts[2], 10);
+        return new Date(year, month, day);
+    }
+
     static setTimeForDate(date, timeStr) {
         date.setHours(timeStr.substr(0, 2), timeStr.substr(3, 2));
         return date;

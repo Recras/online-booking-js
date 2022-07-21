@@ -21,6 +21,15 @@ describe('RecrasDateHelper', () => {
         });
     });
 
+    describe('parseMDY', () => {
+        it('correctly parses entered date', () => {
+            const dateStr = '11-09-2022';
+            const date = RecrasDateHelper.parseMDY(dateStr);
+            expect(date.getMonth()).toEqual(8); // months are 0-indexed
+            expect(date.getDate()).toEqual(11);
+        });
+    });
+
     describe('setTimeForDate', () => {
         it('Correctly sets the time', () => {
             let date = new Date(2018, 3, 20);

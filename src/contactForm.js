@@ -424,6 +424,7 @@ class RecrasContactForm {
                             field: this.findElement('[data-identifier="boeking.datum"]'),
                             i18n: RecrasCalendarHelper.i18n(this.languageHelper),
                             numberOfMonths: 1,
+                            parse: RecrasDateHelper.parseMDY,
                         }
                     );
                     new Pikaday(pikadayOptions);

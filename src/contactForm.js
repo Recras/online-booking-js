@@ -98,7 +98,7 @@ class RecrasContactForm {
                 html += this.quantitySelector(extraOptions.quantityTerm);
             }
             this.contactFormFields.forEach((field, idx) => {
-                html += '<div>' + this.showField(field, idx) + '</div>';
+                html += '<div class="recras-contactform-item">' + this.showField(field, idx) + '</div>';
             });
             if (standalone) {
                 html += this.submitButtonHtml();

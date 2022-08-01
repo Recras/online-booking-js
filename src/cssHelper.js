@@ -21,6 +21,9 @@ class RecrasCSSHelper {
 .booking-error, .minimum-amount {
     color: hsl(0, 50%, 50%);
 }
+.booking-error {
+    grid-column: 1 / 3;
+}
 .recras-success {
     color: hsl(120, 40%, 40%);
 }

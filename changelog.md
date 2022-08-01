@@ -1,5 +1,8 @@
 # Changelog
 
+## development (unreleased)
+* Add inline error messages
+
 ## 2.0.3 (2022-07-21)
 * Fix entering DD-MM-YYYY dates by hand
 

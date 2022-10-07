@@ -184,7 +184,7 @@ class RecrasVoucher {
         let shouldDisable = false;
         this.contactForm.removeErrors();
         if (this.contactForm.hasEmptyRequiredFields() || !this.contactForm.isValid() || !this.contactForm.checkRequiredCheckboxes()) {
-            this.contactForm.showInlineErrors();
+            this.contactForm.showErrors();
             shouldDisable = true;
         }
 

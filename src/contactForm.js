@@ -457,24 +457,32 @@ class RecrasContactForm {
         );
     }
 
-    showInlineErrors() {
+    showErrors() {
+        let errors = [];
         for (let el of this.getEmptyRequiredFields()) {
             const labelEl = el.parentNode.querySelector('label');
             const requiredText = this.languageHelper.translate('CONTACT_FORM_FIELD_REQUIRED', {
                 FIELD_NAME: labelEl.innerText,
             });
-            el.parentNode.insertAdjacentHTML(
-                'afterend',
-                `<div class="booking-error">${ requiredText }</div>`
-            );
+            errors.push(requiredText);
         }
         for (let el of this.getInvalidFields()) {
-            const labelEl = el.parentNode.querySelector('label');
+            let parentEl = el.closest('div');
+            if (parentEl.classList.contains('radioGroup')) {
+                parentEl = parentEl.parentNode.closest('div');
+            }
+            const labelEl = parentEl.querySelector('label');
+            console.log(labelEl, parentEl.querySelectorAll('label'));
             const invalidText = this.languageHelper.translate('CONTACT_FORM_FIELD_INVALID', {
                 FIELD_NAME: labelEl.innerText,
             });
-            this.showInlineError(el, invalidText);
+            errors.push(invalidText);
         }
+        errors = [...new Set(errors)]; // Only unique text
+        this.findElement('button[type="submit"]').insertAdjacentHTML(
+            'afterend',
+            `<div class="booking-error"><ul><li>${ errors.join('<li>') }</ul></div>`
+        );
     }
 
     showLabel(field, idx) {
@@ -502,7 +510,7 @@ class RecrasContactForm {
             );
             return false;
         } else if (this.hasEmptyRequiredFields() || !this.isValid()) {
-            this.showInlineErrors();
+            this.showErrors();
             return false;
         }
 

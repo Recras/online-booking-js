@@ -1,6 +1,6 @@
 {
   "name": "@recras/online-booking-js",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "JS library for easy integration of Recras online booking and voucher sales",
   "main": "dist/onlinebooking.js",
   "scripts": {

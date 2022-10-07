@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.4 (2022-10-07)
+* Contact form/Voucher sales no longer shows error messages inline, but after the form
+
 ## 2.0.3 (2022-07-21)
 * Fix entering DD-MM-YYYY dates by hand
 

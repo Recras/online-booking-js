@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.0.5 (2023-01-30)
 * Contact form time field only allowed time in 5-minute intervals, but browser time pickers don't show this in their UI. Removed this limitation.
 
 ## 2.0.4 (2022-10-07)

@@ -344,7 +344,7 @@ class RecrasContactForm {
                 return label + `<input type="number" ${ fixedAttributes } min="1">`;
             case 'boeking.starttijd':
                 placeholder = this.languageHelper.translate('TIME_FORMAT');
-                return label + `<input type="time" ${ fixedAttributes } placeholder="${ placeholder }" pattern="${ timePattern }" step="300">`;
+                return label + `<input type="time" ${ fixedAttributes } placeholder="${ placeholder }" pattern="${ timePattern }">`;
             case 'boeking.arrangement':
                 const preFilledPackage = this.options.getPackageId();
                 if (field.verplicht && this.packages.length === 1) {

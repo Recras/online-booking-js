@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+* Contact form time field only allowed time in 5-minute intervals, but browser time pickers don't show this in their UI. Removed this limitation.
+
 ## 2.0.4 (2022-10-07)
 * Contact form/Voucher sales no longer shows error messages inline, but after the form
 

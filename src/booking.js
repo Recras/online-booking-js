@@ -1183,7 +1183,8 @@ class RecrasBooking {
 
         let newEndDate = RecrasDateHelper.clone(lastAvailableDay);
         newEndDate.setFullYear(lastMonthYear.year);
-        newEndDate.setMonth(lastMonthYear.month + 2);
+        newEndDate.setMonth(lastMonthYear.month + 3);
+        newEndDate.setDate(0); // Set to 0th day of the month = last day of previous month
 
         this.getAvailableDays(packageId, lastAvailableDay, newEndDate);
     }
@@ -1556,7 +1557,8 @@ ${ msgs[1] }</p></div>`);
             thisClass.loadingIndicatorShow(thisClass.findElement('label[for="recras-onlinebooking-date"]'));
             let startDate = new Date();
             let endDate = new Date();
-            endDate.setMonth(endDate.getMonth() + 3);
+            endDate.setMonth(endDate.getMonth() + 4);
+            endDate.setDate(0); // Set to 0th day of the month = last day of previous month
 
             if (!thisClass.prefilledDate) {
                 thisClass.getAvailableDaysInPeriod(thisClass.selectedPackage.id, startDate, endDate);

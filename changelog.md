@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.6 (2023-02-27)
+* Fetch available dates until the end of the month, to prevent half filled months in calendar
+
 ## 2.0.5 (2023-01-30)
 * Contact form time field only allowed time in 5-minute intervals, but browser time pickers don't show this in their UI. Removed this limitation.
 

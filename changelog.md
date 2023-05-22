@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.0.0 (unreleased)
+* Support for Google Analytics v3 has been dropped
+
 ## 2.0.6 (2023-02-27)
 * Fetch available dates until the end of the month, to prevent half filled months in calendar
 

@@ -61,9 +61,7 @@ class RecrasVoucher {
 
         this.eventHelper.sendEvent(
             RecrasEventHelper.PREFIX_VOUCHER,
-            RecrasEventHelper.EVENT_VOUCHER_VOUCHER_SUBMITTED,
-            this.selectedTemplate.name,
-            Math.round(this.totalPrice())
+            RecrasEventHelper.EVENT_VOUCHER_VOUCHER_SUBMITTED
         );
         this.findElement('.buyTemplate').setAttribute('disabled', 'disabled');
 
@@ -81,8 +79,6 @@ class RecrasVoucher {
                     this.eventHelper.sendEvent(
                         RecrasEventHelper.PREFIX_VOUCHER,
                         RecrasEventHelper.EVENT_VOUCHER_REDIRECT_PAYMENT,
-                        null,
-                        Math.round(this.totalPrice()),
                         {
                             currency: this.languageHelper.currency,
                             value: this.totalPrice(),
@@ -108,8 +104,6 @@ class RecrasVoucher {
         this.eventHelper.sendEvent(
             RecrasEventHelper.PREFIX_VOUCHER,
             RecrasEventHelper.EVENT_VOUCHER_TEMPLATE_CHANGED,
-            null,
-            templateID,
             {
                 content_type: 'voucher',
                 item_id: templateID,

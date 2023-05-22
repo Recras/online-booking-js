@@ -520,9 +520,7 @@ class RecrasContactForm {
 
         this.eventHelper.sendEvent(
             RecrasEventHelper.PREFIX_CONTACT_FORM,
-            RecrasEventHelper.EVENT_CONTACT_FORM_SUBMIT,
-            null,
-            this.options.getFormId()
+            RecrasEventHelper.EVENT_CONTACT_FORM_SUBMIT
         );
 
         this.loadingIndicatorHide();

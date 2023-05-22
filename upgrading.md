@@ -1,3 +1,6 @@
+# 2.0.6 -> 3.0.0
+* Support for Google Analytics v3 has been dropped.
+
 # 1.11.0 -> 2.0.0
 * Support for Google Analytics v2 has been dropped.
 * Support for Internet Explorer (all versions) and old Edge (12-15) has been removed.

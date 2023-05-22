@@ -62,33 +62,19 @@ class RecrasEventHelper {
         return map[action];
     }
 
-    sendAnalyticsEvent(cat, action, label = undefined, value = undefined, ga4Value = undefined) {
-        if (typeof window.gtag !== 'function') {
+    sendAnalyticsEvent(action, value = undefined) {
+        if (typeof window.gtag !== 'function' || !value) {
             return;
         }
 
-        if (this.ga4EventMap(action) && ga4Value) {
-            // v4
-            window.gtag('event', this.ga4EventMap(action), ga4Value);
-            return;
+        if (this.ga4EventMap(action)) {
+            window.gtag('event', this.ga4EventMap(action), value);
         }
-
-        // Global Site Tag (v3)
-        let eventData = {
-            event_category: RecrasEventHelper.PREFIX_GLOBAL + ':' + cat,
-        };
-        if (label) {
-            eventData.event_label = label;
-        }
-        if (value) {
-            eventData.value = value;
-        }
-        window.gtag('event', action, eventData);
     }
 
-    sendEvent(cat, action, label = undefined, value = undefined, ga4Value = undefined) {
+    sendEvent(cat, action, value = undefined) {
         if (this.analyticsEnabled && this.eventEnabled(action)) {
-            this.sendAnalyticsEvent(cat, action, label, value, ga4Value);
+            this.sendAnalyticsEvent(action, value);
         }
 
         const event = new Event(RecrasEventHelper.PREFIX_GLOBAL + ':' + cat + ':' + action);

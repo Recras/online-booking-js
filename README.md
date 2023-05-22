@@ -128,20 +128,7 @@ The library sends out a few custom events when certain things change:
 You can use these events for custom actions, such as analytics. For use in code, please refer to 
 the constants in [src/eventHelper.js](src/eventHelper.js).
 
-When Google Analytics integration is enabled, certain events are sent to GA. Which events are sent depends on the version of GA you are using. For Universal Analytics (v3) and older, these custom events are sent and they include a label and/or value:
-
-| Event                              | Label                             | Value                               |
-| ---------------------------------- | --------------------------------- |-------------------------------------|
-| `Recras:Booking:PackageChanged`    | Package name                      | Package ID                          |
-| `Recras:Booking:DateSelected`      | Selected date, in ISO 8601 format | N/A                                 |
-| `Recras:Booking:BuyInProgress`     | Package name                      | Rounded total amount of the booking |
-| `Recras:Booking:RedirectToPayment` | N/A                               | Rounded total amount of the booking |
-| `Recras:ContactForm:Submit`        | N/A                               | Form ID                             |
-| `Recras:Voucher:TemplateChanged`   | N/A                               | Template ID                         |
-| `Recras:Voucher:BuyInProgress`     | Template name                     | Rounded total amount of the order   |
-| `Recras:Voucher:RedirectToPayment` | N/A                               | Rounded total amount of the order   |
-
-For GA4, these events are sent:
+When Google Analytics integration is enabled, certain events are sent to GA. The following events are sent:
 * when a package is selected: `select_content`. The ID of the package is included.
 * when a voucher is selected: `select_content`. The ID of the template is included.
 * when the user is redirected to the payment provider: `begin_checkout`. The total amount as well as all selected items (name, price, quantity) are included.

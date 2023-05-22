@@ -317,8 +317,6 @@ class RecrasBooking {
             this.eventHelper.sendEvent(
                 RecrasEventHelper.PREFIX_BOOKING,
                 RecrasEventHelper.EVENT_BOOKING_PACKAGE_CHANGED,
-                selectedPackage[0].arrangement,
-                selectedPackage[0].id,
                 {
                     content_type: 'package',
                     item_id: selectedPackage[0].id,
@@ -1148,8 +1146,7 @@ class RecrasBooking {
         this.loadingIndicatorShow(this.findElement('label[for="recras-onlinebooking-time"]'));
         this.eventHelper.sendEvent(
             RecrasEventHelper.PREFIX_BOOKING,
-            RecrasEventHelper.EVENT_BOOKING_DATE_SELECTED,
-            RecrasDateHelper.datePartOnly(date)
+            RecrasEventHelper.EVENT_BOOKING_DATE_SELECTED
         );
         this.selectedDate = date;
 
@@ -1422,9 +1419,7 @@ ${ msgs[1] }</p></div>`);
 
         this.eventHelper.sendEvent(
             RecrasEventHelper.PREFIX_BOOKING,
-            RecrasEventHelper.EVENT_BOOKING_BOOKING_SUBMITTED,
-            this.selectedPackage.arrangement,
-            Math.round(this.getTotalPrice())
+            RecrasEventHelper.EVENT_BOOKING_BOOKING_SUBMITTED
         );
 
         let paymentMethod = this.paymentMethods(this.selectedPackage)[0];
@@ -1464,8 +1459,6 @@ ${ msgs[1] }</p></div>`);
                 this.eventHelper.sendEvent(
                     RecrasEventHelper.PREFIX_BOOKING,
                     RecrasEventHelper.EVENT_BOOKING_REDIRECT_PAYMENT,
-                    null,
-                    Math.round(this.getTotalPrice()),
                     {
                         currency: this.languageHelper.currency,
                         value: this.getTotalPrice(),

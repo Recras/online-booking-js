@@ -182,7 +182,7 @@
 * Remove the time-preview for lines that have no specified time in the programme
 
 ## 0.17.9 (2019-05-29)
-* Fix filtering of invalid tags. For IE compatibility, a polyfill for `RegExp` flags should be loaded (i.e. https://cdn.polyfill.io/v2/polyfill.min.js?features=RegExp.prototype.flags)
+* Fix filtering of invalid tags. For IE compatibility, a polyfill for `RegExp` flags should be loaded
 
 ## 0.17.8 (2019-05-22)
 * Fix availability check for packages with "booking size" in some edge cases

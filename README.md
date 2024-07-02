@@ -103,9 +103,7 @@ The library provides a bit of styling to make it look okay straight from the box
 
 
 ## Browser support
-This library uses various modern techniques that are unsupported in Internet Explorer, and/or old Edge, and/or old Safari. If you care about supporting old browsers, a polyfill should be loaded into your website. We recommend loading the following [Polyfill.io](https://polyfill.io/v3/) script: `https://polyfill.io/v3/polyfill.min.js?features=default,fetch,Promise,Array.prototype.includes,RegExp.prototype.flags`
-
-In modern browsers, this is only a very small file causing little overhead.
+This library does not support old browsers (Internet Explorer, pre-Blink Edge, old Safari versions).
 
 
 ## Events

@@ -1,8 +1,4 @@
 class RecrasOptions {
-    static hostnamesDebug = [
-        'nginx:8886', // Local development
-        'nginx', // Docker Selenium tests
-    ];
 
     constructor(options) {
         this.languageHelper = new RecrasLanguageHelper();
@@ -99,8 +95,6 @@ class RecrasOptions {
     }
 
     validate(options) {
-        const hostnameRegex = new RegExp(/^[a-z0-9\-]+\.recras\.nl$/i);
-
         if (!options.element) {
             throw new Error(this.languageHelper.translate('ERR_NO_ELEMENT'));
         }
@@ -110,14 +104,6 @@ class RecrasOptions {
 
         if (!options.recras_hostname) {
             throw new Error(this.languageHelper.translate('ERR_NO_HOSTNAME'));
-        }
-        if (
-            !hostnameRegex.test(options.recras_hostname) &&
-            !RecrasOptions.hostnamesDebug.includes(options.recras_hostname)
-        ) {
-            throw new Error(
-                this.languageHelper.translate('ERR_INVALID_HOSTNAME')
-            );
         }
         if (options.redirect_url) {
             if (options.redirect_url.indexOf('http://') === -1 && options.redirect_url.indexOf('https://') === -1) {

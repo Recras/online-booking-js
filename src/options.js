@@ -85,12 +85,7 @@ class RecrasOptions {
     }
 
     setOptions(options) {
-        let protocol = 'https';
-        if (RecrasOptions.hostnamesDebug.includes(options.recras_hostname)) {
-            protocol = 'http';
-        }
-        options.hostname = protocol + '://' + options.recras_hostname;
-
+        options.hostname = '//' + options.recras_hostname;
         return options;
     }
 

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.8 (2024-12-10)
+* Changelog & package.json update that was forgotten in 2.0.7
+
+## 2.0.7 (2024-12-10)
+* Remove Recras instance hostname validation
+* Remove explicit http/https
+
 ## 2.0.6 (2023-02-27)
 * Fetch available dates until the end of the month, to prevent half filled months in calendar
 

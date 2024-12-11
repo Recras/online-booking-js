@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.9 (2024-12-11)
+* Previous version was published without dist files
+
 ## 2.0.8 (2024-12-10)
 * Changelog & package.json update that was forgotten in 2.0.7
 

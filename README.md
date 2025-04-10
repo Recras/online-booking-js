@@ -1,20 +1,17 @@
-[![Build Status](https://travis-ci.org/Recras/online-booking-js.svg?branch=master)](https://travis-ci.org/Recras/online-booking-js)
-
-# Recras JS Integration Library
+# Recras Integration Library
 Version: 2.0.9
 
-JS library for easy online booking, contact form, and voucher integration
-
+JavaScript library for easy integration of online booking of packages, contact form, and voucher sales. While it is still possible to integrate using this library, all uses are deprecated in favour of book processes. Usage may not work for every Recras instance.
 
 ## Getting started
-### Online booking
+### Online booking of packages
 In your HTML document,
 1. include the `dist/onlinebooking.js` script
 1. add an element where you want the integration to appear
-1. give the element a unique ID, i.e. `< div id="recras-onlinebooking"></div>`
+1. give the element a unique ID, i.e. `<div id="recras-onlinebooking"></div>`
 1. initialize the script like this:
 ```
-var options = new RecrasOptions({
+const options = new RecrasOptions({
     recras_hostname: 'demo.recras.nl', // Required
     element: document.getElementById('recras-onlinebooking'), // Required
 });
@@ -28,7 +25,7 @@ In your HTML document,
 1. give the element a unique ID, i.e. `<div id="recras-vouchers"></div>`
 1. initialize the script like this:
 ```
-var options = new RecrasOptions({
+const options = new RecrasOptions({
     recras_hostname: 'demo.recras.nl', // Required
     element: document.getElementById('recras-vouchers'), // Required
 });
@@ -43,12 +40,12 @@ In your HTML document,
 1. give the element a unique ID, i.e. `<div id="recras-contactform"></div>`
 1. initialize the script like this:
 ```
-var options = new RecrasOptions({
+const options = new RecrasOptions({
     recras_hostname: 'demo.recras.nl', // Required
     element: document.getElementById('recras-contactform'), // Required
     form_id: 4, // Required
 });
-var form = new RecrasContactForm(options);
+const form = new RecrasContactForm(options);
 form.showForm();
 ```
 See the section Options below for an overview of all options

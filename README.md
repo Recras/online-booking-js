@@ -1,7 +1,10 @@
 # Recras Integration Library
 Version: 2.0.9
 
-JavaScript library for easy integration of online booking of packages, contact form, and voucher sales. While it is still possible to integrate using this library, all uses are deprecated in favour of book processes. Usage may not work for every Recras instance.
+## To start
+**Note:** This library has been deprecated in favour of integrating book processes. You can still use it, but there not be any feature updates. Other updates are unlikely. Usage of this library may not work for every Recras instance.
+
+This JavaScript library allows for easy integration of online booking of packages, contact forms, and selling product vouchers. You **cannot** use this library to integrate book processes or for selling credit vouchers.
 
 ## Getting started
 ### Online booking of packages

@@ -126,6 +126,9 @@ class RecrasContactForm {
         if (contactForm['boeking.datum']) {
             contactForm['boeking.datum'] = RecrasDateHelper.formatStringForAPI(contactForm['boeking.datum']);
         }
+        if (this.nonce) {
+            contactForm.nonce = this.nonce;
+        }
 
         return contactForm;
     }
@@ -135,6 +138,7 @@ class RecrasContactForm {
             .then(form => {
                 this.contactFormFields = form.Velden;
                 this.packages = this.sortPackages(form.Arrangementen);
+                this.nonce = form.nonce ?? null;
                 return this.contactFormFields;
             });
     }

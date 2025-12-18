@@ -9,7 +9,7 @@
   // Suppress warnings about == null comparisons.
   "eqnull": true,
 
-  "esversion": 6,
+  "esversion": 11,
 
   "globals": {
     "console": true,

@@ -1,5 +1,5 @@
 # Recras Integration Library
-Version: 2.0.9
+Version: 2.1.0
 
 ## To start
 **Note:** This library has been deprecated in favour of integrating book processes. You can still use it, but there not be any feature updates. Other updates are unlikely. Usage of this library may not work for every Recras instance.

@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.1.0 (2026-01-05)
+* Improve anti-spam measures
+
 ## 2.0.9 (2024-12-11)
 * Previous version was published without dist files
 
